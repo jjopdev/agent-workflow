@@ -18,3 +18,5 @@
 - **[ARCH]** Snyk tools are optional — Security agent checks availability and falls back to manual review without blocking
 - **[ARCH]** Security reports overwrite (not append) — each review cycle produces a fresh report
 - **[SECURITY]** Security agent auto-generates project security-context on first review — subsequent reviews read and update it
+- **[DX]** ALWAYS run the full pipeline (Plan → Implement → Test → Review → Security) for any task involving code changes, even single-file bug fixes. The Quick/Standard paths caused the orchestrator to skip delegation when there was real work to do. The cost of running the pipeline is always lower than the cost of missing a bug.
+- **[FAIL]** Tester agent must NEVER create temporary debug scripts (test_debug*.mjs) in the same directory as production test files. These scripts import shared modules and contaminate in-memory state, causing unrelated tests to fail. Debug scripts must use a separate /tmp directory or be cleaned up immediately after use.

@@ -1,0 +1,9 @@
+{
+  "name": "workflow-benchmark",
+  "version": "1.0.0",
+  "description": "Smoke test to verify the full agent workflow pipeline",
+  "type": "module",
+  "scripts": {
+    "test": "node --test src/*.test.js"
+  }
+}

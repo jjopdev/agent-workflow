@@ -27,31 +27,33 @@ Every delegation to a subagent MUST include:
 Classify every task before choosing the pipeline:
 
 ### Quick path (direct action, no delegation needed)
-- Questions, explanations, small config changes
-- Single-file typo or obvious bug fix
-- Documentation edits
+- Questions about concepts, explanations, documentation reads
+- Pure information queries with no code changes
 → Handle directly. No subagents needed.
 
-### Standard path (focused delegation)
-- Bug fixes requiring investigation
-- Single-feature implementation
-- Code review of specific files
-→ Delegate to the appropriate agent (implementer, reviewer, tester). Skip Plan if the task is clear.
-
-### Full pipeline (orchestrated workflow)
-- New features touching 3+ files
-- Refactors affecting multiple modules
-- Architecture changes
-- Any task where requirements are ambiguous
-→ Run the complete pipeline:
+### Full pipeline (DEFAULT for all development tasks)
+**Every task that involves code changes** — regardless of size — runs the complete pipeline:
   1. **Plan** → Built-in Plan subagent (haiku, read-only) decomposes the task
   2. **Implement** → Delegate to `implementer` agent (sonnet)
   3. **Test** → Delegate to `tester` agent (sonnet)
   4. **Review** → Delegate to `reviewer` agent (sonnet)
   5. **Security** (conditional) → Delegate to `security` agent (opus) when changes touch security-sensitive areas
 
-### Force full pipeline
-The user can invoke `/workflow` to force the full pipeline on any task regardless of classification.
+This includes:
+- Bug fixes (even single-file) — Plan traces the flow: view → script → controller → server → queries
+- Single-feature implementations
+- Refactors of any size
+- Config changes that affect behavior
+- Any task where the user describes a problem to investigate
+
+### Why always full pipeline?
+- Plan catches issues before implementation starts
+- Test verifies the fix actually works
+- Review catches quality issues the implementer missed
+- The cost of skipping a stage is higher than the cost of running it
+
+### Force full pipeline explicitly
+The user can also invoke `/workflow` to make the intent explicit.
 
 ## Learning System
 - At session start: read `.claude/skills/workflow-knowledge/lessons.md` headers

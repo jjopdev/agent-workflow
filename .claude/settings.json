@@ -177,6 +177,6 @@
   },
 
   "autoUpdatesChannel": "stable",
-  "includeCoAuthoredBy": true,
+  "includeCoAuthoredBy": false,
   "cleanupPeriodDays": 30
 }

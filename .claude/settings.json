@@ -168,8 +168,8 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Review the conversation. Was there a user correction or a failed attempt? If YES, respond with a JSON object: {\"continue\": false, \"stopReason\": \"Record a lesson: describe what went wrong and how to avoid it next time. Append to .claude/skills/workflow-knowledge/lessons.md with the appropriate category [DX], [ARCH], [SECURITY], [FAIL], or [PERF].\"}. If NO corrections or failures, respond: {\"continue\": true}. Context: $ARGUMENTS",
-            "timeout": 15
+            "prompt": "Did the user correct Claude or did any attempt fail in this conversation? Answer with ONLY one of these two JSON strings, no other text:\n{\"continue\":true}\n{\"continue\":false,\"stopReason\":\"Append to .claude/skills/workflow-knowledge/lessons.md a one-line lesson with category [DX],[ARCH],[SECURITY],[FAIL], or [PERF] describing what went wrong.\"}",
+            "timeout": 30
           }
         ]
       }

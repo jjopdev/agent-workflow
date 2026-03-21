@@ -1,210 +1,280 @@
 # Agent Workflow
 
-A generic, multi-agent orchestration workflow based on the Recursive Language Models paper (arXiv:2512.24601). Works across any stack: Next.js, React, ASP.NET MVC, .NET Framework, .NET 10, Node.js, Python, Go, Rust, and more.
-
-Supports **two platforms**: [Claude Code](#claude-code-workflow) and [GitHub Copilot](#github-copilot-workflow).
+A multi-agent orchestration workflow based on the Recursive Language Models paper (arXiv:2512.24601). Choose the platform that works for you.
 
 ## What This Is
 
 This is **not** an application. It's a portable configuration that turns your AI assistant into a Tech Lead orchestrator with specialized subagents. Clone it into any project to get a structured development pipeline.
 
-## Quick Start
+Works with:
+- **Claude Code** (Anthropic)
+- **GitHub Copilot** (Microsoft/OpenAI)
 
-**Choose ONE platform:**
+---
 
-### 🔵 Claude Code
+## 🚀 Quick Start
+
+### ➡️ Choose Your Platform
+
+#### **Claude Code**
 ```bash
+cp CLAUDE.md <your-project>/
+cp -r .claude <your-project>/
 cd <your-project>
-cp -r <this-repo>/.claude ./
-cp <this-repo>/CLAUDE.md ./
 claude
 ```
-→ [See `.claude/README.md`](.claude/README.md) for detailed workflow
+**→ See [`.claude/README.md`](.claude/README.md)** for workflow details
 
-### 🟠 GitHub Copilot
+#### **GitHub Copilot**
 ```bash
+mkdir -p <your-project>/.github/{agents,skills,instructions,tasks}
+cp .github/* <your-project>/.github/
 cd <your-project>
-mkdir -p .github/{agents,skills,instructions,tasks}
-cp -r <this-repo>/.github/* .github/
 code .
 ```
-→ [See `.github/README.md`](.github/README.md) for detailed workflow
+**→ See [`.github/README.md`](.github/README.md)** for workflow details
 
-### 📋 Can't decide?
-→ [See `SETUP.md`](SETUP.md) for comparison and guidance
+#### **Can't Decide?**
+**→ See [`SETUP.md`](SETUP.md)** for comparison table and guidance
+
+---
 
 ## Architecture
 
-Both platforms share the same orchestration philosophy: a root model (the orchestrator) delegates tasks to specialized subagents.
+Both platforms use the same **orchestration philosophy**: a root model coordinates specialized subagents.
 
-### Claude Code Workflow
-
+### Claude Code Stack
 ```
-CLAUDE.md                          ← Orchestrator brain (opus)
+CLAUDE.md (root orchestrator)
 .claude/
 ├── agents/
-│   ├── implementer.md             ← Code writing (sonnet)
-│   ├── reviewer.md                ← Code review (sonnet)
-│   ├── pr-reviewer.md             ← PR review (sonnet)
-│   ├── tester.md                  ← Tests (sonnet)
-│   ├── infra.md                   ← DevOps/CI-CD (sonnet)
-│   └── security.md                ← OWASP review (opus)
+│   ├── implementer.md      (code writing — Sonnet)
+│   ├── reviewer.md         (code review — Sonnet)
+│   ├── pr-reviewer.md      (PR review — Sonnet)
+│   ├── tester.md           (test writing — Sonnet)
+│   ├── infra.md            (DevOps — Sonnet)
+│   └── security.md         (OWASP review — Opus)
 ├── rules/
-│   ├── tech-lead.md               ← Universal quality principles
-│   └── planning.md                ← Task decomposition rules
-├── skills/                        ← 15+ reusable skill modules
-├── settings.json                  ← Shared permissions + security
-└── settings.local.json            ← Personal overrides (gitignored)
+│   ├── tech-lead.md        (universal principles)
+│   └── planning.md         (decomposition rules)
+├── skills/                 (15+ reusable skills)
+└── settings.json           (permissions + security)
 ```
 
-**Model strategy:**
-
-| Role | Model | Why |
-|------|-------|-----|
-| Orchestrator (brain) | opus | Smart delegation reduces total cost |
-| Implementer, Reviewer, Tester, Infra | sonnet | Cost-effective daily coding |
-| Security | opus | Never downgraded |
-| Explorer, Planner | haiku | Cheap read-only operations |
-
-### GitHub Copilot Workflow
-
+### GitHub Copilot Stack
 ```
+.github/copilot-instructions.md (global instructions)
 .github/
-├── copilot-instructions.md        ← Global instructions
 ├── agents/
-│   ├── orchestrator.agent.md      ← Root orchestrator
-│   ├── planner.agent.md           ← Task decomposition
-│   ├── implementer.agent.md       ← Code writing
-│   ├── reviewer.agent.md          ← Code review
-│   ├── pr-reviewer.agent.md       ← PR review
-│   ├── scribe.agent.md            ← Documentation/lessons
-│   ├── infra.agent.md             ← DevOps/CI-CD
-│   └── security.agent.md          ← OWASP review
+│   ├── orchestrator.agent.md    (root coordinator)
+│   ├── planner.agent.md         (task decomposition)
+│   ├── implementer.agent.md     (code writing)
+│   ├── reviewer.agent.md        (code review)
+│   ├── pr-reviewer.agent.md     (PR review)
+│   ├── tester.agent.md          (test writing)
+│   ├── scribe.agent.md          (documentation)
+│   ├── infra.agent.md           (DevOps)
+│   └── security.agent.md        (OWASP review)
 ├── instructions/
 │   └── tech-lead-workflow.instructions.md
-├── skills/                        ← 10+ reusable skill modules
+├── skills/                 (10+ reusable skills)
 └── tasks/
-    ├── todo.md                    ← Active tasks
-    ├── lessons.md                 ← Accumulated learnings
-    └── summaries.md               ← Module summaries
+    ├── todo.md             (active tasks)
+    ├── lessons.md          (learnings)
+    └── summaries.md        (cached analysis)
 ```
 
-**Model strategy (GitHub Copilot):**
+---
 
-| Tier | Models | Multiplier | Use for |
-|------|--------|------------|---------|
-| Economy | Claude Haiku 4.5 | 0.33x | Simple reasoning, trivial analysis |
-| Standard | GPT-5.4 | 1x | Default baseline for most work |
-| Premium | Claude Opus 4.6 | 3x | Hardest orchestration or architecture |
+## Model Strategy (RLM Foundation)
 
-## RLM Foundation
+Based on the paper: an intelligent root model delegating to cheaper sub-models **outperforms** a single expensive model in both quality and cost.
 
-Based on the paper: an intelligent root model delegating to cheaper sub-models **outperforms** a single expensive model in both quality and cost (91.3% on BrowseComp+).
+### Claude Code Models
+| Role | Model | Why |
+|------|-------|-----|
+| Orchestrator (root) | Opus | Smart delegation reduces total cost |
+| Implementer, Reviewer, Tester, Infra | Sonnet | Cost-effective daily coding |
+| Security | Opus | Never downgraded |
+| Planner, Explorer | Haiku | Cheap read-only operations |
 
-Key insight: invest compute in **smart delegation** (the orchestrator), not in raw model power for every task.
+### Copilot Models
+| Tier | Models | When |
+|------|--------|------|
+| Economy | Claude Haiku 4.5 | 0.33x — simple analysis |
+| Standard | GPT-5.4 | 1x — default for most work |
+| Premium | Claude Opus 4.6 | 3x — architecture deadlocks only |
 
 See [workflow-model-strategy.md](workflow-model-strategy.md) for the full theoretical foundation.
 
+---
+
 ## Task Pipeline
 
-The orchestrator classifies tasks and routes them:
+Both platforms use the same pipeline structure:
 
-**Quick** (direct) — Questions, typos, small config changes. No subagents.
+**Quick** — Direct execution (typos, simple config changes)
 
-**Standard** (focused) — Bug fixes, single features. Delegates to 1-2 agents.
+**Standard** — Focused delegation (single feature or bug fix)
 
-**Full pipeline** (orchestrated) — Multi-file features, refactors, architecture changes:
+**Full** — Orchestrated workflow:
 1. **Plan** → Decompose into verifiable subtasks
 2. **Implement** → Write the code
 3. **Test** → Write and run tests
 4. **Review** → Quality review
-5. **Security** → OWASP review when security-sensitive
+5. **Security** → OWASP review (if auth/API/input/secrets involved)
 
-## Slash Commands (Claude Code)
+---
 
-| Command | When to Use |
-|---------|-------------|
-| `/workflow <task>` | Force the full pipeline: Plan → Implement → Test → Review → Security |
-| `/create-issue <summary>` | After analyzing a problem: documents to Notion + GitHub Issue |
-| `/review-pr <number>` | Review a PR (your own or a developer's) |
-| `/lesson [CATEGORY] <text>` | Record a lesson learned |
+## Shared Skills
 
-## Skills
+Both platforms include these reusable skill modules:
 
-Both platforms include reusable skill modules:
+| Skill | Description |
+|-------|-------------|
+| `codebase-navigator/` | Project structure discovery |
+| `rlm-codebase-navigation/` | RLM navigation protocol |
+| `github-cli/` | GitHub CLI reference |
+| `owasp-review/` | Web security (OWASP Top 10) |
+| `owasp-mcp-review/` | MCP/agent security review |
+| `interface-design/` | UI/UX design system |
+| `prompt-refiner/` | Normalize messy input |
+| `skill-creator/` | Create new skills |
+| `workflow-orchestrator/` | Delegation protocol reference |
 
-| Skill | Shared | Description |
-|-------|--------|-------------|
-| `codebase-navigator` | Both | Project structure discovery |
-| `rlm-codebase-navigation` | Both | RLM navigation protocol |
-| `github-cli` | Both | gh CLI reference |
-| `owasp-review` | Both | Web security review (OWASP Top 10) |
-| `owasp-mcp-review` | Both | MCP/agent security review |
-| `interface-design` | Both | UI/UX design system |
-| `prompt-refiner` | Both | Messy input → structured prompt |
-| `skill-creator` | Both | Create new skills |
-| `workflow-orchestrator` | Both | Delegation protocol reference |
-| `create-issue` | Claude Code | Notion + GitHub issue creation |
-| `review-pr` | Claude Code | PR review workflow |
-| `lesson` | Claude Code | Record learnings |
-| `workflow` | Claude Code | Full pipeline trigger |
-| `workflow-knowledge` | Claude Code | Lessons + summaries |
+**Plus platform-specific skills:**
+- Claude Code: `create-issue/`, `review-pr/`, `lesson/`, `workflow/`, `workflow-knowledge/`
+- Copilot: (built into agent definitions)
 
-## Security & Permissions (Claude Code)
+---
 
-- **Sandbox**: OS-level isolation for bash commands
-- **Accept Edits mode**: Auto-approves file edits, reduces approval fatigue
-- **50+ allow rules**: git, gh, npm, dotnet, docker, kubectl, terraform, aws, gcloud, etc.
-- **30+ deny rules**: Blocks destructive commands, secrets access, network attack tools
-- **Network allowlist**: Only approved domains (GitHub, npm, NuGet, PyPI, docs sites)
+## Task Management
+
+### Claude Code
+- **Live tracking:** TaskCreate/TaskUpdate (session-only)
+- **Persistent learning:** `.claude/skills/workflow-knowledge/lessons.md`
+- **Auto-capture:** stop hook prompts for lessons on exit
+
+### GitHub Copilot
+- **Live tracking:** `.github/tasks/todo.md` (manual updates)
+- **Persistent learning:** `.github/tasks/lessons.md` (delegate to Scribe)
+- **Cached analysis:** `.github/tasks/summaries.md` (delegate to Scribe)
+
+---
+
+## Security & Permissions
+
+### Claude Code
+- **Sandbox:** OS-level isolation (WSL2 on Windows)
+- **Auto-approve:** Edits are auto-approved (`acceptEdits` mode)
+- **50+ allow rules:** git, npm, docker, dotnet, kubernetes, aws, etc.
+- **30+ deny rules:** Blocks destructive commands, secrets, network attacks
+- **Network allowlist:** GitHub, npm, NuGet, PyPI, docs sites only
+
+### GitHub Copilot
+- **Cost control:** Choose model tier per delegation
+- **Skills:** Reference `.github/skills/` for domain-specific patterns
+- **Lessons:** Accumulate knowledge in `.github/tasks/lessons.md`
+
+---
 
 ## Supported Stacks
 
-The workflow is stack-agnostic. Settings include tools for:
+**Stack-agnostic.** Both workflows support:
 
 | Stack | Tools |
 |-------|-------|
-| **JavaScript/TypeScript** | npm, npx, node, pnpm, yarn, bun, tsc, eslint, prettier, jest, vitest |
+| **JavaScript/TypeScript** | npm, pnpm, yarn, bun, TypeScript, Node.js |
 | **C# / .NET** | dotnet, msbuild, nuget |
 | **Python** | python, pip, poetry, uv |
 | **Go** | go |
 | **Rust** | cargo |
-| **DevOps** | docker, kubectl, terraform, aws, gcloud, az |
+| **DevOps** | docker, kubernetes, terraform, aws, gcloud, azure |
 
-## Recommended Plugins (Claude Code)
-
-Install via `/plugin install <name>@claude-plugins-official`:
-
-| Plugin | For |
-|--------|-----|
-| `typescript-lsp` | Next.js, React, TypeScript |
-| `csharp-lsp` | ASP.NET MVC, .NET Framework, .NET 10 |
-| `gopls-lsp` | Go projects |
-| `rust-analyzer-lsp` | Rust projects |
-| `pyright-lsp` | Python projects |
+---
 
 ## Learning System
 
-The workflow accumulates knowledge across sessions:
+Both platforms accumulate knowledge across sessions:
 
-1. **Session start** → Read lesson headers
-2. **During work** → Filter relevant lessons by category for each subagent
-3. **After correction** → Record lesson with category: `[DX]`, `[ARCH]`, `[SECURITY]`, `[FAIL]`, `[PERF]`
-4. **Stop hook** (Claude Code) → Automatically prompts for lesson recording
+1. **Session start** → Read lessons headers
+2. **During work** → Filter relevant lessons by category for each agent
+3. **After correction** → Record lesson: `[DX]`, `[ARCH]`, `[SECURITY]`, `[FAIL]`, `[PERF]`
+4. **Persistent** → Lessons survive between sessions
 
-## Key Files
+---
 
-| File | Purpose |
-|------|---------|
-| `CLAUDE.md` | Claude Code orchestrator brain and delegation protocol |
-| `.claude/settings.json` | Security, permissions, sandbox, hooks |
-| `.claude/rules/tech-lead.md` | Universal quality principles (Claude Code) |
-| `.github/copilot-instructions.md` | GitHub Copilot global instructions |
-| `.github/agents/orchestrator.agent.md` | Copilot orchestrator agent |
-| `.github/instructions/tech-lead-workflow.instructions.md` | Universal quality principles (Copilot) |
-| `workflow-model-strategy.md` | RLM foundations and model rationale |
-| `GUIDE.md` | Step-by-step usage guide |
+## Documentation
+
+| File | Audience | Content |
+|------|----------|---------|
+| `SETUP.md` | Choosing a platform | Comparison, installation, troubleshooting |
+| `.claude/README.md` | Claude Code users | Workflow, slash commands, task tracking |
+| `.github/README.md` | Copilot users | Agents, delegations, todo.md system |
+| `CLAUDE.md` | Technical reference | Orchestrator protocol (Claude Code) |
+| `GUIDE.md` | Daily usage | Step-by-step examples, scenarios |
+| `workflow-model-strategy.md` | Theory | RLM foundations, model rationale |
+
+---
+
+## Key Principles (Both Platforms)
+
+- **Plan first:** 3+ steps or architectural decisions → plan before implementing
+- **Test always:** Never mark complete without demonstrating it works
+- **Record lessons:** After corrections, failures, or discoveries
+- **Delegate smartly:** Root LM coordinates, subagents focus
+- **Context minimization:** Reference paths, don't inline full files
+- **Security automatic:** Auth, APIs, user input → security review triggered
+
+---
+
+## Which Should You Choose?
+
+### Use Claude Code if:
+- You want lower costs (Sonnet for most work)
+- You like native CLI + VS Code integration
+- You work on multi-file features frequently
+- You want automatic lesson capture (stop hook)
+
+### Use Copilot if:
+- You already have a Copilot subscription
+- You prefer familiar agent-based workflows
+- You like manual control over documentation
+- You want to avoid CLI setup
+
+### Use Both:
+- **In different projects** ✅
+- **In the same project** ❌ (choose one per project)
+
+See [SETUP.md](SETUP.md) for detailed comparison.
+
+---
+
+## What's Different from Typical AI Workflows?
+
+**Traditional:** You talk to one AI model that tries to handle everything.
+
+**This workflow:** You (the Tech Lead) coordinate specialized AI agents:
+- Each agent is optimized for one job (implement, review, test, etc.)
+- You stay in control — you decide what to delegate
+- Cheaper and more reliable than raw model power
+- Knowledge compounds across sessions via lessons
+- Built-in security review for sensitive changes
+
+Based on research showing: **intelligent delegation outperforms brute-force scaling.**
+
+---
 
 ## License
 
 MIT
+
+---
+
+## Questions?
+
+- **Getting started?** → [SETUP.md](SETUP.md)
+- **Using Claude Code?** → [`.claude/README.md`](.claude/README.md)
+- **Using Copilot?** → [`.github/README.md`](.github/README.md)
+- **Day-to-day usage?** → [GUIDE.md](GUIDE.md)
+- **Theory & foundations?** → [workflow-model-strategy.md](workflow-model-strategy.md)

@@ -10,28 +10,39 @@ This is **not** an application. It's a portable configuration that turns your AI
 
 ## Quick Start
 
-**Choose ONE platform:**
+### Claude Code
 
-### 🔵 Claude Code
 ```bash
-cd <your-project>
-cp -r <this-repo>/.claude ./
-cp <this-repo>/CLAUDE.md ./
+# 1. Clone into your project (or copy .claude/ and CLAUDE.md)
+git clone https://github.com/jjopdev/agent-workflow.git .agent-workflow
+
+# 2. Copy the workflow files into your project root
+cp .agent-workflow/CLAUDE.md ./
+cp -r .agent-workflow/.claude ./
+
+# 3. (Optional) Copy the .gitignore entries
+cat .agent-workflow/.gitignore >> .gitignore
+
+# 4. Start Claude Code — the workflow activates automatically
 claude
 ```
-→ [See `.claude/README.md`](.claude/README.md) for detailed workflow
 
-### 🟠 GitHub Copilot
+### GitHub Copilot (VS Code)
+
 ```bash
-cd <your-project>
-mkdir -p .github/{agents,skills,instructions,tasks}
-cp -r <this-repo>/.github/* .github/
+# 1. Clone into your project (or copy .github/ folder)
+git clone https://github.com/jjopdev/agent-workflow.git .agent-workflow
+
+# 2. Copy the workflow files
+cp .agent-workflow/.github/copilot-instructions.md .github/
+cp -r .agent-workflow/.github/agents .github/
+cp -r .agent-workflow/.github/skills .github/
+cp -r .agent-workflow/.github/instructions .github/
+cp -r .agent-workflow/.github/tasks .github/
+
+# 3. Open VS Code with GitHub Copilot — agents activate automatically
 code .
 ```
-→ [See `.github/README.md`](.github/README.md) for detailed workflow
-
-### 📋 Can't decide?
-→ [See `SETUP.md`](SETUP.md) for comparison and guidance
 
 ## Architecture
 

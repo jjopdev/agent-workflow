@@ -132,7 +132,7 @@ In the Copilot chat:
 - `.github/skills/` — Reusable skills
 - `.github/tasks/` — todo.md, lessons.md, summaries.md
 
-**See:** `.github/README.md` for detailed workflow explanation.
+**See:** `.github/copilot-instructions.md` for the orchestration protocol.
 
 ---
 
@@ -215,9 +215,9 @@ Both workflows support:
 3. See `GUIDE.md` for step-by-step examples
 
 ### For Copilot
-1. Read `.github/README.md` for detailed workflow
-2. Read `.github/copilot-instructions.md` for orchestrator protocol
-3. See `.github/agents/orchestrator.agent.md` for agent definitions
+1. Read `.github/copilot-instructions.md` for orchestrator protocol
+2. See `.github/agents/orchestrator.agent.md` for agent definitions
+3. Explore `.github/skills/` for reusable skills
 
 ### For Both
 - Read `workflow-model-strategy.md` for RLM foundations (applies to both)

@@ -2,6 +2,8 @@
 
 A generic, multi-agent orchestration workflow for Claude Code based on the Recursive Language Models paper (arXiv:2512.24601). Works across any stack: Next.js, React, ASP.NET MVC, .NET Framework, .NET 10, Node.js, Python, Go, Rust, and more.
 
+> **Also using GitHub Copilot?** → [See the Copilot README](.github/README.md)
+
 ## What This Is
 
 This is **not** an application. It's a portable configuration that turns Claude Code into a Tech Lead orchestrator with specialized subagents. Clone it into any project to get a structured development pipeline.

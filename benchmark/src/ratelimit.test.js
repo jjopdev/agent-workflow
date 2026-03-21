@@ -180,4 +180,22 @@ describe("ratelimit", { concurrency: 1 }, () => {
       assert.throws(() => resetLimit("prototype", ADMIN_KEY), /Invalid IP/);
     });
   });
+
+  describe("non-string IP validation", () => {
+    it("should throw Invalid IP when ip is a number", () => {
+      assert.throws(() => rateLimit(123), /Invalid IP/);
+    });
+
+    it("should throw Invalid IP when ip is an object", () => {
+      assert.throws(() => rateLimit({}), /Invalid IP/);
+    });
+
+    it("should throw Invalid IP when ip is null", () => {
+      assert.throws(() => rateLimit(null), /Invalid IP/);
+    });
+
+    it("should throw Invalid IP when resetLimit ip is a number", () => {
+      assert.throws(() => resetLimit(123, ADMIN_KEY), /Invalid IP/);
+    });
+  });
 });

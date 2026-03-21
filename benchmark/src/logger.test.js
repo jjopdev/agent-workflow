@@ -283,4 +283,25 @@ describe("logger", () => {
       assert.equal(result.total, 0);
     });
   });
+
+  describe("circular reference handling", () => {
+    beforeEach(() => {
+      clearLogs(ADMIN_KEY);
+      setMinLevel("debug");
+    });
+
+    it("should replace circular reference with [Circular]", () => {
+      const obj = {};
+      obj.self = obj;
+      const entry = log("info", "test", obj);
+      assert.equal(entry.context.self, "[Circular]");
+    });
+
+    it("should not throw when context contains a deeply nested circular reference", () => {
+      const a = {};
+      const b = { a };
+      a.b = b;
+      assert.doesNotThrow(() => log("info", "test", a));
+    });
+  });
 });

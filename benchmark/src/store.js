@@ -3,22 +3,36 @@
  * Used for session data, user preferences, and cache.
  */
 
-const store = {};
+import { timingSafeEqual } from "node:crypto";
+
+const store = Object.create(null);
 
 const ADMIN_KEY = process.env.STORE_ADMIN_KEY || "default-admin-key";
 
 const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype", "__sessions__"]);
 
+const FORBIDDEN_KEY_NAMES = new Set(["__proto__", "constructor", "prototype"]);
+
+function safeCompare(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
+
 function assertValidUserId(userId) {
+  if (typeof userId !== "string") throw new Error("Invalid key");
   if (FORBIDDEN_KEYS.has(userId)) throw new Error("Invalid key");
 }
 
 function assertValidKey(key) {
-  if (new Set(["__proto__", "constructor", "prototype"]).has(key)) throw new Error("Invalid key");
+  if (typeof key !== "string") throw new Error("Invalid key");
+  if (FORBIDDEN_KEY_NAMES.has(key)) throw new Error("Invalid key");
 }
 
 function assertAdmin(adminKey) {
-  if (adminKey !== ADMIN_KEY) throw new Error("Unauthorized");
+  if (!safeCompare(adminKey, ADMIN_KEY)) throw new Error("Unauthorized");
 }
 
 export function set(userId, key, value) {

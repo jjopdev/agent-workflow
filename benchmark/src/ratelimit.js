@@ -3,13 +3,24 @@
  * Tracks requests per IP with a sliding window.
  */
 
-const windows = {};
+import { timingSafeEqual } from "node:crypto";
+
+const windows = Object.create(null);
 
 const ADMIN_KEY = process.env.RATELIMIT_ADMIN_KEY || "default-admin-key";
 
 const BLOCKED_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
+function safeCompare(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
+
 function validateIP(ip) {
+  if (typeof ip !== "string") throw new Error("Invalid IP");
   if (BLOCKED_KEYS.has(ip)) {
     throw new Error("Invalid IP");
   }
@@ -69,7 +80,7 @@ export function getStats() {
 }
 
 export function resetLimit(ip, adminKey) {
-  if (adminKey !== ADMIN_KEY) {
+  if (!safeCompare(adminKey, ADMIN_KEY)) {
     throw new Error("Unauthorized");
   }
   validateIP(ip);
@@ -77,7 +88,7 @@ export function resetLimit(ip, adminKey) {
 }
 
 export function resetAll(adminKey) {
-  if (adminKey !== ADMIN_KEY) {
+  if (!safeCompare(adminKey, ADMIN_KEY)) {
     throw new Error("Unauthorized");
   }
   for (const key of Object.keys(windows)) {

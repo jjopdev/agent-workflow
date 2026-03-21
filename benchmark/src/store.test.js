@@ -193,4 +193,22 @@ describe("store", () => {
       assert.equal(get("user2", "secret"), undefined);
     });
   });
+
+  describe("non-string input validation", () => {
+    it("should throw Invalid key when userId is a number", () => {
+      assert.throws(() => set(123, "key", "val"), /Invalid key/);
+    });
+
+    it("should throw Invalid key when key is a number", () => {
+      assert.throws(() => set("user", 123, "val"), /Invalid key/);
+    });
+
+    it("should throw Invalid key when userId is an object", () => {
+      assert.throws(() => set({}, "key", "val"), /Invalid key/);
+    });
+
+    it("should throw Invalid key when userId is null", () => {
+      assert.throws(() => set(null, "key", "val"), /Invalid key/);
+    });
+  });
 });

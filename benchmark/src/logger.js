@@ -3,9 +3,19 @@
  * Logs to an in-memory buffer for testing.
  */
 
+import { timingSafeEqual } from "node:crypto";
+
 const logs = [];
 
 const ADMIN_KEY = process.env.LOGGER_ADMIN_KEY || "default-admin-key";
+
+function safeCompare(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
 
 const LEVEL_ORDER = { debug: 0, info: 1, warn: 2, error: 3 };
 let minLevel = "debug";
@@ -22,19 +32,17 @@ const SENSITIVE_KEYS = new Set([
   "api_key",
 ]);
 
-function redactSensitive(obj) {
-  if (obj === null || typeof obj !== "object") {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(redactSensitive);
-  }
+function redactSensitive(obj, seen = new WeakSet()) {
+  if (obj === null || typeof obj !== "object") return obj;
+  if (seen.has(obj)) return "[Circular]";
+  seen.add(obj);
+  if (Array.isArray(obj)) return obj.map(item => redactSensitive(item, seen));
   const result = {};
   for (const [key, value] of Object.entries(obj)) {
     if (SENSITIVE_KEYS.has(key.toLowerCase())) {
       result[key] = "[REDACTED]";
     } else if (value !== null && typeof value === "object") {
-      result[key] = redactSensitive(value);
+      result[key] = redactSensitive(value, seen);
     } else {
       result[key] = value;
     }
@@ -105,7 +113,7 @@ export function getLogs(filter = {}) {
 }
 
 export function clearLogs(adminKey) {
-  if (adminKey !== ADMIN_KEY) {
+  if (!safeCompare(adminKey, ADMIN_KEY)) {
     throw new Error("Unauthorized");
   }
   logs.length = 0;

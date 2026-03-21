@@ -1,0 +1,29 @@
+# Claude Code local settings (machine-specific)
+.claude/settings.local.json
+
+# Agent persistent memory (machine-specific, not shareable)
+.claude/agent-memory/
+
+# Environment files (secrets)
+.env
+.env.local
+.env.production
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+*.swp
+*.swo
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo

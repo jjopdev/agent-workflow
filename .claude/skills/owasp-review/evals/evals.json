@@ -1,0 +1,59 @@
+{
+  "skill_name": "owasp-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this PR for OWASP 2025 issues. It adds a new Next.js API route for exporting invoices and uses a userId query param.",
+      "expected_output": "The skill should activate and focus on broken access control, response leakage, auth enforcement, and exception handling for the new route.",
+      "files": [],
+      "assertions": [
+        "The skill activates for security review and OWASP Top 10:2025 intent",
+        "The review checks authorization and IDOR risk, not only authentication",
+        "The review references a local route protection and schema validation baseline when one exists",
+        "The review output includes severity, OWASP mapping, exploit path, and minimum fix"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can you check if this app is secure against XSS, CSRF, and auth bypass? We added markdown rendering and a password reset form.",
+      "expected_output": "The skill should activate and combine OWASP categories with cross-cutting web checks for XSS, CSRF, and authentication failures.",
+      "files": [],
+      "assertions": [
+        "The skill activates for indirect security language even without naming the skill",
+        "The review checks raw HTML or markdown rendering paths for sanitization",
+        "The review checks CSRF strategy for state-changing browser requests",
+        "The review checks authentication and enumeration risks in password reset flows"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "pls review this API for vulnns, maybe injection, secrets leakage, cors, headers, the usual hardening stuff",
+      "expected_output": "The skill should activate despite typos and cover injection, data exposure, CORS, and security headers as practical hardening checks.",
+      "files": [],
+      "assertions": [
+        "The skill activates on typo-heavy vulnerability review requests",
+        "The review checks schema-first validation before sinks like queries or templates",
+        "The review checks secrets exposure in logs, code, and client bundles",
+        "The review checks CORS policy and relevant security headers"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Help me redesign the dashboard layout and pick a better font pairing.",
+      "expected_output": "This should not trigger the OWASP review skill because the request is about visual design, not security review.",
+      "files": [],
+      "assertions": [
+        "The skill does not activate for non-security frontend design work"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Write a README that explains how to run the app locally.",
+      "expected_output": "This should not trigger the OWASP review skill because the request is documentation-only and unrelated to vulnerability review.",
+      "files": [],
+      "assertions": [
+        "The skill does not activate for general documentation tasks"
+      ]
+    }
+  ]
+}

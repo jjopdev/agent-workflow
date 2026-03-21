@@ -1,6 +1,7 @@
 ---
 last-verified: 2026-03-21
 rlm-paper: https://arxiv.org/abs/2512.24601
+stacks: [nextjs, react, aspnet-mvc, dotnet-framework, dotnet-10, nodejs, python, go, rust]
 ---
 
 # Workflow Model Strategy
@@ -52,6 +53,24 @@ model: sonnet
 ```
 
 The orchestrator session runs on **opus** (set in CLAUDE.md). Subagents declare their own model. This eliminates the need for COMPLEXITY signals in handoffs — model selection is built into the agent definition.
+
+### Stack-agnostic design
+
+The workflow is designed to work across any technology stack. Agents discover the project's stack by reading configuration files (`package.json`, `*.csproj`, `*.sln`, `go.mod`, `Cargo.toml`, `pyproject.toml`, etc.) and adapt their behavior accordingly. No stack-specific rules are hardcoded into the agents.
+
+### Recommended LSP plugins
+
+For enhanced code intelligence (auto-diagnostics after edits, jump to definition, find references), install the appropriate LSP plugin:
+
+| Stack | Plugin | Binary |
+|-------|--------|--------|
+| TypeScript/Next.js | `typescript-lsp` | `typescript-language-server` |
+| C#/.NET | `csharp-lsp` | `csharp-ls` |
+| Python | `pyright-lsp` | `pyright-langserver` |
+| Go | `gopls-lsp` | `gopls` |
+| Rust | `rust-analyzer-lsp` | `rust-analyzer` |
+
+Install via: `/plugin install <name>@claude-plugins-official`
 
 ## Optimization Principle
 

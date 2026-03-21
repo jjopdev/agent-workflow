@@ -4,15 +4,14 @@
     {
       "id": 1,
       "prompt": "I need to add OAuth authentication to my Next.js app. It must support Google and GitHub as providers, protect admin routes, and store the session in a secure cookie.",
-      "expected_output": "The workflow activates REFERENCE mode with multi-agent planning: Planner decomposes into subtasks (OAuth config, providers, middleware, session), Implementer codes, Reviewer verifies security, Tester runs tests.",
+      "expected_output": "The workflow activates with multi-agent planning: Planner decomposes into subtasks (OAuth config, providers, middleware, session), Implementer codes, Reviewer verifies security, Tester runs tests.",
       "files": [],
       "assertions": [
-        "Uses the structured handoff protocol with TASK, COMPLEXITY, SKILLS, ACCEPTANCE",
+        "Uses the structured handoff protocol with TASK, SKILLS, ACCEPTANCE",
         "Delegates to Planner before implementing",
-        "Includes COMPLEXITY: high in the handoff",
         "The Reviewer verifies auth and cookie security",
-        "The flow follows the order: Plan -> Implement -> Test -> Review",
-        "Lessons are recorded in ### [CATEGORY] Title format"
+        "Security agent is triggered because auth is involved",
+        "The flow follows the order: Plan -> Implement -> Test -> Review -> Security"
       ]
     },
     {
@@ -25,18 +24,19 @@
         "Uses the handoff protocol with relevant LESSONS_FILTER",
         "The Implementer investigates the root cause before patching",
         "The Tester verifies the form works post-fix",
-        "New lessons are recorded in lessons.md with ### [CATEGORY] Title format"
+        "New lessons are recorded if corrections occur"
       ]
     },
     {
       "id": 3,
-      "prompt": "I want to optimize my workflow costs. I'm spending too many premium requests on simple tasks.",
-      "expected_output": "The skill provides guidance on COMPLEXITY levels and recommends strategies based on task classification.",
+      "prompt": "I want to understand how tasks are routed to different agents in this workflow.",
+      "expected_output": "The skill explains the task classification (quick, standard, full pipeline) and how model routing works via agent frontmatter.",
       "files": [],
       "assertions": [
-        "Explains low, medium, and high complexity profiles as options",
-        "Mentions the context minimization strategy as an optimization foundation",
-        "Presents the two-layer skill system for progressive disclosure"
+        "Explains the three task paths: quick, standard, full pipeline",
+        "Mentions that model routing is automatic via agent frontmatter",
+        "Presents the context minimization strategy",
+        "References the skill system for progressive disclosure"
       ]
     }
   ]

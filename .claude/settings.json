@@ -45,6 +45,9 @@
       "Bash(aws *)",
       "Bash(gcloud *)",
       "Bash(az *)",
+      "Bash(dotnet *)",
+      "Bash(msbuild *)",
+      "Bash(nuget *)",
       "Bash(snyk *)",
       "Bash(echo *)",
       "Bash(pwd)",
@@ -63,7 +66,9 @@
       "WebFetch(domain:npmjs.com)",
       "WebFetch(domain:crates.io)",
       "WebFetch(domain:pkg.go.dev)",
-      "WebFetch(domain:pypi.org)"
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:learn.microsoft.com)",
+      "WebFetch(domain:nuget.org)"
     ],
     "deny": [
       "Bash(rm -rf /)",
@@ -144,6 +149,10 @@
         "proxy.golang.org",
         "docs.anthropic.com",
         "code.claude.com",
+        "api.nuget.org",
+        "nuget.org",
+        "*.nuget.org",
+        "learn.microsoft.com",
         "owasp.org",
         "*.owasp.org",
         "developer.mozilla.org",

@@ -1,7 +1,6 @@
 ---
 name: interface-design
-description: This skill is for interface design — dashboards, admin panels, apps, tools, and interactive products. NOT for marketing design (landing pages, marketing sites, campaigns).
-version: 1.0.0
+description: Use this skill when designing interfaces — dashboards, admin panels, SaaS apps, tools, and interactive products. Activates on UI/UX tasks, component design, layout decisions, or when the user asks to build an interface. NOT for marketing design (landing pages, marketing sites, campaigns).
 ---
 
 # Interface Design

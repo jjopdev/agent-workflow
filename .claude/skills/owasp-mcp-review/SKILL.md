@@ -8,7 +8,7 @@ description: >
   server", "check my agent security", or "make this toolchain safer". Focus on
   practical reviewer behavior: find the issue, explain risk, map it to MCP01 to
   MCP10, and state the minimum change required to reduce exposure.
-version: 1.0.0
+effort: high
 ---
 
 # OWASP MCP Review - Secure Review for MCP Systems

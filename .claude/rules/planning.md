@@ -1,6 +1,5 @@
 ---
 description: Task decomposition and planning guidelines
-globs: ["**"]
 ---
 
 # Planning Rules

@@ -6,7 +6,7 @@ description: >
   quickly. Activates when the user asks "where is...", "how does X work",
   or needs to understand project structure, module boundaries, and
   dependency graphs — regardless of language or framework.
-version: 1.0.0
+user-invocable: false
 ---
 
 # Codebase Navigator - Project Map

@@ -2,7 +2,7 @@
 name: create-issue
 description: Analyze a problem, generate a technical plan, document in Notion, and create a GitHub Issue. Use after Claude has analyzed an error or requirement from a client.
 disable-model-invocation: true
-argument-hint: <problem summary — after Claude already analyzed it>
+argument-hint: "[problem-summary]"
 ---
 
 # Create Issue — From Analysis to Tracking

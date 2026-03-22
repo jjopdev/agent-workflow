@@ -1,7 +1,7 @@
 ---
 name: github-cli
-description: GitHub CLI (gh) command reference for working with Pull Requests, issues, repos, and API. Activates when you need to interact with GitHub from the terminal.
-version: 1.0.0
+description: Use this skill when interacting with GitHub from the terminal — Pull Requests, issues, repos, reviews, and API calls via gh CLI. Activates when running gh commands, creating PRs, reviewing code, or managing issues.
+user-invocable: false
 ---
 
 # GitHub CLI — Command Reference

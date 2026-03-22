@@ -4,7 +4,7 @@ description: >
   Reference for the agent workflow pipeline and delegation protocol.
   Use this skill when working on any non-trivial development task as the pipeline
   protocol for planning, implementing, reviewing, and testing code.
-version: 3.0.0
+user-invocable: false
 ---
 
 # Workflow Orchestrator — Pipeline Reference

@@ -1,7 +1,7 @@
 ---
 name: rlm-codebase-navigation
 description: Recursive Language Model protocol for efficient codebase exploration and navigation across any project.
-version: 1.0.0
+user-invocable: false
 ---
 
 # RLM Codebase Navigation
@@ -43,7 +43,7 @@ When modifying existing code:
 - Use usage/reference search to find dependents, not full codebase scans
 - Pass reviewers only changed files + immediate import graph
 
-### 6. Fragment-level delegation
+### 5. Fragment-level delegation
 For large tasks across big codebases:
 - Deploy separate agents on different code sections
 - Use lightweight orchestration to coordinate outputs

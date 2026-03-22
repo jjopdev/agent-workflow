@@ -1,7 +1,6 @@
 ---
 name: prompt-refiner
 description: Use this skill when the user writes a messy, incomplete, or typo-filled idea and needs it converted into a structured prompt for the agent workflow. Activates when the message looks like brainstorming, has poor spelling, or mixes multiple intents.
-version: 1.0.0
 ---
 
 # Prompt Refiner — Idea Organizer

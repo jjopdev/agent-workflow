@@ -2,7 +2,7 @@
 name: lesson
 description: Record a lesson learned from this session. Use after a mistake, correction, or discovery worth remembering.
 disable-model-invocation: true
-argument-hint: [CATEGORY] description of the lesson
+argument-hint: "[CATEGORY] description of the lesson"
 ---
 
 # Record Lesson

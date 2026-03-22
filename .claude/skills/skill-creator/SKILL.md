@@ -7,7 +7,6 @@ description: >
   knowledge into reusable agent instructions. Also triggers when the user
   says "create a skill for...", "make a skill that...", or wants to package
   domain knowledge, conventions, or patterns into a structured skill format.
-version: 1.0.0
 ---
 
 # Skill Creator - Project Skill Generator

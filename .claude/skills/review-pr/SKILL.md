@@ -2,7 +2,11 @@
 name: review-pr
 description: Review a Pull Request as Tech Lead — code quality, architecture, security, and actionable feedback. Works for both your own PRs and developer PRs.
 disable-model-invocation: true
-argument-hint: <PR number>
+argument-hint: "[pr-number]"
+context: fork
+agent: PR Reviewer
+model: sonnet
+allowed-tools: Bash(gh *), Read, Glob, Grep
 ---
 
 # Review PR — Tech Lead Review

@@ -1,6 +1,5 @@
 ---
 description: Universal quality and scope principles for all work
-globs: ["**"]
 ---
 
 # Universal Coding Principles

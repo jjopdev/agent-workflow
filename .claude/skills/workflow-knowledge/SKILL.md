@@ -1,7 +1,7 @@
 ---
 name: workflow-knowledge
 description: Use this skill to consult lessons learned, error patterns, and project knowledge before starting work or after encountering issues.
-version: 1.0.0
+user-invocable: false
 ---
 
 # Workflow Knowledge Base

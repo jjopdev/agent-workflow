@@ -1,10 +1,8 @@
 ---
 name: workflow
-description: Force the full orchestration pipeline (Plan → Implement → Test → Review → Security) on any task. Use when you want the complete workflow regardless of task complexity.
+description: Force the full orchestration pipeline (Plan → Implement → Test → Review → Security) on any task regardless of size. Ensures every code change goes through planning, implementation, testing, code review, and conditional security analysis.
 disable-model-invocation: true
-context: fork
-agent: general-purpose
-argument-hint: <task description>
+argument-hint: "[task-description]"
 ---
 
 # Full Workflow Pipeline

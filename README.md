@@ -47,11 +47,10 @@ You (prompt)
  │
  ▼
 ┌─────────────────────────────┐
-│  Orchestrator (opus)        │  ← CLAUDE.md — classifies tasks, delegates
+│  Orchestrator (opus)        │  ← CLAUDE.md — classifies, delegates
 │  ┌────────────────────────┐ │
-│  │ Quick   → direct fix   │ │
-│  │ Standard→ single agent │ │
-│  │ Full    → pipeline ▼   │ │
+│  │ Question → direct      │ │
+│  │ Code change → pipeline │ │
 │  └────────────────────────┘ │
 └─────────────────────────────┘
          │
@@ -59,7 +58,7 @@ You (prompt)
 Plan (haiku) → Implement (sonnet) → Test (sonnet) → Review (sonnet) → Security (opus)
 ```
 
-The orchestrator picks the lightest path that fits the task. Force the full pipeline with `/workflow <task>`.
+Every code change runs the full pipeline. Questions and explanations are handled directly. Use `/workflow <task>` to make the pipeline intent explicit.
 
 ## Model Strategy (RLM)
 
@@ -75,6 +74,7 @@ The orchestrator picks the lightest path that fits the task. Force the full pipe
 | Command | Description |
 |---------|-------------|
 | `/workflow <task>` | Full pipeline: Plan → Implement → Test → Review → Security |
+| `/save-progress [state]` | Save current plan and progress to `.claude/progress.md` for session resumption |
 | `/create-issue <summary>` | Document to Notion + create GitHub Issue |
 | `/review-pr <number>` | Review a PR and post results on GitHub |
 | `/lesson [CATEGORY] <text>` | Record a lesson (`[DX]`, `[ARCH]`, `[SECURITY]`, `[FAIL]`, `[PERF]`) |
@@ -92,14 +92,15 @@ CLAUDE.md                          ← Orchestrator brain
 │   ├── infra.md                     DevOps / CI-CD (sonnet)
 │   └── security.md                  OWASP review (opus)
 ├── rules/                         ← Quality & planning principles
-├── skills/                        ← 14 reusable skills
+├── skills/                        ← 15 reusable skills
 │   ├── workflow/                    /workflow — full pipeline trigger
+│   ├── save-progress/               /save-progress — persist work state
 │   ├── create-issue/                /create-issue — Notion + GitHub Issue
 │   ├── review-pr/                   /review-pr — PR review
 │   ├── lesson/                      /lesson — record learnings
 │   ├── owasp-review/                Web security (OWASP Top 10:2025)
 │   ├── owasp-mcp-review/            MCP / agent security
-│   └── ...                          and 8 more
+│   └── ...                          and 7 more
 └── settings.json                  ← Permissions, sandbox, hooks
 ```
 
@@ -112,6 +113,13 @@ The security agent runs automatically when changes touch auth, tokens, user inpu
 - 50+ allow rules (git, gh, npm, dotnet, docker, kubectl, terraform, aws...)
 - 30+ deny rules (destructive commands, secret access, network attack tools)
 - Network allowlist (GitHub, npm, NuGet, PyPI, crates.io, OWASP, Anthropic)
+
+### Hooks
+
+| Event | Type | Purpose |
+|-------|------|---------|
+| `SessionStart` | agent | Detects saved work in `.claude/progress.md` and notifies on resume |
+| `Stop` | agent | Detects user corrections or failures and enforces lesson recording |
 
 ## Supported Stacks
 

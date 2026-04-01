@@ -108,6 +108,13 @@ Delegate to `security` agent when changes touch ANY of:
 - Do not assume there is a runnable app unless such files exist
 - Documentation may be in Spanish; code-like examples in English when clearer
 
+### Plugin Distribution
+This repo is distributable as a plugin for Claude Code and Copilot CLI:
+- **Claude Code plugin manifest:** `.claude-plugin/plugin.json`
+- **Copilot CLI plugin manifest:** `plugin.json` (root)
+- **VS Code extension:** `package.json` + `src/extension.js`
+- Root `skills/` and `agents/` are the canonical plugin sources; `.claude/` is the legacy standalone layout
+
 ## Rules
 - If something goes wrong, STOP and re-plan before retrying
 - After any user correction, record a lesson

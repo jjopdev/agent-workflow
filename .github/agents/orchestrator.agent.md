@@ -50,7 +50,7 @@ handoffs:
 
 ---
 
-<!-- GENERATED FROM .github/skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
+<!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
 
 # Orchestrator — Project Coordinator
 
@@ -58,7 +58,7 @@ You are the project orchestrator. Your role is to **coordinate subagents**, NOT 
 
 ## Session start
 
-1. Read `.github/skills/workflow-orchestrator/SKILL.md` — **default skill** with the pipeline and active HIGH configuration
+1. Read `skills/workflow-orchestrator/SKILL.md` — **default skill** with the pipeline and active HIGH configuration
 2. Ensure `.github/tasks/` exists
 3. If `.github/tasks/lessons.md` does not exist, delegate to Scribe to create it with a minimal header
 4. If `.github/tasks/todo.md` does not exist, delegate to Scribe to create it with a minimal header
@@ -66,7 +66,7 @@ You are the project orchestrator. Your role is to **coordinate subagents**, NOT 
 6. Read `.github/tasks/lessons.md` for lessons learned
 7. Read `.github/tasks/todo.md` for recent state
 8. Read `.github/tasks/summaries.md` for cached module summaries
-9. List `.github/skills/` with #tool:search/listDirectory to discover **project** skills
+9. List `skills/` with #tool:search/listDirectory to discover **project** skills
 10. List `~/.copilot/skills/` with #tool:search/listDirectory to discover your **personal** skills
 11. Read the description (frontmatter `description:`) of each skill found — do NOT read the full content
 12. Save a mental map of which skills apply to which domains for use in delegations
@@ -190,7 +190,7 @@ Skills are folders with `SKILL.md` that contain patterns, conventions, and pitfa
 - Discovered at session start by listing the directory
 - Apply cross-project — do not contain paths or config specific to a repo
 
-### Layer 2: Project skills (`.github/skills/`)
+### Layer 2: Project skills (`skills/`)
 **Specific** patterns for the current codebase:
 - Module maps, PK/SK patterns, env vars, directory structure, etc.
 - Complement and specialize personal skills
@@ -310,7 +310,7 @@ When a subagent returns `STATUS: failed` or `STATUS: blocked`, follow this escal
    ```
    TASK: OWASP Top 10:2025 security review
    COMPLEXITY: high
-   SKILLS: [.github/skills/security-context/SKILL.md (if exists), other relevant security skills]
+   SKILLS: [skills/security-context/SKILL.md (if exists), other relevant security skills]
    ARTIFACTS: [files changed by the Implementer]
    ACCEPTANCE: All 10 OWASP categories reviewed, structured report produced, security context updated if new discoveries
    CONSTRAINTS: Read-only — do not modify any files
@@ -328,7 +328,7 @@ When a subagent returns `STATUS: failed` or `STATUS: blocked`, follow this escal
      ```
      TASK: Create security context skill
      ACTION: create_skill
-     TARGET: .github/skills/security-context/SKILL.md
+     TARGET: skills/security-context/SKILL.md
      CONTENT: [full template from SECURITY_CONTEXT_CONTENT]
      ```
    
@@ -336,7 +336,7 @@ When a subagent returns `STATUS: failed` or `STATUS: blocked`, follow this escal
      ```
      TASK: Update security context skill
      ACTION: update_skill
-     TARGET: .github/skills/security-context/SKILL.md
+     TARGET: skills/security-context/SKILL.md
      CONTENT: [delta content from SECURITY_CONTEXT_CONTENT]
      ```
    

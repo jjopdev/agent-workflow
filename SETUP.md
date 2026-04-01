@@ -2,6 +2,42 @@
 
 This project supports **two independent workflows**. Choose ONE based on what you have installed.
 
+## Plugin Installation (Recommended)
+
+The fastest way to install is via plugin:
+
+```bash
+# Claude Code
+claude plugin install jjopdev/agent-workflow
+
+# GitHub Copilot CLI
+copilot plugin install jjopdev/agent-workflow
+```
+
+For VS Code, download the `.vsix` from [GitHub Releases](https://github.com/jjopdev/agent-workflow/releases) and run:
+
+```bash
+code --install-extension agent-workflow-1.0.0.vsix
+```
+
+Or in VS Code: Extensions → "..." menu → "Install from VSIX..."
+
+---
+
+## Sandbox / Local Testing
+
+Test a local checkout without publishing:
+
+- **Claude Code:** `claude --plugin-dir /path/to/agent-workflow`
+- **Copilot CLI:** `copilot plugin install /path/to/agent-workflow`
+- **VS Code:** Open the repo in VS Code and press F5 to launch an Extension Development Host
+
+---
+
+## Manual Setup (Legacy / Standalone)
+
+Use this if you prefer to manage files directly or cannot use the plugin system.
+
 ## ❌ DO NOT MIX
 
 **Important:** Do not use both Copilot and Claude Code in the same project session. Each has a different task management system. Mixing them causes confusion and lost work tracking.
@@ -84,10 +120,10 @@ git clone https://github.com/jjopdev/agent-workflow.git .agent-workflow
 cd <your-project>
 
 # 2. Copy workflow files
-mkdir -p .github/{agents,skills,instructions,tasks}
+mkdir -p .github/{agents,instructions,tasks} skills
 cp .agent-workflow/.github/copilot-instructions.md .github/
 cp -r .agent-workflow/.github/agents/* .github/agents/
-cp -r .agent-workflow/.github/skills/* .github/skills/
+cp -r .agent-workflow/skills/* skills/
 cp -r .agent-workflow/.github/instructions/* .github/instructions/
 cp -r .agent-workflow/.github/tasks/* .github/tasks/ 2>/dev/null || true
 
@@ -129,7 +165,7 @@ In the Copilot chat:
 - `.github/copilot-instructions.md` — Global instructions
 - `.github/agents/orchestrator.agent.md` — Root orchestrator
 - `.github/agents/` — 8 specialized agents
-- `.github/skills/` — Reusable skills
+- `skills/` — Reusable skills
 - `.github/tasks/` — todo.md, lessons.md, summaries.md
 
 **See:** `.github/copilot-instructions.md` for the orchestration protocol.
@@ -217,7 +253,7 @@ Both workflows support:
 ### For Copilot
 1. Read `.github/copilot-instructions.md` for orchestrator protocol
 2. See `.github/agents/orchestrator.agent.md` for agent definitions
-3. Explore `.github/skills/` for reusable skills
+3. Explore `skills/` for reusable skills
 
 ### For Both
 - Read `workflow-model-strategy.md` for RLM foundations (applies to both)

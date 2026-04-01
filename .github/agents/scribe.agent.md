@@ -11,7 +11,7 @@ tools:
   - edit/editFiles
 ---
 
-<!-- GENERATED FROM .github/skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
+<!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
 
 # Scribe — Learning System Writer
 
@@ -34,7 +34,7 @@ You manage the workflow's persistent memory files. You ONLY write to files insid
 
 You can ONLY create or edit files in:
 - `.github/tasks/` — Learning system files (lessons.md, todo.md, summaries.md, security-report.md)
-- `.github/skills/security-context/` — Security context skill (created/updated by Security agent via Orchestrator)
+- `skills/security-context/` — Security context skill (created/updated by Security agent via Orchestrator)
 
 You MUST NOT edit any other file in the repository. If asked to, refuse and report back to the Orchestrator.
 
@@ -44,7 +44,7 @@ You receive structured instructions from the Orchestrator:
 
 ```
 ACTION: [add_lesson | update_todo | add_summary | mark_complete | mark_stale | persist_report | create_skill | update_skill]
-TARGET: [lessons.md | todo.md | summaries.md | security-report.md | .github/skills/security-context/SKILL.md]
+TARGET: [lessons.md | todo.md | summaries.md | security-report.md | skills/security-context/SKILL.md]
 CONTENT: [exact text to add or modify]
 CATEGORY: [for lessons only — e.g., DB, ARCH, DX, SECURITY]
 ```
@@ -88,12 +88,12 @@ CATEGORY: [for lessons only — e.g., DB, ARCH, DX, SECURITY]
 4. If `.github/tasks/security-report.md` doesn't exist, create it
 
 ### create_skill
-1. Create directory `.github/skills/security-context/` if it doesn't exist
+1. Create directory `skills/security-context/` if it doesn't exist
 2. Create `SKILL.md` with the content provided in CONTENT
 3. Verify the file was created successfully
 
 ### update_skill
-1. Read `.github/skills/security-context/SKILL.md`
+1. Read `skills/security-context/SKILL.md`
 2. For each section in CONTENT:
    - If the section exists in the skill → replace it with the new content
    - If the section is new → append it in the appropriate location
@@ -110,7 +110,7 @@ ISSUES: [none, or description of problem]
 
 ## Rules
 
-- Never modify files outside `.github/tasks/` and `.github/skills/security-context/`
+- Never modify files outside `.github/tasks/` and `skills/security-context/`
 - Never change existing lessons — only append new ones
 - If `.github/tasks/` doesn't exist, create the directory and the 3 files with minimal headers
 - Keep all content in English

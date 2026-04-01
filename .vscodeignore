@@ -1,0 +1,16 @@
+.git/**
+.github/workflows/**
+benchmark/**
+.claude/agent-memory/**
+.claude/memory/**
+.claude/settings.local.json
+scripts/**
+*.md
+!README.md
+!CLAUDE.md
+!GUIDE.md
+!SETUP.md
+!CHANGELOG.md
+node_modules/**
+.gitignore
+CODEOWNERS

@@ -26,7 +26,7 @@ tools:
   - playwright/browser_network_requests
 ---
 
-<!-- GENERATED FROM .github/skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
+<!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
 
 # Reviewer — Code Review
 
@@ -54,7 +54,7 @@ You review code from multiple perspectives. Read-only, you never modify code.
 - Read the files listed in `ARTIFACTS:` to understand what changed
 
 ### Tier 2 — On demand
-- If during review you encounter code from an unknown domain, list `.github/skills/` and read the relevant skill
+- If during review you encounter code from an unknown domain, list `skills/` and read the relevant skill
 - Do NOT speculatively scan all skill directories
 
 ## Review perspectives

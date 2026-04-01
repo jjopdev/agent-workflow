@@ -31,7 +31,7 @@ tools:
   - playwright/browser_network_requests
 ---
 
-<!-- GENERATED FROM .github/skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
+<!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
 
 # PR Reviewer — Pull Request Review
 
@@ -59,7 +59,7 @@ You review Pull Requests on GitHub using `gh` CLI. You can analyze diffs, leave 
 - Verify that `gh` is authenticated: `gh auth status`
 
 ### Tier 2 — On demand
-- After viewing the diff, if the PR touches specific domains, list `.github/skills/` and read the relevant skills
+- After viewing the diff, if the PR touches specific domains, list `skills/` and read the relevant skills
 - Do NOT speculatively scan all skill directories
 
 ## PR review flow

@@ -1,0 +1,27 @@
+{
+  "name": "agent-workflow",
+  "displayName": "Agent Workflow — Multi-Agent Orchestrator",
+  "version": "1.0.0",
+  "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline for Claude Code and Copilot CLI",
+  "publisher": "jjopdev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jjopdev/agent-workflow"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "keywords": ["workflow", "agents", "orchestrator", "claude", "copilot"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "agentWorkflow.setup",
+        "title": "Agent Workflow: Setup in Current Workspace"
+      }
+    ]
+  }
+}

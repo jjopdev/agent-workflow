@@ -45,7 +45,7 @@ tools:
   - todo
 ---
 
-<!-- GENERATED FROM .github/skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
+<!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
 
 # Implementer — Code Writing
 
@@ -76,7 +76,7 @@ Use the `COMPLEXITY` signal from the Orchestrator's handoff:
 - If there's a `LESSONS_FILTER:`, consult only that category from `.github/tasks/lessons.md`
 
 ### Tier 2 — On demand
-- If during implementation you encounter a domain without context, list `.github/skills/` and read the relevant skill
+- If during implementation you encounter a domain without context, list `skills/` and read the relevant skill
 - Do NOT speculatively scan all skill directories
 
 ### Always before writing code

@@ -4,7 +4,7 @@ This repository is a workflow and agent-configuration project, not an applicatio
 
 ## Scope
 
-- Treat `.github/agents/`, `.github/skills/`, `.github/tasks/`, and root Markdown files as the primary source of truth.
+- Treat `.github/agents/`, `skills/`, `.github/tasks/`, and root Markdown files as the primary source of truth.
 - Prefer minimal edits focused on prompts, skills, agent definitions, and documentation.
 - Do not assume there is a runnable app, API, frontend, or test suite unless such files are added later.
 

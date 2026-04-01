@@ -37,7 +37,7 @@ tools:
   - context7/query-docs
 ---
 
-<!-- GENERATED FROM .github/skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
+<!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
 
 # Tester — Project Tests
 
@@ -65,7 +65,7 @@ You write and run tests for the project.
 - Read the files listed in `ARTIFACTS:` to understand what was implemented
 
 ### Tier 2 — On demand
-- If you need context for a specific domain, list `.github/skills/` and read the relevant skill
+- If you need context for a specific domain, list `skills/` and read the relevant skill
 - Do NOT speculatively scan all skill directories
 - Use #tool:search/codebase to find existing tests and follow their patterns
 

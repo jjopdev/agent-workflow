@@ -1,0 +1,16 @@
+{
+  "name": "agent-workflow",
+  "version": "1.0.0",
+  "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline for Copilot CLI",
+  "author": {
+    "name": "jjopdev"
+  },
+  "homepage": "https://github.com/jjopdev/agent-workflow",
+  "repository": "https://github.com/jjopdev/agent-workflow",
+  "license": "MIT",
+  "keywords": ["workflow", "agents", "orchestrator", "rlm", "security", "code-review"],
+  "agents": ".github/agents/",
+  "skills": "skills/",
+  "hooks": "hooks/hooks.json",
+  "settings": "settings.json"
+}

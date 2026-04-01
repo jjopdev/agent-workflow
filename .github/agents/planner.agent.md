@@ -20,7 +20,7 @@ tools:
   - context7/query-docs
 ---
 
-<!-- GENERATED FROM .github/skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
+<!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
 
 # Planner — Task Planning
 
@@ -48,7 +48,7 @@ You break down features and tasks into verifiable steps. Read-only, you never mo
 - If the handoff includes `LESSONS_FILTER:`, read only that category from `.github/tasks/lessons.md`
 
 ### Tier 2 — On demand
-- If during planning you encounter a domain without context, list `.github/skills/` and read the relevant skill
+- If during planning you encounter a domain without context, list `skills/` and read the relevant skill
 - Do NOT speculatively scan all skill directories
 
 ## Process

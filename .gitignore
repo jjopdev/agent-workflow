@@ -27,3 +27,6 @@ npm-debug.log*
 dist/
 build/
 *.tsbuildinfo
+
+# VS Code extension artifacts
+*.vsix

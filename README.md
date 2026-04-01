@@ -23,22 +23,47 @@ Drop it into any project. No runtime dependencies. No framework lock-in.
 - **Persistent learning** — Lessons accumulate across sessions via stop hook and `/lesson` command
 - **Stack-agnostic** — Works with TypeScript, .NET, Python, Go, Rust, and any stack with a CLI
 
-## Quick Start
+## Installation
+
+### Method 1: Claude Code Plugin (recommended)
 
 ```bash
-# Clone
-git clone https://github.com/jjopdev/agent-workflow.git .agent-workflow
+claude plugin install jjopdev/agent-workflow
+```
 
-# Copy into your project
-cd <your-project>
-cp .agent-workflow/CLAUDE.md ./
-cp -r .agent-workflow/.claude ./
+### Method 2: GitHub Copilot CLI Plugin
 
-# Start Claude Code — the workflow activates automatically
-claude
+```bash
+copilot plugin install jjopdev/agent-workflow
+```
+
+### Method 3: VS Code Extension
+
+Download the `.vsix` from [GitHub Releases](https://github.com/jjopdev/agent-workflow/releases), then:
+
+```bash
+code --install-extension agent-workflow-1.0.0.vsix
+```
+
+Or in VS Code: Extensions → "..." menu → "Install from VSIX..."
+
+### Method 4: Standalone (Legacy)
+
+```bash
+git clone https://github.com/jjopdev/agent-workflow.git
+cp -r agent-workflow/.claude/ your-project/.claude/
+cp agent-workflow/CLAUDE.md your-project/
 ```
 
 > For full setup options (including the Copilot variant), see [`SETUP.md`](SETUP.md).
+
+## Sandbox / Local Testing
+
+Test a local checkout before publishing:
+
+- **Claude Code:** `claude --plugin-dir /path/to/agent-workflow`
+- **Copilot CLI:** `copilot plugin install /path/to/agent-workflow`
+- **VS Code:** Use Extension Development Host (F5 in the extension project)
 
 ## Architecture
 
@@ -143,10 +168,12 @@ The security agent runs automatically when changes touch auth, tokens, user inpu
 
 ## Contributing
 
+This project uses a fork-only workflow. See [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) for guidelines.
+
 1. Fork the repository
-2. Create a feature branch
+2. Create a feature branch from `main`
 3. Make your changes
-4. Open a pull request
+4. Open a pull request against `main`
 
 ## License
 

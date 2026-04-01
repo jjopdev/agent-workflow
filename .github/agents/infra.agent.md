@@ -34,7 +34,7 @@ tools:
   - ms-azuretools.vscode-containers/containerToolsConfig
 ---
 
-<!-- GENERATED FROM .github/skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
+<!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
 
 # Infra — Infrastructure and Deploy
 
@@ -62,7 +62,7 @@ You manage the project's infrastructure and deploy configuration.
 - Read the files listed in `CONTEXT_FILES:` of the handoff
 
 ### Tier 2 — On demand
-- If you need additional context, list `.github/skills/` and read the relevant skill
+- If you need additional context, list `skills/` and read the relevant skill
 - Do NOT speculatively scan all skill directories
 
 ### Always

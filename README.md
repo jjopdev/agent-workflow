@@ -25,45 +25,45 @@ Drop it into any project. No runtime dependencies. No framework lock-in.
 
 ## Installation
 
-### Method 1: Claude Code Plugin (recommended)
+Each target installs **only the files it needs** — no project metadata, benchmarks, or scripts.
+
+### Claude Code
 
 ```bash
-claude plugin install jjopdev/agent-workflow
+claude plugin install jjopdev/agent-workflow:packages/claude-code
 ```
 
-### Method 2: GitHub Copilot CLI Plugin
+### GitHub Copilot CLI
 
 ```bash
-copilot plugin install jjopdev/agent-workflow
+copilot plugin install jjopdev/agent-workflow:packages/copilot-cli
 ```
 
-### Method 3: VS Code Extension
+### VS Code Extension
 
-Download the `.vsix` from [GitHub Releases](https://github.com/jjopdev/agent-workflow/releases), then:
+Download the `.vsix` for your variant from [GitHub Releases](https://github.com/jjopdev/agent-workflow/releases):
+
+| File | Agents |
+|------|--------|
+| `vscode-claude.vsix` | Claude Code agents (.md) |
+| `vscode-copilot.vsix` | Copilot agents (.agent.md) |
 
 ```bash
-code --install-extension agent-workflow-1.0.0.vsix
+code --install-extension vscode-claude.vsix
+# or
+code --install-extension vscode-copilot.vsix
 ```
 
-Or in VS Code: Extensions → "..." menu → "Install from VSIX..."
+> For full setup options, enterprise deployment, and local testing, see [`INSTALL.md`](INSTALL.md) and [`SETUP.md`](SETUP.md).
 
-### Method 4: Standalone (Legacy)
-
-```bash
-git clone https://github.com/jjopdev/agent-workflow.git
-cp -r agent-workflow/.claude/ your-project/.claude/
-cp agent-workflow/CLAUDE.md your-project/
-```
-
-> For full setup options (including the Copilot variant), see [`SETUP.md`](SETUP.md).
-
-## Sandbox / Local Testing
+## Local Testing
 
 Test a local checkout before publishing:
 
 - **Claude Code:** `claude --plugin-dir /path/to/agent-workflow`
-- **Copilot CLI:** `copilot plugin install /path/to/agent-workflow`
-- **VS Code:** Use Extension Development Host (F5 in the extension project)
+- **Copilot CLI:** `copilot plugin install ./dist/copilot-cli`
+- **VS Code:** Open the repo in VS Code and press F5
+- **Build all packages:** `bash scripts/build-dist.sh --target all`
 
 ## Architecture
 
@@ -108,25 +108,24 @@ Every code change runs the full pipeline. Questions and explanations are handled
 
 ```
 CLAUDE.md                          ← Orchestrator brain
-.claude/
-├── agents/                        ← 6 specialized agents
+agents/                            ← 6 specialized agents (canonical)
 │   ├── implementer.md               Code writing (sonnet)
 │   ├── reviewer.md                  Code review (sonnet)
 │   ├── pr-reviewer.md               PR review (sonnet)
 │   ├── tester.md                    Tests (sonnet)
 │   ├── infra.md                     DevOps / CI-CD (sonnet)
 │   └── security.md                  OWASP review (opus)
-├── rules/                         ← Quality & planning principles
-├── skills/                        ← 15 reusable skills
+skills/                            ← 15 reusable skills (canonical)
 │   ├── workflow/                    /workflow — full pipeline trigger
 │   ├── save-progress/               /save-progress — persist work state
-│   ├── create-issue/                /create-issue — Notion + GitHub Issue
-│   ├── review-pr/                   /review-pr — PR review
-│   ├── lesson/                      /lesson — record learnings
 │   ├── owasp-review/                Web security (OWASP Top 10:2025)
-│   ├── owasp-mcp-review/            MCP / agent security
-│   └── ...                          and 7 more
-└── settings.json                  ← Permissions, sandbox, hooks
+│   └── ...                          and 12 more
+.claude/
+│   ├── rules/                     ← Quality & planning principles
+│   └── settings.json              ← Permissions, sandbox, hooks
+packages/                          ← Clean distribution packages
+│   ├── claude-code/                 Claude Code plugin (36 files)
+│   └── copilot-cli/                 Copilot CLI plugin (39 files)
 ```
 
 ## Security
@@ -162,7 +161,8 @@ The security agent runs automatically when changes touch auth, tokens, user inpu
 | File | Description |
 |------|-------------|
 | [`CLAUDE.md`](CLAUDE.md) | Orchestrator identity, delegation protocol, pipeline routing |
-| [`SETUP.md`](SETUP.md) | Installation guide — Claude Code & Copilot variants |
+| [`INSTALL.md`](INSTALL.md) | Installation guide for all 4 targets |
+| [`SETUP.md`](SETUP.md) | Setup guide — Claude Code & Copilot variants |
 | [`GUIDE.md`](GUIDE.md) | Step-by-step usage with real-world scenarios |
 | [`workflow-model-strategy.md`](workflow-model-strategy.md) | RLM scientific foundations and model rationale |
 

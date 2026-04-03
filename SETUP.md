@@ -4,33 +4,43 @@ This project supports **two independent workflows**. Choose ONE based on what yo
 
 ## Plugin Installation (Recommended)
 
-The fastest way to install is via plugin:
+Each target installs only the files it needs:
 
 ```bash
-# Claude Code
-claude plugin install jjopdev/agent-workflow
+# Claude Code (36 files — agents, skills, hooks, settings)
+claude plugin install jjopdev/agent-workflow:packages/claude-code
 
-# GitHub Copilot CLI
-copilot plugin install jjopdev/agent-workflow
+# GitHub Copilot CLI (39 files — agents, skills, hooks, settings)
+copilot plugin install jjopdev/agent-workflow:packages/copilot-cli
 ```
 
-For VS Code, download the `.vsix` from [GitHub Releases](https://github.com/jjopdev/agent-workflow/releases) and run:
+For VS Code, download the variant `.vsix` from [GitHub Releases](https://github.com/jjopdev/agent-workflow/releases):
 
 ```bash
-code --install-extension agent-workflow-1.0.0.vsix
+# Claude Code agents variant
+code --install-extension vscode-claude.vsix
+
+# Copilot agents variant
+code --install-extension vscode-copilot.vsix
 ```
 
-Or in VS Code: Extensions → "..." menu → "Install from VSIX..."
+> For detailed installation options (enterprise, air-gapped, local build), see [`INSTALL.md`](INSTALL.md).
 
 ---
 
-## Sandbox / Local Testing
+## Local Testing
 
-Test a local checkout without publishing:
+Test a local build before publishing:
 
-- **Claude Code:** `claude --plugin-dir /path/to/agent-workflow`
-- **Copilot CLI:** `copilot plugin install /path/to/agent-workflow`
-- **VS Code:** Open the repo in VS Code and press F5 to launch an Extension Development Host
+```bash
+# Build all 4 clean packages
+bash scripts/build-dist.sh --target all
+
+# Test locally
+claude --plugin-dir /path/to/agent-workflow
+copilot plugin install ./dist/copilot-cli
+code --install-extension dist/vscode-claude.vsix
+```
 
 ---
 

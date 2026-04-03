@@ -7,6 +7,7 @@ Checks:
   2. Version fields are consistent across all three.
   3. Required paths exist in the repository.
   4. Every skill subdirectory contains a SKILL.md file.
+  5. Distribution packages (if dist/ exists) contain no forbidden files.
 
 Exits with code 0 on full success, code 1 on any failure.
 """
@@ -138,6 +139,59 @@ if os.path.isdir(skills_dir):
         fail("skills/ directory exists but contains no subdirectories")
 else:
     fail("skills/ directory not found — skipping SKILL.md checks")
+
+# ---------------------------------------------------------------------------
+# 5. Distribution package validation (only if dist/ exists)
+# ---------------------------------------------------------------------------
+
+DIST_DIR = os.path.join(ROOT, "dist")
+FORBIDDEN_FILES = [
+    "README.md", "CONTRIBUTING.md", "CODEOWNERS", "CLAUDE.md",
+    "GUIDE.md", "SETUP.md", "CHANGELOG.md", "INSTALL.md",
+    "workflow-model-strategy.md", ".gitignore", ".git",
+    "benchmark", "scripts", "node_modules", ".github/workflows",
+    ".vscodeignore", "hooks/hooks.dev.json",
+]
+
+if os.path.isdir(DIST_DIR):
+    section("5. Distribution packages")
+
+    for pkg_name in sorted(os.listdir(DIST_DIR)):
+        pkg_path = os.path.join(DIST_DIR, pkg_name)
+        if not os.path.isdir(pkg_path):
+            continue  # skip .vsix files
+
+        # Check forbidden files
+        for forbidden in FORBIDDEN_FILES:
+            full = os.path.join(pkg_path, forbidden)
+            if os.path.exists(full):
+                fail(f"dist/{pkg_name} contains forbidden: {forbidden}")
+
+        # Check PLAN-*.md
+        import glob as _glob
+        for f in _glob.glob(os.path.join(pkg_path, "PLAN-*.md")):
+            fail(f"dist/{pkg_name} contains forbidden: {os.path.basename(f)}")
+
+        # Check required files
+        if os.path.isfile(os.path.join(pkg_path, "LICENSE")):
+            ok(f"dist/{pkg_name}/LICENSE")
+        else:
+            fail(f"dist/{pkg_name} missing LICENSE")
+
+        if os.path.isdir(os.path.join(pkg_path, "skills")):
+            ok(f"dist/{pkg_name}/skills/")
+        else:
+            fail(f"dist/{pkg_name} missing skills/")
+
+        if os.path.isdir(os.path.join(pkg_path, "agents")):
+            ok(f"dist/{pkg_name}/agents/")
+        else:
+            fail(f"dist/{pkg_name} missing agents/")
+
+        if os.path.isfile(os.path.join(pkg_path, "hooks", "hooks.json")):
+            ok(f"dist/{pkg_name}/hooks/hooks.json")
+        else:
+            fail(f"dist/{pkg_name} missing hooks/hooks.json")
 
 # ---------------------------------------------------------------------------
 # Summary

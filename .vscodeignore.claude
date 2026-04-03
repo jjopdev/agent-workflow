@@ -1,0 +1,19 @@
+# Exclude everything, then whitelist only what Claude variant needs
+**
+
+# Extension core
+!package.json
+!src/**
+!LICENSE
+
+# Claude Code agents (canonical .md format)
+!agents/**
+
+# Shared skills
+!skills/**
+
+# Consumer hooks template
+!hooks/hooks.json
+
+# Claude Code settings (permissions, sandbox)
+!settings.json

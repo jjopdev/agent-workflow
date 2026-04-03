@@ -92,15 +92,15 @@ claude
 - Tasks exist only for this session
 
 **Between sessions (persistent learning):**
-- Lessons auto-recorded via stop hook in `.claude/skills/workflow-knowledge/lessons.md`
+- Lessons auto-recorded via stop hook in `skills/workflow-knowledge/lessons.md`
 - Or manually: `/lesson [CATEGORY] description`
 
 ### Key Files
 - `CLAUDE.md` — Root orchestrator
 - `.claude/settings.json` — Permissions, security, hooks
-- `.claude/agents/` — Subagent instructions
+- `agents/` — Subagent instructions
 - `.claude/rules/` — Quality principles
-- `.claude/skills/` — Reusable skills
+- `skills/` — Reusable skills
 
 **See:** `.claude/README.md` for detailed workflow explanation.
 

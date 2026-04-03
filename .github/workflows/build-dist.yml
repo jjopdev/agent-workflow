@@ -1,0 +1,101 @@
+name: Build Distribution Packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Build target'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - claude-code
+          - copilot-cli
+          - vscode-claude
+          - vscode-copilot
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build distribution packages
+        run: |
+          TARGET="${{ github.event.inputs.target || 'all' }}"
+          bash scripts/build-dist.sh --target "$TARGET"
+
+      - name: Upload Claude Code package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-workflow-claude-code
+          path: dist/claude-code/
+          if-no-files-found: ignore
+
+      - name: Upload Copilot CLI package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-workflow-copilot-cli
+          path: dist/copilot-cli/
+          if-no-files-found: ignore
+
+      - name: Upload VS Code Claude VSIX
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-workflow-vscode-claude
+          path: dist/vscode-claude.vsix
+          if-no-files-found: ignore
+
+      - name: Upload VS Code Copilot VSIX
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-workflow-vscode-copilot
+          path: dist/vscode-copilot.vsix
+          if-no-files-found: ignore
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Package CLI distributions as tarballs
+        run: |
+          cd artifacts
+          if [ -d "agent-workflow-claude-code" ]; then
+            tar -czf agent-workflow-claude-code.tar.gz -C agent-workflow-claude-code .
+          fi
+          if [ -d "agent-workflow-copilot-cli" ]; then
+            tar -czf agent-workflow-copilot-cli.tar.gz -C agent-workflow-copilot-cli .
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/agent-workflow-claude-code.tar.gz
+            artifacts/agent-workflow-copilot-cli.tar.gz
+            artifacts/agent-workflow-vscode-claude/vscode-claude.vsix
+            artifacts/agent-workflow-vscode-copilot/vscode-copilot.vsix

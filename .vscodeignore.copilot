@@ -1,0 +1,16 @@
+# Exclude everything, then whitelist only what Copilot variant needs
+**
+
+# Extension core
+!package.json
+!src/**
+!LICENSE
+
+# Copilot agents (staged from .github/agents/ by build script)
+!agents/**
+
+# Shared skills
+!skills/**
+
+# Consumer hooks template
+!hooks/hooks.json

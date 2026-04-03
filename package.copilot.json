@@ -1,0 +1,28 @@
+{
+  "name": "agent-workflow-copilot",
+  "displayName": "Agent Workflow — Copilot Agents",
+  "version": "1.0.0",
+  "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline — GitHub Copilot agents variant",
+  "publisher": "jjopdev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jjopdev/agent-workflow"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "keywords": ["workflow", "agents", "orchestrator", "copilot", "github"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./src/extension.js",
+  "agentVariant": "copilot",
+  "contributes": {
+    "commands": [
+      {
+        "command": "agentWorkflow.setup",
+        "title": "Agent Workflow (Copilot): Setup in Current Workspace"
+      }
+    ]
+  }
+}

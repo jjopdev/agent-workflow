@@ -63,7 +63,7 @@ TaskCreate({
 
 #### 2. Lessons File (Persistent Learning)
 
-`.claude/skills/workflow-knowledge/lessons.md` — survives between sessions
+`skills/workflow-knowledge/lessons.md` — survives between sessions
 
 ```markdown
 ## [SECURITY] OAuth callback state parameter validation
@@ -106,7 +106,7 @@ When delegating to a subagent (internal, not visible to you):
 
 ```
 TASK: Implement OAuth callback error handling
-SKILLS: .claude/skills/owasp-review/SKILL.md
+SKILLS: skills/owasp-review/SKILL.md
 CONTEXT_FILES: src/lib/auth/, src/api/oauth/
 ACCEPTANCE: Error handling for all OAuth providers, state parameter validation
 CONSTRAINTS: Don't modify other auth flows
@@ -128,7 +128,7 @@ CONSTRAINTS: Don't modify other auth flows
 
 ### Skills
 
-Located in `.claude/skills/`. Each skill is a folder with `SKILL.md`:
+Located in `skills/`. Each skill is a folder with `SKILL.md`:
 
 **Shared with Copilot:**
 - `codebase-navigator/` — Project structure discovery
@@ -187,7 +187,7 @@ Add your personal overrides:
 When you stop Claude Code (`Ctrl+C`), the hook checks:
 > "Was there a user correction or failed attempt?"
 
-**If YES:** Prompts to record lesson in `.claude/skills/workflow-knowledge/lessons.md`
+**If YES:** Prompts to record lesson in `skills/workflow-knowledge/lessons.md`
 **If NO:** Stops cleanly
 
 This ensures important discoveries are captured automatically.
@@ -199,9 +199,9 @@ This ensures important discoveries are captured automatically.
 - `settings.json` — Shared security & permissions
 - `rules/tech-lead.md` — Universal quality principles
 - `rules/planning.md` — Task decomposition guidelines
-- `skills/workflow-knowledge/lessons.md` — Accumulated learnings
-- `agents/implementer.md` — Implementer instructions
-- `agents/security.md` — Security review protocol
+- `../skills/workflow-knowledge/lessons.md` — Accumulated learnings
+- `../agents/implementer.md` — Implementer instructions
+- `../agents/security.md` — Security review protocol
 
 ## Rules
 

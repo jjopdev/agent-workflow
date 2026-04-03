@@ -12,43 +12,86 @@ function activate(context) {
 
     const targetRoot = workspaceFolders[0].uri.fsPath;
     const extensionRoot = context.extensionPath;
+    const variant = detectVariant(extensionRoot);
 
+    const label = variant === 'copilot' ? 'Copilot' : 'Claude Code';
     const confirm = await vscode.window.showWarningMessage(
-      'This will copy Agent Workflow configs (.claude/, .github/) into your workspace. Continue?',
+      `Install Agent Workflow (${label} agents) into your workspace?`,
       'Yes', 'Cancel'
     );
 
     if (confirm !== 'Yes') return;
 
-    const dirsToCopy = [
-      { src: '.claude', dest: '.claude' },
-      { src: '.github', dest: '.github' },
-      { src: 'skills', dest: 'skills' },
-      { src: 'agents', dest: 'agents' },
-      { src: 'CLAUDE.md', dest: 'CLAUDE.md' }
-    ];
-
     try {
-      for (const { src, dest } of dirsToCopy) {
-        const srcPath = path.join(extensionRoot, src);
-        const destPath = path.join(targetRoot, dest);
-
-        if (!fs.existsSync(srcPath)) continue;
-
-        const stat = fs.statSync(srcPath);
-        if (stat.isDirectory()) {
-          copyDirSync(srcPath, destPath);
-        } else {
-          fs.copyFileSync(srcPath, destPath);
-        }
+      if (variant === 'copilot') {
+        installCopilotVariant(extensionRoot, targetRoot);
+      } else {
+        installClaudeVariant(extensionRoot, targetRoot);
       }
-      vscode.window.showInformationMessage('Agent Workflow configs installed successfully!');
+      vscode.window.showInformationMessage(
+        `Agent Workflow (${label}) installed successfully!`
+      );
     } catch (err) {
       vscode.window.showErrorMessage(`Setup failed: ${err.message}`);
     }
   });
 
   context.subscriptions.push(disposable);
+}
+
+function detectVariant(extensionRoot) {
+  try {
+    const pkgPath = path.join(extensionRoot, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    if (pkg.agentVariant === 'copilot' || (pkg.name && pkg.name.includes('copilot'))) {
+      return 'copilot';
+    }
+  } catch (_) {
+    // fallback to claude
+  }
+  return 'claude';
+}
+
+function installClaudeVariant(extensionRoot, targetRoot) {
+  const items = [
+    { src: 'agents', dest: 'agents' },
+    { src: 'skills', dest: 'skills' },
+    { src: 'hooks/hooks.json', dest: 'hooks/hooks.json' },
+    { src: 'settings.json', dest: 'settings.json' }
+  ];
+
+  for (const { src, dest } of items) {
+    const srcPath = path.join(extensionRoot, src);
+    const destPath = path.join(targetRoot, dest);
+    if (!fs.existsSync(srcPath)) continue;
+    copyEntry(srcPath, destPath);
+  }
+}
+
+function installCopilotVariant(extensionRoot, targetRoot) {
+  const items = [
+    { src: 'agents', dest: '.github/agents' },
+    { src: 'skills', dest: 'skills' },
+    { src: 'hooks/hooks.json', dest: 'hooks/hooks.json' }
+  ];
+
+  for (const { src, dest } of items) {
+    const srcPath = path.join(extensionRoot, src);
+    const destPath = path.join(targetRoot, dest);
+    if (!fs.existsSync(srcPath)) continue;
+    copyEntry(srcPath, destPath);
+  }
+}
+
+function copyEntry(srcPath, destPath) {
+  const stat = fs.statSync(srcPath);
+  if (stat.isDirectory()) {
+    copyDirSync(srcPath, destPath);
+  } else {
+    const destDir = path.dirname(destPath);
+    fs.mkdirSync(destDir, { recursive: true });
+    fs.copyFileSync(srcPath, destPath);
+  }
 }
 
 function copyDirSync(src, dest) {

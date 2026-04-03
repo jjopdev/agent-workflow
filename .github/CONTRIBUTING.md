@@ -1,47 +1,47 @@
-# Guia de Contribucion
+# Contribution Guide
 
-## Flujo de trabajo: solo mediante forks
+## Workflow: fork-only
 
-Este proyecto **no acepta push directo a ninguna rama**, incluso para colaboradores. Toda contribucion debe llegar a traves de un fork y un Pull Request.
+This project **does not accept direct pushes to any branch**, even from collaborators. All contributions must come through a fork and a Pull Request.
 
-## Por que forks?
+## Why forks?
 
-- Mantiene el historial del repositorio limpio y lineal.
-- Garantiza que todo cambio pase por revision del dueno antes de integrarse.
-- Protege la rama `main` de cambios accidentales o no revisados.
+- Keeps the repository history clean and linear.
+- Ensures every change is reviewed by the owner before being merged.
+- Protects the `main` branch from accidental or unreviewed changes.
 
-## Pasos para contribuir
+## Steps to contribute
 
-1. **Fork** — Haz fork de este repositorio en tu cuenta de GitHub.
-2. **Clonar** — Clona tu fork localmente:
+1. **Fork** — Fork this repository to your GitHub account.
+2. **Clone** — Clone your fork locally:
    ```bash
-   git clone https://github.com/<tu-usuario>/agent-workflow.git
+   git clone https://github.com/<your-username>/agent-workflow.git
    cd agent-workflow
    ```
-3. **Rama** — Crea una rama descriptiva para tu cambio:
+3. **Branch** — Create a descriptive branch for your change:
    ```bash
-   git checkout -b feat/descripcion-corta
+   git checkout -b feat/short-description
    ```
-4. **Cambios** — Realiza tus modificaciones siguiendo las convenciones del proyecto.
-5. **Push** — Empuja la rama a **tu fork** (no al repositorio original):
+4. **Changes** — Make your modifications following the project conventions.
+5. **Push** — Push the branch to **your fork** (not the original repository):
    ```bash
-   git push origin feat/descripcion-corta
+   git push origin feat/short-description
    ```
-6. **Pull Request** — Abre un PR desde tu fork hacia `jjopdev/agent-workflow:main`.
+6. **Pull Request** — Open a PR from your fork targeting `jjopdev/agent-workflow:main`.
 
-## Requisitos del PR
+## PR Requirements
 
-- Debe pasar todas las verificaciones de estado (si las hay).
-- Requiere aprobacion del dueno (`@jjopdev`) antes de poder fusionarse.
-- El historial debe ser lineal — no se aceptan merge commits; usa `rebase` si es necesario.
-- Las ramas se eliminan automaticamente tras el merge.
+- Must pass all status checks (if any).
+- Requires approval from the owner (`@jjopdev`) before it can be merged.
+- History must be linear — merge commits are not accepted; use `rebase` if needed.
+- Branches are automatically deleted after merge.
 
-## Lo que NO esta permitido
+## What is NOT allowed
 
-- Push directo a `main` o cualquier otra rama del repositorio original.
-- Force push sobre ramas protegidas.
-- Eliminar ramas protegidas.
+- Direct push to `main` or any other branch of the original repository.
+- Force push on protected branches.
+- Deleting protected branches.
 
-## Contacto
+## Contact
 
-Si tienes preguntas, abre un Issue en el repositorio.
+If you have questions, open an Issue in the repository.

@@ -1,0 +1,28 @@
+{
+  "name": "agent-workflow-claude",
+  "displayName": "Agent Workflow — Claude Code Agents",
+  "version": "1.0.0",
+  "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline — Claude Code agents variant",
+  "publisher": "jjopdev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jjopdev/agent-workflow"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "keywords": ["workflow", "agents", "orchestrator", "claude", "tech-lead"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./src/extension.js",
+  "agentVariant": "claude",
+  "contributes": {
+    "commands": [
+      {
+        "command": "agentWorkflow.setup",
+        "title": "Agent Workflow (Claude): Setup in Current Workspace"
+      }
+    ]
+  }
+}

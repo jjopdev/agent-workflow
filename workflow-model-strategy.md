@@ -45,7 +45,7 @@ Saving on the root degrades the entire pipeline. That is why the Orchestrator us
 
 Claude Code natively routes models through agent frontmatter. Unlike the previous Copilot setup where a human operator manually selected models in the UI, Claude Code agents declare their model in their definition file and the system routes automatically.
 
-Agent definitions in `.claude/agents/*.md` use YAML frontmatter:
+Agent definitions in `agents/*.md` use YAML frontmatter:
 ```yaml
 ---
 model: sonnet

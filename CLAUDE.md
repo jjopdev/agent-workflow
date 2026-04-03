@@ -17,7 +17,7 @@ Based on arXiv:2512.24601: An intelligent root model that recursively delegates 
 ## Delegation Protocol
 Every delegation to a subagent MUST include:
 - **TASK**: One-line description of the subtask
-- **SKILLS**: Paths to relevant `.claude/skills/*/SKILL.md` files to read
+- **SKILLS**: Paths to relevant `skills/*/SKILL.md` files to read
 - **CONTEXT_FILES**: Codebase paths the agent should read first
 - **ACCEPTANCE**: Verifiable criteria for "done"
 - **CONSTRAINTS**: What is explicitly out of scope
@@ -56,7 +56,7 @@ This includes:
 The user can also invoke `/workflow` to make the intent explicit.
 
 ## Learning System
-- At session start: read `.claude/skills/workflow-knowledge/lessons.md` headers
+- At session start: read `skills/workflow-knowledge/lessons.md` headers
 - After any user correction: record a lesson in memory AND append to lessons.md
 - Before delegating: filter relevant lessons by category for the subagent
 - Categories: [DX], [ARCH], [SECURITY], [FAIL], [PERF]
@@ -103,7 +103,7 @@ Delegate to `security` agent when changes touch ANY of:
 - Error handling or logging
 
 ## Scope
-- Primary sources of truth: `.claude/agents/`, `.claude/skills/`, `.claude/rules/`, and root Markdown files
+- Primary sources of truth: `agents/`, `skills/`, `.claude/rules/`, and root Markdown files
 - Prefer minimal, focused changes
 - Do not assume there is a runnable app unless such files exist
 - Documentation may be in Spanish; code-like examples in English when clearer
@@ -113,7 +113,7 @@ This repo is distributable as a plugin for Claude Code and Copilot CLI:
 - **Claude Code plugin manifest:** `.claude-plugin/plugin.json`
 - **Copilot CLI plugin manifest:** `plugin.json` (root)
 - **VS Code extension:** `package.json` + `src/extension.js`
-- Root `skills/` and `agents/` are the canonical plugin sources; `.claude/` is the legacy standalone layout
+- Root `skills/` and `agents/` are the canonical plugin sources
 
 ## Rules
 - If something goes wrong, STOP and re-plan before retrying

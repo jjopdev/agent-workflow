@@ -1,0 +1,41 @@
+{
+  "skill_name": "skill-creator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to create a skill for my project that uses Prisma with PostgreSQL. The devs keep getting confused by many-to-many relationships and nested includes.",
+      "expected_output": "A skill with a SKILL.md covering Prisma patterns: relationships, includes, queries, and naming conventions. Include evals and assertions.",
+      "files": [],
+      "assertions": [
+        "Generates a SKILL.md with valid frontmatter (name, description)",
+        "The description uses the imperative phrase 'Use this skill when...'",
+        "Includes a 'When to use this skill' section",
+        "Includes rules with Correct/Incorrect examples for many-to-many relationships",
+        "Generates evals/evals.json with at least 3 test cases",
+        "The skill stays under 5000 tokens"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I want to create a skill for the components in my project. We have our own design system with tokens and naming conventions.",
+      "expected_output": "A skill that captures the design system: tokens, naming conventions, and component patterns. It explores the codebase first to extract real patterns.",
+      "files": [],
+      "assertions": [
+        "Explores the codebase before creating the skill (looks for existing components)",
+        "Extracts real project patterns, not generic ones",
+        "Generates a Quick Reference table",
+        "The description covers synonyms (UI, components, design system, tokens)",
+        "Includes a directory structure if the design system is complex"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "How do I write a good README for my project?",
+      "expected_output": "This should NOT trigger the skill-creator. Writing a README is not creating a skill.",
+      "files": [],
+      "assertions": [
+        "The skill does NOT activate for this request"
+      ]
+    }
+  ]
+}

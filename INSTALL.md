@@ -6,10 +6,16 @@ Agent Workflow ships as **4 separate packages** — install only the one that ma
 
 ## 1. Claude Code
 
+### From GitHub (recommended)
+
+```bash
+# Installs only the clean Claude Code package (not the full repo)
+claude plugin install jjopdev/agent-workflow:packages/claude-code
+```
+
 ### From GitHub Release
 
 ```bash
-# Download and extract the Claude Code package
 curl -L https://github.com/jjopdev/agent-workflow/releases/latest/download/agent-workflow-claude-code.tar.gz -o agent-workflow-claude-code.tar.gz
 mkdir -p agent-workflow-claude-code
 tar -xzf agent-workflow-claude-code.tar.gz -C agent-workflow-claude-code
@@ -38,6 +44,13 @@ bash scripts/build-dist.sh --target claude-code
 ---
 
 ## 2. Copilot CLI
+
+### From GitHub (recommended)
+
+```bash
+# Installs only the clean Copilot CLI package (not the full repo)
+copilot plugin install jjopdev/agent-workflow:packages/copilot-cli
+```
 
 ### From GitHub Release
 

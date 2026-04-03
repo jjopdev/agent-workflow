@@ -351,6 +351,25 @@ main() {
   esac
 
   # ---------------------------------------------------------------------------
+  # Sync to packages/ (git-tracked, for remote installs via git-subdir)
+  # ---------------------------------------------------------------------------
+  local PACKAGES="$ROOT/packages"
+  if [ -d "$DIST/claude-code" ]; then
+    log_info "Syncing packages/claude-code/ (git-tracked)..."
+    rm -rf "$PACKAGES/claude-code"
+    mkdir -p "$PACKAGES/claude-code"
+    cp -r "$DIST/claude-code/." "$PACKAGES/claude-code/"
+    log_ok "packages/claude-code/ synced"
+  fi
+  if [ -d "$DIST/copilot-cli" ]; then
+    log_info "Syncing packages/copilot-cli/ (git-tracked)..."
+    rm -rf "$PACKAGES/copilot-cli"
+    mkdir -p "$PACKAGES/copilot-cli"
+    cp -r "$DIST/copilot-cli/." "$PACKAGES/copilot-cli/"
+    log_ok "packages/copilot-cli/ synced"
+  fi
+
+  # ---------------------------------------------------------------------------
   # Summary
   # ---------------------------------------------------------------------------
   echo ""

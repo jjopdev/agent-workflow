@@ -15,6 +15,16 @@ A portable configuration that turns Claude Code into a **Tech Lead orchestrator*
 
 Drop it into any project. No runtime dependencies. No framework lock-in.
 
+## Origin
+
+This project was built by applying the RLM paper's own principles to its construction:
+
+1. **[NotebookLM](https://notebooklm.google.com/)** — Used to analyze, summarize, and deeply understand the [Recursive Language Models paper](https://arxiv.org/abs/2512.24601) (MIT/Stanford, ICML 2025)
+2. **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** — Used to design, implement, and iterate on the entire agent workflow system
+3. **[GitHub Copilot CLI](https://docs.github.com/en/copilot)** — Used to test cross-platform compatibility and validate the Copilot agent variant
+
+The workflow was dogfooded from day one — it was built using itself.
+
 ## Why
 
 - **Lower cost** — Opus orchestrates, Sonnet does the work, Haiku handles read-only tasks

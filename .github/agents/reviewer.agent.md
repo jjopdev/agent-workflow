@@ -2,7 +2,7 @@
 name: Reviewer
 description: Reviews code from multiple perspectives (correctness, security, performance, architecture). Read-only.
 user-invocable: false
-model: ['GPT-5.4 (copilot)', 'Claude Sonnet 4.6 (copilot)', 'Claude Haiku 4.5 (copilot)']
+model: ['Claude Sonnet 4.6 (copilot)', 'GPT-5.4 (copilot)']
 tools:
   # Reading
   - read/readFile

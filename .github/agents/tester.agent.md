@@ -2,7 +2,7 @@
 name: Tester
 description: Writes and runs tests (unit, integration, E2E). Diagnoses failures and reports coverage.
 user-invocable: false
-model: ['GPT-5.4 (copilot)', 'GPT-5.3-Codex (copilot)','Claude Haiku 4.5 (copilot)']
+model: ['Claude Sonnet 4.6 (copilot)', 'GPT-5.4 (copilot)']
 tools:
   # Reading
   - read/readFile

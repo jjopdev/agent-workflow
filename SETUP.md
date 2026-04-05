@@ -174,7 +174,7 @@ In the Copilot chat:
 ### Key Files
 - `.github/copilot-instructions.md` — Global instructions
 - `.github/agents/orchestrator.agent.md` — Root orchestrator
-- `.github/agents/` — 8 specialized agents
+- `.github/agents/` — 9 agents (includes Orchestrator)
 - `skills/` — Reusable skills
 - `.github/tasks/` — todo.md, lessons.md, summaries.md
 
@@ -190,7 +190,7 @@ In the Copilot chat:
 | **Task tracking (live)** | TaskCreate (native) | Manual `.github/tasks/todo.md` |
 | **Lesson recording** | Auto stop hook | Manual via Scribe delegation |
 | **Cost model** | Opus/Sonnet/Haiku mix | GPT-5.4/Opus (premium) |
-| **Agents** | 6 + built-in helpers | 8 (Orchestrator, Planner, Scribe...) |
+| **Agents** | 6 + built-in helpers | 9 (Orchestrator, Planner, Scribe...) |
 | **Integration** | CLI + VS Code | VS Code only |
 | **Learning curve** | Steeper (RLM concepts) | Gentler (familiar agents) |
 | **Best for** | Complex multi-file features, cost-conscious teams | Quick bugs, existing Copilot users |

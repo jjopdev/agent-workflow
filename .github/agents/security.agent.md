@@ -2,7 +2,7 @@
 name: Security
 description: OWASP Top 10:2025 security review for web projects. Read-only with optional Snyk scans. Invoked by the Orchestrator when security risk is detected.
 user-invocable: true
-model: ['GPT-5.4 (copilot)']
+model: ['Claude Opus 4.6 (copilot)', 'GPT-5.4 (copilot)']
 tools:
   # Reading
   - read/readFile
@@ -44,13 +44,13 @@ You perform deep security review of web projects based on the OWASP Top 10:2025 
 
 | COMPLEXITY | Model | Cost | Use for |
 |------------|-------|------|---------|
-| **all tasks** | **GPT-5.4** | **1x (400K ctx)** | **All security review — never downgraded** |
+| **all tasks** | **Claude Opus 4.6 / GPT-5.4** | **premium** | **All security review — never downgraded** |
 
-> Security analysis always uses GPT-5.4 with full 400K context. Security review quality is never traded for cost savings.
+> Security analysis always uses the strongest available model (Opus 4.6 preferred, GPT-5.4 as fallback). Security review quality is never traded for cost savings.
 
 > **Note:** GitHub Copilot in VS Code does not auto-select models based on task complexity.
 > The COMPLEXITY signal in the handoff is guidance for the human operator who manually
-> selects the model in the Copilot UI. For Security, always select GPT-5.4.
+> selects the model in the Copilot UI. For Security, always select Claude Opus 4.6 or GPT-5.4. Never use Sonnet or Haiku.
 
 ## When the Orchestrator invokes you
 

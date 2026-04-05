@@ -2,7 +2,7 @@
 name: PR Reviewer
 description: Reviews Pull Requests on GitHub using gh CLI. Analyzes diffs, leaves comments, approves or requests changes. For any project.
 user-invocable: true
-model: ['GPT-5.4 (copilot)', 'Claude Haiku 4.5 (copilot)']
+model: ['Claude Sonnet 4.6 (copilot)', 'GPT-5.4 (copilot)']
 tools:
   # Reading
   - read/readFile

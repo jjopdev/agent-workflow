@@ -1,5 +1,5 @@
 ---
-last-verified: 2026-03-21
+last-verified: 2026-04-05
 rlm-paper: https://arxiv.org/abs/2512.24601
 stacks: [nextjs, react, aspnet-mvc, dotnet-framework, dotnet-10, nodejs, python, go, rust]
 ---

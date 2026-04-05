@@ -36,7 +36,7 @@ bash scripts/build-dist.sh --target claude-code
 |---|---|
 | `.claude-plugin/plugin.json` | Plugin manifest |
 | `agents/` | 6 agent definitions (.md) |
-| `skills/` | 16 skill directories |
+| `skills/` | 15 skill directories |
 | `hooks/hooks.json` | Hook template (empty, customizable) |
 | `settings.json` | Permissions and sandbox config |
 | `LICENSE` | MIT license |
@@ -75,7 +75,7 @@ bash scripts/build-dist.sh --target copilot-cli
 |---|---|
 | `plugin.json` | Plugin manifest |
 | `agents/` | 9 agent definitions (.agent.md) |
-| `skills/` | 16 skill directories |
+| `skills/` | 15 skill directories |
 | `hooks/hooks.json` | Hook template (empty, customizable) |
 | `settings.json` | Permissions and sandbox config |
 | `LICENSE` | MIT license |

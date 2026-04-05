@@ -13,25 +13,17 @@ tools:
   - search/usages
   - search/changes
   - search/listDirectory
-  # Web and docs
-  - web/fetch
-  - web/githubRepo
-  - context7/resolve-library-id
-  - context7/query-docs
-  # Snyk (optional — use if available)
-  - snyk/snyk_code_scan
-  - snyk/snyk_sca_scan
-  - snyk/snyk_iac_scan
-  # Browser (to verify security headers, CORS, etc.)
-  - playwright/browser_navigate
-  - playwright/browser_snapshot
-  - playwright/browser_take_screenshot
-  - playwright/browser_console_messages
-  - playwright/browser_network_requests
-  # Terminal (read-only — for checking configs, env, headers)
+  # Terminal (read-only verification)
   - read/terminalLastCommand
   - execute/runInTerminal
   - execute/getTerminalOutput
+  # Snyk (automated scanning)
+  - snyk/snyk_code_scan
+  - snyk/snyk_sca_scan
+  - snyk/snyk_iac_scan
+  # Browser (security header verification)
+  - playwright/browser_navigate
+  - playwright/browser_network_requests
 ---
 
 <!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->

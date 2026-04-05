@@ -59,6 +59,7 @@ The user can also invoke `/workflow` to make the intent explicit.
 - After any user correction: record a lesson in memory AND append to lessons.md
 - Before delegating: filter relevant lessons by category for the subagent
 - Categories: [DX], [ARCH], [SECURITY], [FAIL], [PERF]
+- Periodically: run `/consolidate` to merge duplicates and enforce size limits
 
 ## Context Minimization
 - Pass ONLY information necessary for each subtask

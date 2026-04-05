@@ -4,18 +4,14 @@ description: Breaks down features into verifiable tasks. Read-only, never modifi
 user-invocable: false
 model: ['Claude Haiku 4.5 (copilot)', 'GPT-5.4 (copilot)']
 tools:
+  # Reading
   - read/readFile
-  - read/problems
   - search/codebase
   - search/fileSearch
   - search/listDirectory
   - search/textSearch
   - search/usages
-  - search/changes
-  - web/fetch
-  - web/githubRepo
-  - microsoft-learn/microsoft_docs_search
-  - microsoft-learn/microsoft_docs_fetch
+  # Documentation
   - context7/resolve-library-id
   - context7/query-docs
 ---

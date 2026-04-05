@@ -4,22 +4,20 @@ description: Orchestrates subagents, plans, and verifies. Never implements direc
 
 model: ['GPT-5.4 (copilot)','Claude Opus 4.6 (copilot)']
 tools:
+  # Delegation
   - agent/runSubagent
   - agent
+  # Reading
   - read/readFile
   - read/problems
-  - read/terminalLastCommand
   - search/codebase
   - search/fileSearch
   - search/listDirectory
   - search/changes
   - search/searchSubagent
-  - web/fetch
-  - context7/resolve-library-id
-  - context7/query-docs
+  # State
   - vscode/memory
   - vscode/askQuestions
-  - vscode.mermaid-chat-features/renderMermaidDiagram
   - todo
 agents: ['Planner', 'Implementer', 'Reviewer', 'PR Reviewer', 'Tester', 'Infra', 'Scribe', 'Security']
 handoffs:

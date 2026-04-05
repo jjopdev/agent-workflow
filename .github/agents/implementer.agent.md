@@ -12,37 +12,18 @@ tools:
   - search/fileSearch
   - search/listDirectory
   - search/textSearch
-  - search/usages
   # Editing
   - edit/createFile
-  - edit/createDirectory
   - edit/editFiles
-  - edit/rename
   # Terminal
   - execute/runInTerminal
   - execute/getTerminalOutput
   - execute/awaitTerminal
-  - execute/killTerminal
-  - execute/createAndRunTask
   # Documentation
   - context7/resolve-library-id
   - context7/query-docs
-  - web/fetch
-  - microsoft-learn/microsoft_docs_search
-  - microsoft-learn/microsoft_docs_fetch
-  # shadcn
-  - shadcn/list_components
-  - shadcn/get_component
+  # UI components (when project uses shadcn)
   - shadcn/add_component
-  # Browser (to verify UI)
-  - playwright/browser_navigate
-  - playwright/browser_snapshot
-  - playwright/browser_take_screenshot
-  - playwright/browser_console_messages
-  # VS Code
-  - vscode/runCommand
-  - vscode/getProjectSetupInfo
-  - todo
 ---
 
 <!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->

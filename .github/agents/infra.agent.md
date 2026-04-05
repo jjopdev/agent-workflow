@@ -14,24 +14,14 @@ tools:
   - search/textSearch
   # Editing
   - edit/createFile
-  - edit/createDirectory
   - edit/editFiles
   # Terminal
   - execute/runInTerminal
   - execute/getTerminalOutput
   - execute/awaitTerminal
-  - execute/createAndRunTask
-  # Docs and web
-  - web/fetch
+  # Documentation
   - context7/resolve-library-id
   - context7/query-docs
-  - microsoft-learn/microsoft_docs_search
-  - microsoft-learn/microsoft_docs_fetch
-  - snyk/snyk_iac_scan
-  - snyk/snyk_container_scan
-  # VS Code
-  - vscode/getProjectSetupInfo
-  - ms-azuretools.vscode-containers/containerToolsConfig
 ---
 
 <!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->

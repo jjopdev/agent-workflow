@@ -18,17 +18,6 @@ tools:
   - execute/runInTerminal
   - execute/getTerminalOutput
   - execute/awaitTerminal
-  # Docs
-  - context7/resolve-library-id
-  - context7/query-docs
-  - web/fetch
-  - web/githubRepo
-  # Browser for visual review
-  - playwright/browser_navigate
-  - playwright/browser_snapshot
-  - playwright/browser_take_screenshot
-  - playwright/browser_console_messages
-  - playwright/browser_network_requests
 ---
 
 <!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->

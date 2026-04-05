@@ -114,6 +114,7 @@ Every code change runs the full pipeline. Test and Review run in parallel after 
 | `/create-issue <summary>` | Document to Notion + create GitHub Issue |
 | `/review-pr <number>` | Review a PR and post results on GitHub |
 | `/lesson [CATEGORY] <text>` | Record a lesson (`[DX]`, `[ARCH]`, `[SECURITY]`, `[FAIL]`, `[PERF]`) |
+| `/consolidate [--dry-run]` | Consolidate knowledge base: merge duplicate lessons, group by category, prune stale entries |
 
 ## Project Structure
 
@@ -126,7 +127,7 @@ agents/                            ← 6 specialized agents (canonical)
 │   ├── tester.md                    Tests (sonnet)
 │   ├── infra.md                     DevOps / CI-CD (sonnet)
 │   └── security.md                  OWASP review (opus)
-skills/                            ← 15 reusable skills (canonical)
+skills/                            ← 16 reusable skills (canonical)
 │   ├── workflow/                    /workflow — full pipeline trigger
 │   ├── save-progress/               /save-progress — persist work state
 │   ├── owasp-review/                Web security (OWASP Top 10:2025)

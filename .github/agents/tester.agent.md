@@ -11,7 +11,6 @@ tools:
   - search/codebase
   - search/fileSearch
   - search/textSearch
-  - search/usages
   - search/listDirectory
   # Editing (to write tests)
   - edit/createFile
@@ -22,17 +21,14 @@ tools:
   - execute/getTerminalOutput
   - execute/awaitTerminal
   - execute/testFailure
-  # Browser (for E2E with Playwright)
+  # Browser (E2E — core set)
   - playwright/browser_navigate
   - playwright/browser_click
   - playwright/browser_fill_form
-  - playwright/browser_snapshot
   - playwright/browser_take_screenshot
   - playwright/browser_console_messages
   - playwright/browser_wait_for
-  - playwright/browser_press_key
-  - playwright/browser_select_option
-  # Docs
+  # Documentation
   - context7/resolve-library-id
   - context7/query-docs
 ---

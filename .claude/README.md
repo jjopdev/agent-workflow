@@ -125,6 +125,7 @@ CONSTRAINTS: Don't modify other auth flows
 | `/create-issue <summary>` | Document analysis in Notion + GitHub Issue |
 | `/review-pr <number>` | Review a PR (your own or developer's) |
 | `/lesson [CAT] <text>` | Record lesson with category `[DX]`, `[ARCH]`, `[SECURITY]`, `[FAIL]`, `[PERF]` |
+| `/consolidate [--dry-run]` | Merge duplicate lessons, group by category, prune stale entries |
 
 ### Skills
 

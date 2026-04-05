@@ -205,8 +205,9 @@ When reviewing:
 When learning:
   7. /lesson [CATEGORY] description → Records for future sessions
 
-End of day:
-  8. Stop hook auto-captures any missed lessons
+End of day / periodically:
+  8. /consolidate → Merges duplicate lessons and prunes stale summaries
+  9. Stop hook auto-captures any missed lessons
 ```
 
 ---

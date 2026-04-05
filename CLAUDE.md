@@ -35,9 +35,8 @@ Classify every task before choosing the pipeline:
 **Every task that involves code changes** — regardless of size — runs the complete pipeline:
   1. **Plan** → Built-in Plan subagent (haiku, read-only) decomposes the task
   2. **Implement** → Delegate to `implementer` agent (sonnet)
-  3. **Test** → Delegate to `tester` agent (sonnet)
-  4. **Review** → Delegate to `reviewer` agent (sonnet)
-  5. **Security** (conditional) → Delegate to `security` agent (opus) when changes touch security-sensitive areas
+  3. **Test + Review** (parallel) → Delegate to `tester` AND `reviewer` agents simultaneously (sonnet)
+  4. **Security** (conditional) → Delegate to `security` agent (opus) — runs AFTER both Test and Review complete
 
 This includes:
 - Bug fixes (even single-file) — Plan traces the flow: view → script → controller → server → queries

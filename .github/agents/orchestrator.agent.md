@@ -286,16 +286,20 @@ When a subagent returns `STATUS: failed` or `STATUS: blocked`, follow this escal
    - `ACCEPTANCE:` verifiable criteria
    - `CONSTRAINTS:` out-of-scope paths
 
-4. **Testing** — Delegate to `Tester`:
+4. **Testing + Review** (parallel) — Delegate to `Tester` AND `Reviewer` simultaneously. Delegate both before waiting for either to return:
+
+   **Tester:**
    - `ARTIFACTS:` files changed by the Implementer
    - `ACCEPTANCE:` behavior to verify
 
-5. **Review** — Delegate to `Reviewer`:
+   **Reviewer:**
    - `ARTIFACTS:` changed files
    - `SKILLS:` pattern skills to review against
    - `ACCEPTANCE:` original criteria
 
-5b. **Security review (conditional)** — If ANY of these conditions are true, delegate to `Security`:
+   Both must complete before proceeding to Security.
+
+5. **Security review (conditional)** — Runs AFTER both Test and Review complete. If ANY of these conditions are true, delegate to `Security`:
    - The change touches auth, sessions, tokens, middleware, or access control
    - The change handles user input (forms, APIs, file uploads, URL parameters)
    - The change modifies environment variables, secrets, or security configuration

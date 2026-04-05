@@ -11,7 +11,7 @@
         "Delegates to Planner before implementing",
         "The Reviewer verifies auth and cookie security",
         "Security agent is triggered because auth is involved",
-        "The flow follows the order: Plan -> Implement -> Test -> Review -> Security"
+        "The flow follows the order: Plan -> Implement -> [Test + Review in parallel] -> Security"
       ]
     },
     {

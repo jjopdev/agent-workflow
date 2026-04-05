@@ -1,6 +1,6 @@
 ---
 name: Always run full pipeline for code tasks
-description: User wants every development task (bugs, features, refactors) to run the full Plan→Implement→Test→Review→Security pipeline, never skip stages
+description: User wants every development task (bugs, features, refactors) to run the full Plan→Implement→[Test ∥ Review]→Security pipeline, never skip stages
 type: feedback
 ---
 
@@ -11,8 +11,7 @@ Always run the full workflow pipeline for ANY task involving code changes — ev
 **How to apply:** When a user describes a bug or development task (e.g., "there's an error in login, trace from view → controller → queries"), always:
 1. Plan first (decompose the investigation/fix flow)
 2. Implement via subagent
-3. Test via subagent
-4. Review via subagent
-5. Security if applicable
+3. Test + Review in parallel (both run simultaneously after implementation)
+4. Security if applicable
 
 Only skip the pipeline for pure information queries (questions, explanations, doc reads).

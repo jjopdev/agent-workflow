@@ -110,7 +110,7 @@ After creating both artifacts, ask:
 
 > Issue #XX created. Notion updated.
 > Do you want to:
-> 1. **Execute it yourself** — I'll run the full workflow (Plan→Implement→Test→Review→Security)
+> 1. **Execute it yourself** — I'll run the full workflow (Plan→Implement→[Test ∥ Review]→Security)
 > 2. **Delegate to a developer** — The issue is ready, assign it to a dev
 
 ## Rules

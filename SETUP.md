@@ -88,7 +88,7 @@ claude
 "Fix the OAuth callback error in Google login"
 
 # Claude investigates, then you choose:
-/workflow Implement OAuth callback fix       # Full pipeline: Plan → Implement → Test → Review → Security
+/workflow Implement OAuth callback fix       # Full pipeline: Plan → Implement → [Test ∥ Review] → Security
 /create-issue OAuth callback error fix       # Create GitHub Issue + Notion page
 /review-pr 15                                # Review a PR
 /lesson [SECURITY] OAuth state validation    # Record learning for future sessions

@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: Force the full orchestration pipeline (Plan → Implement → Test → Review → Security) on any task regardless of size. Ensures every code change goes through planning, implementation, testing, code review, and conditional security analysis.
+description: Force the full orchestration pipeline (Plan → Implement → [Test ∥ Review] → Security) on any task regardless of size. Ensures every code change goes through planning, implementation, parallel testing and code review, and conditional security analysis.
 disable-model-invocation: true
 argument-hint: "[task-description]"
 ---
@@ -28,19 +28,24 @@ For each subtask in the plan:
 - Implement the minimum necessary change
 - Verify the change compiles/runs
 
-### Step 3: Test
+### Step 3: Test + Review (parallel)
+Delegate to `tester` AND `reviewer` simultaneously — both only need the changed files from Implement:
+
+**Tester:**
 - Run existing tests to verify nothing is broken
 - Write new tests for the changes if applicable
 - Report test results
 
-### Step 4: Review
+**Reviewer:**
 - Review all changed files for quality, readability, and correctness
 - Check for code duplication
 - Verify naming conventions and patterns
 - Report findings by priority (critical, warning, suggestion)
 
-### Step 5: Security (conditional)
-If the changes touch any of: auth, user input, APIs, secrets, dependencies, CORS, headers, data storage, encryption, error handling, or logging:
+Both must complete before proceeding to Security.
+
+### Step 4: Security (conditional)
+Runs AFTER both Test and Review complete. If the changes touch any of: auth, user input, APIs, secrets, dependencies, CORS, headers, data storage, encryption, error handling, or logging:
 - Perform OWASP Top 10:2025 review on the changed files
 - Report vulnerabilities by severity
 

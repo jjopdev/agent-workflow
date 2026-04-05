@@ -94,7 +94,7 @@ Why: OWASP A01:2021 — Broken Access Control
    ```
    /workflow Implement OAuth callback fix
    ```
-   This runs: Plan → Implement → Test → Review → Security (if auth-related)
+   This runs: Plan → Implement → [Test ∥ Review] → Security (if auth-related)
 
 5. **Record lessons** at session end:
    - Manual: `/lesson [SECURITY] OAuth state validation required`
@@ -121,7 +121,7 @@ CONSTRAINTS: Don't modify other auth flows
 
 | Command | Use |
 |---------|-----|
-| `/workflow <task>` | Run full pipeline: Plan → Implement → Test → Review → Security |
+| `/workflow <task>` | Run full pipeline: Plan → Implement → [Test ∥ Review] → Security |
 | `/create-issue <summary>` | Document analysis in Notion + GitHub Issue |
 | `/review-pr <number>` | Review a PR (your own or developer's) |
 | `/lesson [CAT] <text>` | Record lesson with category `[DX]`, `[ARCH]`, `[SECURITY]`, `[FAIL]`, `[PERF]` |

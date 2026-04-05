@@ -90,10 +90,11 @@ You (prompt)
 └─────────────────────────────┘
          │
          ▼
-Plan (haiku) → Implement (sonnet) → Test (sonnet) → Review (sonnet) → Security (opus)
+Plan (haiku) → Implement (sonnet) → ┬─ Test (sonnet)   ┬→ Security (opus)
+                                     └─ Review (sonnet) ┘
 ```
 
-Every code change runs the full pipeline. Questions and explanations are handled directly. Use `/workflow <task>` to make the pipeline intent explicit.
+Every code change runs the full pipeline. Test and Review run in parallel after Implement, then Security runs last. Questions and explanations are handled directly. Use `/workflow <task>` to make the pipeline intent explicit.
 
 ## Model Strategy (RLM)
 
@@ -108,7 +109,7 @@ Every code change runs the full pipeline. Questions and explanations are handled
 
 | Command | Description |
 |---------|-------------|
-| `/workflow <task>` | Full pipeline: Plan → Implement → Test → Review → Security |
+| `/workflow <task>` | Full pipeline: Plan → Implement → [Test ∥ Review] → Security |
 | `/save-progress [state]` | Save current plan and progress to `.claude/progress.md` for session resumption |
 | `/create-issue <summary>` | Document to Notion + create GitHub Issue |
 | `/review-pr <number>` | Review a PR and post results on GitHub |

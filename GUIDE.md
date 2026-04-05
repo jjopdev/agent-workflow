@@ -63,9 +63,8 @@ If you're doing the work yourself, run the full agent pipeline:
 The pipeline runs automatically:
 1. **Plan** → Decomposes the task into subtasks (you review and approve)
 2. **Implement** → Writes the code changes
-3. **Test** → Runs existing tests + writes new ones
-4. **Review** → Reviews the code for quality
-5. **Security** → OWASP review if auth/input/secrets are touched
+3. **Test ∥ Review** → Run in parallel: tests + new test cases, and code quality review
+4. **Security** → OWASP review if auth/input/secrets are touched
 
 After completion, create a PR:
 
@@ -135,7 +134,7 @@ Claude investigates → finds multiple files involved → you run `/create-issue
 "Agregar autenticación con Microsoft Azure AD para el portal de administración"
 ```
 
-Claude scopes the feature → `/create-issue` → `/workflow` runs Plan → Implement → Test → Review → Security (auth changes trigger security review automatically).
+Claude scopes the feature → `/create-issue` → `/workflow` runs Plan → Implement → [Test ∥ Review] → Security (auth changes trigger security review automatically).
 
 ### Code Review (Developer PR)
 
@@ -216,6 +215,6 @@ End of day:
 
 - **Messy input is fine** — The prompt-refiner skill normalizes typos, mixed languages, and unstructured ideas
 - **Don't over-specify** — Let Claude explore the codebase; it often finds related issues you didn't know about
-- **Trust the pipeline** — The full workflow (Plan → Implement → Test → Review → Security) catches issues that single-pass coding misses
+- **Trust the pipeline** — The full workflow (Plan → Implement → [Test ∥ Review] → Security) catches issues that single-pass coding misses
 - **Security is automatic** — When changes touch auth, APIs, secrets, or user input, the security review triggers without you asking
 - **Lessons compound** — Each recorded lesson makes future sessions smarter across all projects using this workflow

@@ -83,6 +83,15 @@ copy_file() {
   cp "$src" "$dest"
 }
 
+# Sync version from package.json into a plugin.json file
+sync_version() {
+  local file="$1"
+  if [ -f "$file" ]; then
+    sed -i "s/\"version\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"version\": \"$VERSION\"/" "$file"
+    log_info "Synced version $VERSION → $file"
+  fi
+}
+
 # Count files recursively in a directory
 count_files() {
   local dir="$1"
@@ -201,6 +210,9 @@ build_claude_code() {
   copy_file "$ROOT/settings.json"         "$out/settings.json"
   copy_file "$ROOT/LICENSE"               "$out/LICENSE"
 
+  # Sync version from package.json into plugin manifest
+  sync_version "$out/.claude-plugin/plugin.json"
+
   validate_package "$out" "claude-code"
 }
 
@@ -223,6 +235,9 @@ build_copilot_cli() {
 
   # Copy plugin.json and update agents path from ".github/agents/" to "agents/"
   sed 's|".github/agents/"|"agents/"|g' "$ROOT/plugin.json" > "$out/plugin.json"
+
+  # Sync version from package.json into plugin manifest
+  sync_version "$out/plugin.json"
 
   validate_package "$out" "copilot-cli"
 }

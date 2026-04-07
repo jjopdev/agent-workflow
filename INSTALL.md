@@ -8,10 +8,14 @@ Agent Workflow ships as **4 separate packages** — install only the one that ma
 
 ### From GitHub (recommended)
 
-```bash
-# Installs only the clean Claude Code package (not the full repo)
-claude plugin install jjopdev/agent-workflow:packages/claude-code
+Inside an active Claude Code session:
+
 ```
+/plugin marketplace add jjopdev/agent-workflow
+/plugin install agent-workflow@jjopdev-agent-workflow
+```
+
+This registers `jjopdev/agent-workflow` as a plugin marketplace and installs the `agent-workflow` plugin (sourced from `packages/claude-code/`, not the full repo).
 
 ### From GitHub Release
 

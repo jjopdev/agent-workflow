@@ -39,9 +39,14 @@ Each target installs **only the files it needs** — no project metadata, benchm
 
 ### Claude Code
 
-```bash
-claude plugin install jjopdev/agent-workflow:packages/claude-code
+Inside an active Claude Code session, run:
+
 ```
+/plugin marketplace add jjopdev/agent-workflow
+/plugin install agent-workflow@jjopdev-agent-workflow
+```
+
+The first command registers this repo as a plugin marketplace; the second installs the `agent-workflow` plugin from it.
 
 ### GitHub Copilot CLI
 

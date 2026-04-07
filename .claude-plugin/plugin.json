@@ -9,8 +9,5 @@
   "repository": "https://github.com/jjopdev/agent-workflow",
   "license": "MIT",
   "keywords": ["workflow", "agents", "orchestrator", "rlm", "security", "code-review", "tech-lead"],
-  "agents": "agents/",
-  "skills": "skills/",
-  "hooks": "hooks/hooks.json",
-  "settings": "settings.json"
+  "hooks": "./hooks/hooks.json"
 }

@@ -48,6 +48,22 @@ Inside an active Claude Code session, run:
 
 The first command registers this repo as a plugin marketplace; the second installs the `agent-workflow` plugin from it.
 
+#### Using the Orchestrator
+
+After installing the plugin, start Claude Code with the orchestrator agent:
+
+```bash
+claude --agent agent-workflow:orchestrator
+```
+
+Or set it as the default agent in your project's `.claude/settings.json`:
+
+```json
+{
+  "agent": "agent-workflow:orchestrator"
+}
+```
+
 ### GitHub Copilot CLI
 
 ```bash
@@ -87,7 +103,7 @@ You (prompt)
  │
  ▼
 ┌─────────────────────────────┐
-│  Orchestrator (opus)        │  ← CLAUDE.md — classifies, delegates
+│  Orchestrator (opus)        │  ← agents/orchestrator.md
 │  ┌────────────────────────┐ │
 │  │ Question → direct      │ │
 │  │ Code change → pipeline │ │
@@ -124,8 +140,9 @@ Every code change runs the full pipeline. Test and Review run in parallel after 
 ## Project Structure
 
 ```
-CLAUDE.md                          ← Orchestrator brain
-agents/                            ← 6 specialized agents (canonical)
+CLAUDE.md                          ← Repo-specific config (imports orchestrator)
+agents/                            ← 7 agents (canonical)
+│   ├── orchestrator.md              Tech Lead coordinator (opus)
 │   ├── implementer.md               Code writing (sonnet)
 │   ├── reviewer.md                  Code review (sonnet)
 │   ├── pr-reviewer.md               PR review (sonnet)
@@ -141,7 +158,7 @@ skills/                            ← 17 reusable skills (canonical)
 │   ├── rules/                     ← Quality & planning principles
 │   └── settings.json              ← Permissions, sandbox, hooks
 packages/                          ← Clean distribution packages
-│   ├── claude-code/                 Claude Code plugin (36 files)
+│   ├── claude-code/                 Claude Code plugin (37 files)
 │   └── copilot-cli/                 Copilot CLI plugin (39 files)
 ```
 
@@ -177,7 +194,8 @@ The security agent runs automatically when changes touch auth, tokens, user inpu
 
 | File | Description |
 |------|-------------|
-| [`CLAUDE.md`](CLAUDE.md) | Orchestrator identity, delegation protocol, pipeline routing |
+| [`CLAUDE.md`](CLAUDE.md) | Repo-specific config — imports `agents/orchestrator.md` |
+| [`agents/orchestrator.md`](agents/orchestrator.md) | Orchestrator identity, delegation protocol, pipeline routing |
 | [`INSTALL.md`](INSTALL.md) | Installation guide for all 4 targets |
 | [`SETUP.md`](SETUP.md) | Setup guide — Claude Code & Copilot variants |
 | [`GUIDE.md`](GUIDE.md) | Step-by-step usage with real-world scenarios |

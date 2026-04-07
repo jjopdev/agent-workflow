@@ -39,11 +39,24 @@ bash scripts/build-dist.sh --target claude-code
 | File/Directory | Purpose |
 |---|---|
 | `.claude-plugin/plugin.json` | Plugin manifest |
-| `agents/` | 6 agent definitions (.md) |
+| `agents/` | 7 agent definitions (.md) — includes orchestrator |
 | `skills/` | 17 skill directories |
 | `hooks/hooks.json` | Hook template (empty, customizable) |
 | `settings.json` | Permissions and sandbox config |
 | `LICENSE` | MIT license |
+
+### Using the Orchestrator
+
+The plugin includes an orchestrator agent that acts as the Tech Lead coordinator:
+
+```bash
+# Start a session with the orchestrator
+claude --agent agent-workflow:orchestrator
+
+# Or set it as default for a project
+# Add to .claude/settings.json:
+# { "agent": "agent-workflow:orchestrator" }
+```
 
 ---
 

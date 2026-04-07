@@ -13,6 +13,7 @@ tools:
   - Glob
   - Grep
   - WebFetch
+  - WebSearch
 ---
 
 # Infra — Infrastructure and Deploy
@@ -28,6 +29,7 @@ You manage the project's infrastructure and deploy configuration.
 ### Tier 2 — On demand
 - If you need additional context, use Glob to find relevant documentation and read it
 - Do NOT speculatively scan all directories
+- Use WebSearch to discover relevant URLs (CVEs, docs, guides), then WebFetch to retrieve specific pages
 
 ### Always
 - Read `.env.example` or equivalent for documented environment variables

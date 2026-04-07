@@ -2,20 +2,16 @@
 name: Planner
 description: Breaks down features into verifiable tasks. Read-only, never modifies code.
 user-invocable: false
-model: ['GPT-5.4 (copilot)', 'Claude Opus 4.6 (copilot)', 'Claude Haiku 4.5 (copilot)']
+model: ['Claude Haiku 4.5 (copilot)', 'GPT-5.4 (copilot)']
 tools:
+  # Reading
   - read/readFile
-  - read/problems
   - search/codebase
   - search/fileSearch
   - search/listDirectory
   - search/textSearch
   - search/usages
-  - search/changes
-  - web/fetch
-  - web/githubRepo
-  - microsoft-learn/microsoft_docs_search
-  - microsoft-learn/microsoft_docs_fetch
+  # Documentation
   - context7/resolve-library-id
   - context7/query-docs
 ---
@@ -30,16 +26,15 @@ You break down features and tasks into verifiable steps. Read-only, you never mo
 
 | COMPLEXITY | Model | Cost | Use for |
 |------------|-------|------|---------|
-| low | Claude Haiku 4.5 | 0.33x (~0.30x Auto) | Decompose into <4 simple subtasks |
+| **low (DEFAULT)** | **Claude Haiku 4.5** | **0.33x** | **Decompose into <4 simple subtasks — planning is read-only** |
 | medium | GPT-5.4 | 1x (400K ctx) | Standard decomposition with broader repo context |
-| **high (DEFAULT)** | **GPT-5.4** | **1x (400K ctx)** | **Cross-module decomposition, large codebases** |
+| high | GPT-5.4 | 1x (400K ctx) | Cross-module decomposition, large codebases |
 
-> **Active profile: HIGH** — GPT-5.4 with 400K ctx is the default planning model because it keeps the widest useful context at 1x. Do NOT use free models — they don't load skills correctly.
+> **Active profile: LOW** — Per RLM, planning is a read-only decomposition task. Haiku 4.5 is the default because it's the cheapest option for tasks that don't generate code. Upgrade to GPT-5.4 only for large cross-module planning.
 
 > **Note:** GitHub Copilot in VS Code does not auto-select models based on task complexity.
 > The COMPLEXITY signal in the handoff is guidance for the human operator who manually
-> selects the model in the Copilot UI. When you see `COMPLEXITY: low`, the operator
-> should select Haiku 4.5. For `medium` or `high`, select GPT-5.4.
+> selects the model in the Copilot UI. For most planning, select Haiku 4.5. For large cross-module tasks, select GPT-5.4.
 
 ## Context loading
 

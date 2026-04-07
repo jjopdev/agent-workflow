@@ -27,6 +27,18 @@ ACCEPTANCE: [verifiable acceptance criteria]
 CONSTRAINTS: [out-of-scope paths, specific restrictions]
 ```
 
+### Budget & monitoring
+
+Include in every delegation:
+```
+BUDGET: [max turns for this agent type, per table in CLAUDE.md]
+```
+
+Monitor subagent progress:
+- If subagent produces 3 consecutive low-progress responses (<500 chars each), abort and re-plan
+- If subagent returns STATUS: blocked, do NOT retry with the same decomposition — re-plan first
+- Track turn count against the BUDGET limit; abort if exceeded
+
 ### Inbound (subagent -> orchestrator)
 
 Expect this return structure:

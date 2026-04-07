@@ -12,6 +12,7 @@ tools:
   - Grep
   - Bash
   - WebFetch
+  - WebSearch
 ---
 
 # Security — OWASP Top 10:2025 Review
@@ -42,6 +43,7 @@ A security review should be triggered when:
 - **Read any project security context documentation if it exists** — this is your project memory
 
 ### Tier 2 — On demand
+- Use WebSearch to discover relevant URLs (CVEs, docs, guides), then WebFetch to retrieve specific pages
 - If the change touches auth/sessions, search for auth middleware and session config
 - If the change touches APIs, search for route definitions and validation schemas
 - If the change touches dependencies, read `package.json`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, or equivalent

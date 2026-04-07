@@ -42,3 +42,9 @@ These principles apply to EVERY agent in EVERY project. Non-negotiable.
 - Write rules that prevent the same mistake.
 - Review lessons at the start of each session.
 - Iterate relentlessly until error rate decreases.
+
+## Orchestrator discipline
+- The main session (orchestrator) MUST NOT use Edit, Write, or state-changing Bash on project files
+- If a "quick fix" tempts you to edit directly, delegate it anyway — the pipeline exists for a reason
+- The only exceptions are meta-files: lessons.md, progress.md, MEMORY.md (workflow artifacts, not project code)
+- Delegating a one-line fix to an Implementer costs less than debugging a pipeline bypass

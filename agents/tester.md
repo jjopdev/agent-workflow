@@ -12,6 +12,8 @@ tools:
   - Bash
   - Glob
   - Grep
+  - WebFetch
+  - NotebookEdit
 ---
 
 # Tester — Project Tests
@@ -72,3 +74,4 @@ You write and run tests for the project.
 - Don't write tests that only verify the implementation (testing the mock)
 - Tests must be independent of each other
 - If a test needs state, use the framework's setup/teardown mechanism
+- When the project uses Jupyter notebooks (.ipynb), use NotebookEdit to modify cells

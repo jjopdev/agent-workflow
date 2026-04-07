@@ -52,6 +52,8 @@ MANIFESTS = {
     "Claude Code (.claude-plugin/plugin.json)": os.path.join(ROOT, ".claude-plugin", "plugin.json"),
     "Copilot CLI (plugin.json)":                os.path.join(ROOT, "plugin.json"),
     "VS Code extension (package.json)":         os.path.join(ROOT, "package.json"),
+    "VS Code Claude variant (package.claude.json)":  os.path.join(ROOT, "package.claude.json"),
+    "VS Code Copilot variant (package.copilot.json)": os.path.join(ROOT, "package.copilot.json"),
 }
 
 REQUIRED_PATHS = [

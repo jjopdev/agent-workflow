@@ -2,7 +2,7 @@
 name: Security
 description: OWASP Top 10:2025 security review for web projects. Read-only with optional Snyk scans. Invoked by the Orchestrator when security risk is detected.
 user-invocable: true
-model: ['GPT-5.4 (copilot)']
+model: ['Claude Opus 4.6 (copilot)', 'GPT-5.4 (copilot)']
 tools:
   # Reading
   - read/readFile
@@ -13,25 +13,17 @@ tools:
   - search/usages
   - search/changes
   - search/listDirectory
-  # Web and docs
-  - web/fetch
-  - web/githubRepo
-  - context7/resolve-library-id
-  - context7/query-docs
-  # Snyk (optional — use if available)
-  - snyk/snyk_code_scan
-  - snyk/snyk_sca_scan
-  - snyk/snyk_iac_scan
-  # Browser (to verify security headers, CORS, etc.)
-  - playwright/browser_navigate
-  - playwright/browser_snapshot
-  - playwright/browser_take_screenshot
-  - playwright/browser_console_messages
-  - playwright/browser_network_requests
-  # Terminal (read-only — for checking configs, env, headers)
+  # Terminal (read-only verification)
   - read/terminalLastCommand
   - execute/runInTerminal
   - execute/getTerminalOutput
+  # Snyk (automated scanning)
+  - snyk/snyk_code_scan
+  - snyk/snyk_sca_scan
+  - snyk/snyk_iac_scan
+  # Browser (security header verification)
+  - playwright/browser_navigate
+  - playwright/browser_network_requests
 ---
 
 <!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
@@ -44,13 +36,13 @@ You perform deep security review of web projects based on the OWASP Top 10:2025 
 
 | COMPLEXITY | Model | Cost | Use for |
 |------------|-------|------|---------|
-| **all tasks** | **GPT-5.4** | **1x (400K ctx)** | **All security review — never downgraded** |
+| **all tasks** | **Claude Opus 4.6 / GPT-5.4** | **premium** | **All security review — never downgraded** |
 
-> Security analysis always uses GPT-5.4 with full 400K context. Security review quality is never traded for cost savings.
+> Security analysis always uses the strongest available model (Opus 4.6 preferred, GPT-5.4 as fallback). Security review quality is never traded for cost savings.
 
 > **Note:** GitHub Copilot in VS Code does not auto-select models based on task complexity.
 > The COMPLEXITY signal in the handoff is guidance for the human operator who manually
-> selects the model in the Copilot UI. For Security, always select GPT-5.4.
+> selects the model in the Copilot UI. For Security, always select Claude Opus 4.6 or GPT-5.4. Never use Sonnet or Haiku.
 
 ## When the Orchestrator invokes you
 

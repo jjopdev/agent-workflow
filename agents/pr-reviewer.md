@@ -5,6 +5,7 @@ model: sonnet
 skills:
   - workflow-knowledge
   - github-cli
+memory: project
 tools:
   - Read
   - Glob

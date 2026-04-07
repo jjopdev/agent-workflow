@@ -13,6 +13,8 @@ tools:
   - Glob
   - Grep
   - WebFetch
+  - WebSearch
+  - NotebookEdit
 ---
 
 # Implementer — Code Writing
@@ -32,6 +34,7 @@ You write code for the project. You have full access to reading, editing, creati
 ### Always before writing code
 - Use Grep to understand existing patterns in related files
 - Use WebFetch to verify APIs and library usage when uncertain
+- Use WebSearch to discover relevant URLs (CVEs, docs, guides), then WebFetch to retrieve specific pages
 - Read project configuration files (package.json, tsconfig, Cargo.toml, go.mod, etc.) to know versions and conventions
 
 ## Process
@@ -52,3 +55,4 @@ You write code for the project. You have full access to reading, editing, creati
 - If you find a bug while implementing something else, report it but don't fix it in the same change
 - If you need infrastructure that doesn't exist, report the need rather than implementing it yourself
 - Use WebFetch for up-to-date docs when uncertain about APIs — don't rely on memory alone
+- When the project uses Jupyter notebooks (.ipynb), use NotebookEdit instead of Write for cell modifications

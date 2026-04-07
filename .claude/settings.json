@@ -184,6 +184,15 @@
             "timeout": 30
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "You are a post-pipeline extraction hook.\n\nInput:\n$ARGUMENTS\n\n## Decision logic\n\n1. Parse the input JSON. If `stop_hook_active` is `true`, respond with ONLY `{}` to prevent infinite loops.\n\n2. Analyze `last_assistant_message` for evidence that a full pipeline run just completed. Look for patterns like:\n   - Security review completion (final stage)\n   - Pipeline summary with multiple stages mentioned\n   - References to Plan, Implement, Test, Review, and/or Security stages completing\n\n3. If a pipeline completion is detected, respond with ONLY:\n{\"decision\":\"block\",\"reason\":\"Pipeline run detected. Run /post-session --auto to extract lessons from this pipeline run before ending.\"}\n\n4. If no pipeline completion detected, respond with ONLY: {}",
+            "timeout": 15
+          }
+        ]
       }
     ]
   },

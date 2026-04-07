@@ -2,7 +2,7 @@
 name: Implementer
 description: Writes code following the project's standards and architecture. Full access to editing and terminal.
 user-invocable: false
-model: ['GPT-5.4 (copilot)', 'GPT-5.3-Codex (copilot)','Claude Sonnet 4.6 (copilot)', 'Claude Haiku 4.5 (copilot)']
+model: ['GPT-5.4 (copilot)', 'GPT-5.3-Codex (copilot)', 'Claude Sonnet 4.6 (copilot)']
 tools:
   # Reading
   - read/readFile
@@ -12,37 +12,18 @@ tools:
   - search/fileSearch
   - search/listDirectory
   - search/textSearch
-  - search/usages
   # Editing
   - edit/createFile
-  - edit/createDirectory
   - edit/editFiles
-  - edit/rename
   # Terminal
   - execute/runInTerminal
   - execute/getTerminalOutput
   - execute/awaitTerminal
-  - execute/killTerminal
-  - execute/createAndRunTask
   # Documentation
   - context7/resolve-library-id
   - context7/query-docs
-  - web/fetch
-  - microsoft-learn/microsoft_docs_search
-  - microsoft-learn/microsoft_docs_fetch
-  # shadcn
-  - shadcn/list_components
-  - shadcn/get_component
+  # UI components (when project uses shadcn)
   - shadcn/add_component
-  # Browser (to verify UI)
-  - playwright/browser_navigate
-  - playwright/browser_snapshot
-  - playwright/browser_take_screenshot
-  - playwright/browser_console_messages
-  # VS Code
-  - vscode/runCommand
-  - vscode/getProjectSetupInfo
-  - todo
 ---
 
 <!-- GENERATED FROM skills/workflow-orchestrator/SKILL.md — Do not edit directly. Re-run bootstrap to regenerate. -->
@@ -57,16 +38,15 @@ Use the `COMPLEXITY` signal from the Orchestrator's handoff:
 
 | COMPLEXITY | Model | Cost | Use for |
 |------------|-------|------|---------|
-| low | Claude Haiku 4.5 | 0.33x (~0.30x Auto) | Renaming, seed data, boilerplate, config |
+| low | Claude Sonnet 4.6 | cost-effective | Renaming, seed data, boilerplate, config |
 | medium | GPT-5.4 | 1x (400K ctx) | Typical features and refactoring when broader repo context matters |
 | **high (DEFAULT)** | **GPT-5.4** | **1x (400K ctx)** | **Complex logic, debugging, multi-file with wider context** |
 
-> **Active profile: HIGH** — GPT-5.4 is the default implementation baseline because the wider context reduces rework across multi-file changes. `GPT-5.3-Codex` remains an optional fallback for terminal-heavy coding. Don't use free models for implementation.
+> **Active profile: HIGH** — GPT-5.4 is the default implementation baseline because the wider context reduces rework across multi-file changes. `GPT-5.3-Codex` remains an optional fallback for terminal-heavy coding. Never use Haiku for implementation — minimum tier is Sonnet.
 
 > **Note:** GitHub Copilot in VS Code does not auto-select models based on task complexity.
 > The COMPLEXITY signal in the handoff is guidance for the human operator who manually
-> selects the model in the Copilot UI. When you see `COMPLEXITY: low`, the operator
-> should select Haiku 4.5. For `medium` or `high`, select GPT-5.4.
+> selects the model in the Copilot UI. For `low`, select Sonnet 4.6. For `medium` or `high`, select GPT-5.4.
 
 ## Context loading
 

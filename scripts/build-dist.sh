@@ -288,6 +288,9 @@ build_vscode_variant() {
 
   # Swap manifests
   cp "$pkg_file" "$orig_pkg"
+  # Sync version into variant manifest
+  sed -i "s/\"version\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"version\": \"$VERSION\"/" "$orig_pkg"
+  log_info "Synced version $VERSION → package.json (from ${variant} variant)"
   cp "$ignore_file" "$orig_ignore"
 
   # Build .vsix
@@ -324,6 +327,9 @@ build_vscode_variant() {
       mv "$ROOT/agents.claude.bak" "$ROOT/agents"
     fi
   fi
+
+  # Keep variant source file version in sync
+  sync_version "$pkg_file"
 
   return "$exit_code"
 }

@@ -4,22 +4,20 @@ description: Orchestrates subagents, plans, and verifies. Never implements direc
 
 model: ['GPT-5.4 (copilot)','Claude Opus 4.6 (copilot)']
 tools:
+  # Delegation
   - agent/runSubagent
   - agent
+  # Reading
   - read/readFile
   - read/problems
-  - read/terminalLastCommand
   - search/codebase
   - search/fileSearch
   - search/listDirectory
   - search/changes
   - search/searchSubagent
-  - web/fetch
-  - context7/resolve-library-id
-  - context7/query-docs
+  # State
   - vscode/memory
   - vscode/askQuestions
-  - vscode.mermaid-chat-features/renderMermaidDiagram
   - todo
 agents: ['Planner', 'Implementer', 'Reviewer', 'PR Reviewer', 'Tester', 'Infra', 'Scribe', 'Security']
 handoffs:
@@ -286,7 +284,7 @@ When a subagent returns `STATUS: failed` or `STATUS: blocked`, follow this escal
    - `ACCEPTANCE:` verifiable criteria
    - `CONSTRAINTS:` out-of-scope paths
 
-4. **Testing + Review (parallel)** — Delegate both simultaneously after implementation:
+4. **Testing + Review** (parallel) — Delegate to `Tester` AND `Reviewer` simultaneously. Delegate both before waiting for either to return:
 
    **Tester:**
    - `ARTIFACTS:` files changed by the Implementer
@@ -297,7 +295,9 @@ When a subagent returns `STATUS: failed` or `STATUS: blocked`, follow this escal
    - `SKILLS:` pattern skills to review against
    - `ACCEPTANCE:` original criteria
 
-5. **Security review (conditional)** — If ANY of these conditions are true, delegate to `Security`:
+   Both must complete before proceeding to Security.
+
+5. **Security review (conditional)** — Runs AFTER both Test and Review complete. If ANY of these conditions are true, delegate to `Security`:
    - The change touches auth, sessions, tokens, middleware, or access control
    - The change handles user input (forms, APIs, file uploads, URL parameters)
    - The change modifies environment variables, secrets, or security configuration

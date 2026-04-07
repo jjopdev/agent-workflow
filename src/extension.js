@@ -71,8 +71,8 @@ function installClaudeVariant(extensionRoot, targetRoot) {
 function installCopilotVariant(extensionRoot, targetRoot) {
   const items = [
     { src: 'agents', dest: '.github/agents' },
-    { src: 'skills', dest: 'skills' },
-    { src: 'hooks/hooks.json', dest: 'hooks/hooks.json' }
+    { src: 'skills', dest: '.github/skills' },
+    { src: 'hooks/hooks.json', dest: '.github/hooks/hooks.json' }
   ];
 
   for (const { src, dest } of items) {

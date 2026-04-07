@@ -1,0 +1,26 @@
+{
+  "name": "jjopdev-agent-workflow",
+  "owner": {
+    "name": "jjopdev"
+  },
+  "metadata": {
+    "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline",
+    "version": "1.3.0"
+  },
+  "plugins": [
+    {
+      "name": "agent-workflow",
+      "source": "./packages/claude-code",
+      "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline for Claude Code",
+      "version": "1.3.0",
+      "author": {
+        "name": "jjopdev"
+      },
+      "homepage": "https://github.com/jjopdev/agent-workflow",
+      "license": "MIT",
+      "keywords": ["workflow", "agents", "orchestrator", "rlm", "security", "code-review", "tech-lead"],
+      "category": "workflow",
+      "tags": ["orchestrator", "multi-agent", "rlm"]
+    }
+  ]
+}

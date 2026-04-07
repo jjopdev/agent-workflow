@@ -127,7 +127,7 @@ agents/                            ← 6 specialized agents (canonical)
 │   ├── tester.md                    Tests (sonnet)
 │   ├── infra.md                     DevOps / CI-CD (sonnet)
 │   └── security.md                  OWASP review (opus)
-skills/                            ← 16 reusable skills (canonical)
+skills/                            ← 17 reusable skills (canonical)
 │   ├── workflow/                    /workflow — full pipeline trigger
 │   ├── save-progress/               /save-progress — persist work state
 │   ├── owasp-review/                Web security (OWASP Top 10:2025)

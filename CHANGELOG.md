@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-04-06
+
+### Added
+- Orchestrator hardening: Coordinator Mode, Pipeline Gates, Stall Detection & Budget Limits, Fallback Strategy
+- `/post-session` skill — post-pipeline extraction and lesson recording
+- Agent improvements: WebFetch added to Tester, `memory: project` to PR Reviewer, WebSearch to Security/Infra/Implementer, NotebookEdit to Implementer/Tester
+
+### Fixed
+- VS Code variant manifests not syncing version from package.json
+- VS Code Copilot extension installing skills/hooks at project root instead of .github/
+- Root plugin.json files not auto-syncing version on build
+- Distribution packages missing `consolidate` and `post-session` skills
+
 ## [1.2.0] - 2026-04-05
 
 ### Added

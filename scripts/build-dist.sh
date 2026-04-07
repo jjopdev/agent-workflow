@@ -345,6 +345,10 @@ main() {
 
   local errors=0
 
+  # Sync version into root plugin manifests (source of truth for installs)
+  sync_version "$ROOT/.claude-plugin/plugin.json"
+  sync_version "$ROOT/plugin.json"
+
   case "$TARGET" in
     claude-code)
       build_claude_code || errors=$((errors + 1))

@@ -1,6 +1,6 @@
 # Work In Progress
 
-> Last saved: 2026-04-08 (session 9 final — VS Code Copilot)
+> Last saved: 2026-04-08 (session 10 — VS Code Copilot)
 
 ## Task
 Comprehensive plan for fixing plugin installation, aligning agents/skills/hooks across platforms, cleaning project structure, and optimizing distribution — 9 PRs planned, 0 implemented.
@@ -45,7 +45,7 @@ Comprehensive plan for fixing plugin installation, aligning agents/skills/hooks 
 - [ ] Fix cross-platform skill paths (consolidate, save-progress, lesson)
 - [ ] Decide if Stop hooks go in production hooks.json
 
-## Key Findings This Session
+## Key Findings (sessions 1-9)
 
 ### Agent tools (Subtask D)
 - YAML frontmatter tools: CORRECT per platform, VS Code auto-maps
@@ -72,7 +72,7 @@ Comprehensive plan for fixing plugin installation, aligning agents/skills/hooks 
 
 ## Key Files
 - `.github/tasks/todo.md` — master plan with 9 PRs, Subtasks A-H
-- `skills/workflow-knowledge/lessons.md` — 12 lessons accumulated
+- `skills/workflow-knowledge/lessons.md` — 11 lessons accumulated
 - `src/extension.js` — bug in installClaudeVariant() (L55-68)
 - `scripts/build-dist.sh` — build logic per variant
 - `agents/*.md` — Claude agents (need MCP tools)
@@ -87,16 +87,19 @@ Comprehensive plan for fixing plugin installation, aligning agents/skills/hooks 
 5. **SETUP.md vs INSTALL.md**: merge or keep separate?
 6. **Staff Engineer consolidation**: merge PR6+PR8+PR9 into fewer PRs?
 
-## Next Steps (for tomorrow)
+## Next Steps
 1. Make decisions on pending items (especially D and H)
 2. Start Fase 1: PR1, PR2, PR5, PR6 in parallel
 3. Consider Staff Engineer advice: consolidate PR6+PR8+PR9
 
 ## Context
 - **9 PRs, 2 phases**: Fase 1 (PR1,2,5,6 parallel) → Fase 2 (PR3,4,7,8,9 sequential)
-- **4 commits unpushed**: `08d8ec3`, `fd1a8d3`, `8cb2ccf`, `e556021` + this fix commit
-- **11 lessons** recorded across sessions (1 duplicate removed)
-- **Session memory** updated with agent tools + skills audit findings
+- **All pushed** to origin at `6c32a7d` — working tree clean
+- **11 lessons** recorded across sessions (no duplicates)
+- **Branch**: `main`
+
+## Resume
+Read this file → then `.github/tasks/todo.md` for detailed plans per subtask.
 
 ## Branch
 `main` — last pushed: `9a961d9`, local HEAD: pending

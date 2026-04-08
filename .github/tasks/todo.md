@@ -305,7 +305,7 @@ Plugins se instalan en `~/.copilot/installed-plugins/`. No copian al workspace.
 
 ### Estrategia de PRs y orden de ejecución
 
-**4 PRs separados** — cada uno con scope claro (principio: "Separate refactoring from feature changes"):
+**5 PRs separados** — cada uno con scope claro (principio: "Separate refactoring from feature changes"):
 
 | PR | Scope | Depende de | Branch |
 |---|---|---|---|
@@ -313,10 +313,11 @@ Plugins se instalan en `~/.copilot/installed-plugins/`. No copian al workspace.
 | **PR2** | Subtarea A: Unificar archivos operacionales | Nada (independiente) | `refactor/unify-operational-files` |
 | **PR3** | Subtarea B: Cleanup `.claude/` + memory→rules | PR2 (progress.md ya movido) | `cleanup/claude-dead-files` |
 | **PR4** | Subtarea C: Wire summaries.md triggers | PR2 (paths unificados) | `feat/wire-summaries-triggers` |
+| **PR5** | Subtarea D: Alinear tools de agents por plataforma | Nada (independiente) | `fix/agent-tools-per-platform` |
 
-**Orden:** PR1 y PR2 en paralelo. PR3 después de PR2. PR4 después de PR2.
+**Orden:** PR1, PR2 y PR5 en paralelo. PR3 y PR4 después de PR2.
 
-**Sin conflicto:** PR1 toca `extension.js` + manifests. PR2 toca paths/references. PR3 toca `.claude/` cleanup. PR4 toca orchestrator/scribe agent logic.
+**Sin conflicto:** PR1 toca `extension.js` + manifests. PR2 toca paths/references. PR3 toca `.claude/` cleanup. PR4 toca orchestrator/scribe logic. PR5 toca agent body text + frontmatter tools.
 
 ---
 
@@ -449,3 +450,110 @@ Los archivos operacionales (lessons, todo, progress, summaries) están fragmenta
 2. Si un pipeline modifica `src/auth/handler.ts` y existe summary active para `src/auth/`, se marca stale automáticamente
 3. Claude Code bootstrapea summaries.md si no existe
 4. Post-Pipeline Extraction incluye summaries además de lessons
+
+---
+
+### Subtarea D: Alinear herramientas de agents por plataforma — 2026-04-08
+
+#### Problema
+
+Los agents Claude Code (`agents/*.md`) y los agents Copilot/VS Code (`.github/agents/*.agent.md`) tienen **cuerpos (body) completamente diferentes** en cuánto a herramientas referenciadas, capabilities, y MCP integrations.
+
+Cuando un agent Claude termina cargado en VS Code (via VSIX Claude variant o plugin con detección Claude), funciona pero con capacidades degradadas.
+
+#### Auditoría: diferencias por agent
+
+| Aspecto | Claude agents (`agents/`) | Copilot agents (`.github/agents/`) | ¿Gap? |
+|---|---|---|---|
+| **Frontmatter tools** | `Read, Edit, Bash, Grep, Glob...` | `read/readFile, edit/editFiles, execute/runInTerminal...` | ✅ VS Code mapea automáticamente |
+| **Body tool references** | `"Use Grep to..."` (natural language) | `#tool:search/textSearch` (explicit syntax) | ⚠️ Funcional pero impreciso en VS Code |
+| **MCP tools (context7)** | ❌ No referenciados | ✅ `context7/resolve-library-id`, `context7/query-docs` | 🔴 Gap real — Claude agents no consultan docs |
+| **MCP tools (shadcn)** | ❌ No referenciados | ✅ `shadcn/add_component` | 🔴 Gap real |
+| **MCP tools (snyk)** | ❌ No referenciados | ✅ `snyk/snyk_code_scan`, `snyk_sca_scan`, `snyk_iac_scan` | 🔴 Gap real — Security agent sin Snyk |
+| **MCP tools (playwright)** | ❌ No referenciados | ✅ `playwright/browser_*` | 🔴 Gap real — Tester/Security sin browser |
+| **VS Code specifics** | ❌ Sin `read/problems` | ✅ Lint errors inline | 🟡 Reducido |
+| **VS Code specifics** | ❌ Sin `search/usages` | ✅ Find references | 🟡 Reducido |
+| **VS Code specifics** | ❌ Sin `vscode/memory`, `vscode/askQuestions` | ✅ Orchestrator los usa | 🟡 Reducido |
+| **VS Code specifics** | ❌ Sin `execute/testFailure`, `execute/runTests` | ✅ Tester los usa | 🟡 Reducido |
+| **Task management** | `TaskCreate/Update/List/Get` | `todo` | ✅ VS Code mapea |
+| **Model selection** | `model: sonnet` (Claude Code format) | `model: ['GPT-5.4 (copilot)', ...]` (VS Code format) | ✅ Cada plataforma usa su formato |
+| **Handoff protocol** | No tiene YAML handoffs | `handoffs:` con labels, agents, prompts | 🟡 Claude delega con `Agent` tool |
+| **Context loading** | Genérico ("Read the task") | Estructurado ("Read SKILLS: from handoff") | 🟡 Diferente calidad de guidance |
+
+#### Root cause
+
+Los agents se mantienen como **2 bases de código independientes**: `agents/` (Claude Code) y `.github/agents/` (Copilot/VS Code). Cuando se cambia uno, no se propaga al otro. No hay mecanismo automático de sincronización.
+
+El `build-dist.sh` solo copia — no transforma. Así que:
+- `packages/claude-code/agents/` = copia exacta de `agents/`
+- `packages/copilot-cli/agents/` = copia exacta de `.github/agents/`
+- VSIX Claude variant = empaqueta `agents/` directamente
+- VSIX Copilot variant = staging: copia `.github/agents/` → `agents/` temporal
+
+#### 3 escenarios donde Claude agents terminan en VS Code
+
+| # | Escenario | ¿Qué agents se cargan? | Resultado |
+|---|---|---|---|
+| 1 | VSIX Claude variant | Claude agents en `.claude/agents/` | ⚠️ Funciona pero sin MCP tools, sin VS Code specifics |
+| 2 | Plugin "Install from Source" | VS Code detecta `.claude-plugin/` → Claude format | ⚠️ Carga desde `agents/` default → Claude agents en VS Code |
+| 3 | VSIX Copilot variant | Copilot agents en `.github/agents/` | ✅ Full VS Code tools |
+
+#### Docs oficiales relevantes
+
+> **"VS Code maps Claude-specific tool names to the corresponding VS Code tools."**
+> — [VS Code Customization docs](https://code.visualstudio.com/docs/copilot/customization/custom-agents)
+
+> **"If a given tool is not available when using the custom agent, it is ignored."**
+
+Esto significa:
+- ✅ Frontmatter `tools:` se mapean correctamente (Read → read/readFile, etc.)
+- ⚠️ Tools que no tienen mapeo (TaskCreate?) se ignoran silenciosamente
+- ❌ Body text NO se transforma — el modelo recibe "Use Grep" sin context de que el tool real es `search/textSearch`
+- ❌ MCP tools (context7, shadcn, snyk, playwright) NO están en agents Claude → nunca se usan aunque estén disponibles en VS Code
+
+#### Opciones de fix
+
+**Opción A: Mantener 2 bases independientes + proceso de sync manual**
+- Pros: cada plataforma optimizada para su runtime
+- Cons: drift inevitable, más mantenimiento, ya está desincronizado
+
+**Opción B: Single source → Copilot format, transform para Claude Code**
+- `.github/agents/*.agent.md` = fuente canónica
+- `build-dist.sh` transforma a Claude format: strip YAML arrays → comma-separated, rename tools, strip MCP refs, strip model arrays
+- Pros: single source of truth, cambios se propagan automáticamente
+- Cons: transform complejo, puede perder nuance por plataforma
+
+**Opción C: Single source → Claude format (simpler), VS Code mapea**
+- `agents/*.md` = fuente canónica (Claude format)
+- VS Code ya mapea Claude tool names automáticamente
+- `build-dist.sh` transforma a Copilot format para `.github/agents/`: add YAML arrays, add MCP tools, add `#tool:` syntax
+- Pros: fuente simple, VS Code compatibility nativa
+- Cons: pierde MCP tool guidance en la fuente canónica
+
+**Opción D (recomendada): Unificar body, frontmatter por plataforma**
+- Body (instrucciones) = compartido en un template o include
+- Frontmatter (tools, model, handoffs) = específico por plataforma
+- Body usa syntax neutral: ni `#tool:search/codebase` ni "Use Grep" — sino "Search the codebase for...", "Verify APIs in documentation"
+- Cada `build-dist.sh` target inyecta el frontmatter correcto + agrega platform-specific tool hints al body
+- Pros: zero drift en instrucciones, tools optimizados por plataforma
+- Cons: requiere template system en build
+
+#### Decisión: PENDIENTE
+
+> ⚠️ Esta decisión requiere input del usuario antes de implementar. Las 4 opciones tienen trade-offs significativos.
+
+#### Fix inmediato (independiente de la decisión arquitectural)
+
+Mientras se decide la opción, hay fixes que ya se pueden hacer:
+
+- [ ] **Claude agents: agregar MCP tools al frontmatter** — `context7/resolve-library-id`, `context7/query-docs` para Implementer, Planner, Infra, Tester. Si VS Code los mapea y Claude Code los ignora, no hay riesgo.
+- [ ] **Claude agents: agregar body hints para docs lookup** — agregar "Verify APIs and library usage with documentation tools when uncertain" (neutral, funciona en ambas plataformas)
+- [ ] **Security agent Claude: agregar Snyk/Playwright refs** — las tools se ignoran si no están disponibles
+- [ ] **Verificar mapeo VS Code** — confirmar qué Claude tools mapean y cuáles se ignoran silenciosamente
+- [ ] **Propagar a distribution copies** — `packages/claude-code/agents/` y `packages/copilot-cli/agents/`
+
+#### Acceptance criteria (fix inmediato)
+1. Claude agents con MCP tools en frontmatter → al cargar en VS Code, context7 aparece como tool disponible
+2. Claude agent Security con snyk/playwright en frontmatter → Snyk scan funciona si extensión instalada
+3. Body hints neutros → funciona en Claude Code CLI Y VS Code sin confusión
+4. Claude Code CLI no se rompe → tools desconocidos se ignoran silenciosamente

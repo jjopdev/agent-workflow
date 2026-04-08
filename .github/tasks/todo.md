@@ -305,17 +305,18 @@ Plugins se instalan en `~/.copilot/installed-plugins/`. No copian al workspace.
 
 ### Estrategia de PRs y orden de ejecución
 
-**3 PRs separados** — cada uno con scope claro (principio: "Separate refactoring from feature changes"):
+**4 PRs separados** — cada uno con scope claro (principio: "Separate refactoring from feature changes"):
 
 | PR | Scope | Depende de | Branch |
 |---|---|---|---|
 | **PR1** | Fix Plugin Installation Paths (Steps 0-6) | Nada | `fix/plugin-install-paths` |
 | **PR2** | Subtarea A: Unificar archivos operacionales | Nada (independiente) | `refactor/unify-operational-files` |
 | **PR3** | Subtarea B: Cleanup `.claude/` + memory→rules | PR2 (progress.md ya movido) | `cleanup/claude-dead-files` |
+| **PR4** | Subtarea C: Wire summaries.md triggers | PR2 (paths unificados) | `feat/wire-summaries-triggers` |
 
-**Orden:** PR1 y PR2 en paralelo. PR3 después de PR2.
+**Orden:** PR1 y PR2 en paralelo. PR3 después de PR2. PR4 después de PR2.
 
-**Sin conflicto:** PR1 toca `extension.js` + manifests. PR2 toca skills/hooks references. Archivos distintos.
+**Sin conflicto:** PR1 toca `extension.js` + manifests. PR2 toca paths/references. PR3 toca `.claude/` cleanup. PR4 toca orchestrator/scribe agent logic.
 
 ---
 
@@ -354,7 +355,7 @@ Los archivos operacionales (lessons, todo, progress, summaries) están fragmenta
 - [ ] Actualizar hooks que referencian `.claude/progress.md`
 - [ ] Actualizar packages Claude Code y Copilot CLI (copias del build)
 
-> **Dependencia:** PR3 (Subtarea B) requiere que este PR esté mergeado primero — `progress.md` se mueve aquí y se elimina allá.
+> **Dependencia:** PR3 (Subtarea B) y PR4 (Subtarea C) requieren que este PR esté mergeado primero.
 
 ---
 
@@ -394,3 +395,57 @@ Los archivos operacionales (lessons, todo, progress, summaries) están fragmenta
   - **Justificación:** `~/.claude/projects/<project>/memory/` es auto-managed por Claude Code en HOME, NO en el repo. Poner archivos en `.claude/memory/` del repo no tiene efecto — Claude Code nunca los lee de ahí.
 - [ ] Verificar que `build-dist.sh` NO empaqueta `agent-memory/` ni `memory/` en los dist packages
 - [ ] Verificar `.gitignore` tiene `settings.local.json`
+
+---
+
+### Subtarea C: Cablear triggers de `summaries.md` (dead code funcional)
+
+#### Problema
+`summaries.md` es un caché de navegación del codebase diseñado para evitar re-explorar módulos entre sesiones. El Scribe tiene las operaciones (`add_summary`, `mark_stale`), el Orchestrator lo lee al inicio, pero **nadie triggerea las escrituras**. Es dead code funcional en TODAS las plataformas.
+
+#### Auditoría cruzada
+
+| Plataforma | Bootstrap (crear) | Write (trigger) | Read | Post-Pipeline |
+|---|---|---|---|---|
+| Copilot (VS Code/CLI) | ✅ Orchestrator L63 | ⚠️ Scribe tiene action, nadie lo llama | ✅ Session start | ❌ Solo lessons |
+| Claude Code CLI | ❌ No hay bootstrap | ❌ No hay Scribe | ⚠️ Implícito via skill | ❌ Solo lessons |
+| VS Code Extension | Depende del variant | Sin trigger | Depende del variant | N/A |
+
+#### 6 issues identificados
+
+| # | Severidad | Issue |
+|---|---|---|
+| 1 | 🔴 | Path fragmentado: `.github/tasks/` vs `skills/workflow-knowledge/` (se resuelve en PR2) |
+| 2 | 🔴 | Claude Code `agents/orchestrator.md` no bootstrapea summaries.md |
+| 3 | 🔴 | Claude Code no tiene Scribe — no hay mecanismo para escribir summaries |
+| 4 | 🟡 | Sin trigger explícito para `add_summary` en Orchestrator (Copilot ni Claude Code) |
+| 5 | 🟡 | Sin trigger explícito para `mark_stale` cuando código cambia |
+| 6 | 🟡 | Post-Pipeline Extraction ignora summaries — solo extrae lessons |
+
+#### Fix — triggers a cablear
+
+**Trigger 1: `add_summary` después de explorar un módulo**
+- [ ] Orchestrator Copilot (`.github/agents/orchestrator.agent.md`): agregar regla en pipeline — *"Después de que Explore/Reviewer analice un módulo, delega `add_summary` al Scribe con paths y hallazgos"*
+- [ ] Orchestrator Claude Code (`agents/orchestrator.md`): agregar Post-Pipeline step — *"Después del pipeline, si se exploró un módulo nuevo, registrar summary"*
+- [ ] Definir qué cuenta como "módulo" → directorio con 3+ archivos que fue analizado durante el pipeline
+
+**Trigger 2: `mark_stale` cuando código en un área summarizada cambia**
+- [ ] Orchestrator Copilot: agregar regla — *"Al inicio de cada pipeline, revisar ARTIFACTS del Implementer. Si algún path coincide con un summary active, delegar `mark_stale` al Scribe"*
+- [ ] Orchestrator Claude Code: mismo trigger en Post-Pipeline Extraction
+
+**Trigger 3: Post-Pipeline Extraction**
+- [ ] Ambos orchestrators: expandir Post-Pipeline Extraction para incluir — *"Si se exploró código nuevo durante el pipeline (Explore, Reviewer, Planner), extraer module summary y delegar `add_summary`"*
+
+**Bootstrap Claude Code:**
+- [ ] `agents/orchestrator.md`: agregar session start step — *"Si `summaries.md` no existe, crear con header mínimo"*
+- [ ] Decidir mecanismo de escritura para Claude Code: ¿agregar Scribe como subagent? ¿O el orchestrator escribe directo con ultrathink?
+
+**Distribution copies:**
+- [ ] Propagar cambios a `packages/copilot-cli/agents/orchestrator.agent.md`
+- [ ] Propagar cambios a `packages/claude-code/agents/orchestrator.md`
+
+#### Acceptance criteria
+1. Después de un pipeline que explora `src/auth/`, el orchestrator delega `add_summary` → summaries.md tiene entrada `### [AREA] src/auth/ ...`
+2. Si un pipeline modifica `src/auth/handler.ts` y existe summary active para `src/auth/`, se marca stale automáticamente
+3. Claude Code bootstrapea summaries.md si no existe
+4. Post-Pipeline Extraction incluye summaries además de lessons

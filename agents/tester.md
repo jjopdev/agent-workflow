@@ -14,6 +14,16 @@ tools:
   - Grep
   - WebFetch
   - NotebookEdit
+  # Documentation (testing framework APIs)
+  - context7/resolve-library-id
+  - context7/query-docs
+  # E2E browser automation (when available)
+  - playwright/browser_navigate
+  - playwright/browser_click
+  - playwright/browser_fill_form
+  - playwright/browser_take_screenshot
+  - playwright/browser_console_messages
+  - playwright/browser_wait_for
 ---
 
 # Tester — Project Tests
@@ -36,6 +46,7 @@ You write and run tests for the project.
 1. Read the implemented code and its acceptance criteria
 2. Discover the project's testing framework by reading `package.json`, `Cargo.toml`, `go.mod`, etc.
 3. Use WebFetch or existing test files as reference for testing framework APIs
+  - Use browser automation tools when available for E2E test verification
 4. Write tests using Edit (for existing test files) or Write (for new test files) that cover:
    - The happy path
    - At least 2 edge cases

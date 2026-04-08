@@ -54,10 +54,9 @@ function detectVariant(extensionRoot) {
 
 function installClaudeVariant(extensionRoot, targetRoot) {
   const items = [
-    { src: 'agents', dest: 'agents' },
-    { src: 'skills', dest: 'skills' },
-    { src: 'hooks/hooks.json', dest: 'hooks/hooks.json' },
-    { src: 'settings.json', dest: 'settings.json' }
+    { src: 'agents', dest: '.claude/agents' },
+    { src: 'skills', dest: '.claude/skills' },
+    { src: 'rules', dest: '.claude/rules' }
   ];
 
   for (const { src, dest } of items) {
@@ -66,6 +65,34 @@ function installClaudeVariant(extensionRoot, targetRoot) {
     if (!fs.existsSync(srcPath)) continue;
     copyEntry(srcPath, destPath);
   }
+
+  installClaudeSettings(extensionRoot, targetRoot);
+}
+
+function installClaudeSettings(extensionRoot, targetRoot) {
+  const hooksSrc = path.join(extensionRoot, 'hooks', 'hooks.json');
+  const settingsDest = path.join(targetRoot, '.claude', 'settings.json');
+
+  let incomingHooks = {};
+  if (fs.existsSync(hooksSrc)) {
+    incomingHooks = JSON.parse(fs.readFileSync(hooksSrc, 'utf8'));
+  }
+
+  fs.mkdirSync(path.dirname(settingsDest), { recursive: true });
+
+  const existing = fs.existsSync(settingsDest)
+    ? JSON.parse(fs.readFileSync(settingsDest, 'utf8'))
+    : {};
+
+  // Merge hooks arrays per event key — do not replace existing handlers
+  const existingHooks = existing.hooks || {};
+  const mergedHooks = Object.assign({}, existingHooks);
+  for (const [event, handlers] of Object.entries(incomingHooks)) {
+    mergedHooks[event] = [...(mergedHooks[event] || []), ...handlers];
+  }
+
+  const output = Object.assign({}, existing, { hooks: mergedHooks });
+  fs.writeFileSync(settingsDest, JSON.stringify(output, null, 2), 'utf8');
 }
 
 function installCopilotVariant(extensionRoot, targetRoot) {

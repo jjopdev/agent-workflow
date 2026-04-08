@@ -85,7 +85,7 @@ for manifest in "${MANIFESTS[@]}"; do
     log_error "Manifest not found: $manifest (skipping)"
     continue
   fi
-  sed -i "s/\"version\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"version\": \"$NEW_VERSION\"/" "$filepath"
+  sed -i '' "s/\"version\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"version\": \"$NEW_VERSION\"/" "$filepath"
   log_ok "Updated $manifest → $NEW_VERSION"
 done
 
@@ -101,7 +101,7 @@ else
   # Insert new entry after the header block (line starting with "## [")
   TEMPLATE="## [$NEW_VERSION] - $TODAY\n\n### Added\n\n### Changed\n\n### Fixed\n"
   # Find the first release heading and insert before it
-  sed -i "0,/^## \[/s|^## \[|${TEMPLATE}\n## [|" "$CHANGELOG"
+  sed -i '' "0,/^## \[/s|^## \[|${TEMPLATE}\n## [|" "$CHANGELOG"
   log_ok "Added CHANGELOG.md template for $NEW_VERSION"
 fi
 

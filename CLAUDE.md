@@ -6,7 +6,7 @@
 - Primary sources of truth: `agents/`, `skills/`, `.claude/rules/`, and root Markdown files
 - Prefer minimal, focused changes
 - Do not assume there is a runnable app unless such files exist
-- Documentation may be in Spanish; code-like examples in English when clearer
+- Documentation is in English
 
 ## Plugin Distribution
 This repo is distributable as a plugin for Claude Code and Copilot CLI:

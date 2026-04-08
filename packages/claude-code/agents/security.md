@@ -3,16 +3,24 @@ name: Security
 description: Performs OWASP Top 10:2025 security review for web projects with optional Snyk scans — finds and reports vulnerabilities but never fixes them.
 model: opus
 skills:
-  - workflow-knowledge
-  - owasp-review
+   - workflow-knowledge
+   - owasp-review
 memory: project
 tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
-  - WebFetch
-  - WebSearch
+   - Read
+   - Glob
+   - Grep
+   - Bash
+   - WebFetch
+   - WebSearch
+   # Snyk (automated vulnerability scanning)
+   - snyk/snyk_code_scan
+   - snyk/snyk_sca_scan
+   - snyk/snyk_iac_scan
+   # Browser (security header verification)
+   - playwright/browser_navigate
+   - playwright/browser_network_requests
+   - playwright/browser_console_messages
 ---
 
 # Security — OWASP Top 10:2025 Review
@@ -83,6 +91,8 @@ If project security context documentation EXISTS:
 5. If nothing new was discovered, omit the context update
 
 ## Snyk integration (optional)
+
+When automated vulnerability scanning tools are available (Snyk extensions, CLI), prefer them over manual grep-based review for dependency and code scanning.
 
 Before running scans, check if Snyk CLI is available:
 
@@ -175,6 +185,8 @@ For each category, review the changed code AND its surrounding context:
 - [ ] Error handling does not leak sensitive information
 
 ## Security headers verification
+
+When a browser automation tool is available, use it to navigate to the target URL and verify security headers directly instead of relying on curl.
 
 When the app is running, verify security headers:
 

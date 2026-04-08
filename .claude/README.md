@@ -63,7 +63,7 @@ TaskCreate({
 
 #### 2. Lessons File (Persistent Learning)
 
-`skills/workflow-knowledge/lessons.md` — survives between sessions
+`.github/tasks/lessons.md` — survives between sessions
 
 ```markdown
 ## [SECURITY] OAuth callback state parameter validation
@@ -82,8 +82,8 @@ Why: OWASP A01:2021 — Broken Access Control
 
 1. **Describe the problem** to Claude Code (any language, natural)
    ```
-   El cliente reporta error 500 en login con Google,
-   parece que es en el callback de OAuth
+   The client reports a 500 error on Google login,
+   appears to be in the OAuth callback
    ```
 
 2. **Claude investigates** (quick path) or **suggests planning** (complex path)
@@ -134,7 +134,7 @@ Located in `skills/`. Each skill is a folder with `SKILL.md`:
 **Shared with Copilot:**
 - `codebase-navigator/` — Project structure discovery
 - `github-cli/` — GitHub CLI reference
-- `interface-design/` — UI/UX design system
+- `interface-design/` — UI/UX design system (source only, not distributed)
 - `owasp-review/` — Web security (OWASP Top 10)
 - `owasp-mcp-review/` — MCP/agent security
 - `prompt-refiner/` — Normalize messy input
@@ -188,7 +188,7 @@ Add your personal overrides:
 When you stop Claude Code (`Ctrl+C`), the hook checks:
 > "Was there a user correction or failed attempt?"
 
-**If YES:** Prompts to record lesson in `skills/workflow-knowledge/lessons.md`
+**If YES:** Prompts to record lesson in `.github/tasks/lessons.md`
 **If NO:** Stops cleanly
 
 This ensures important discoveries are captured automatically.
@@ -200,7 +200,7 @@ This ensures important discoveries are captured automatically.
 - `settings.json` — Shared security & permissions
 - `rules/tech-lead.md` — Universal quality principles
 - `rules/planning.md` — Task decomposition guidelines
-- `../skills/workflow-knowledge/lessons.md` — Accumulated learnings
+- `.github/tasks/lessons.md` — Accumulated learnings
 - `../agents/implementer.md` — Implementer instructions
 - `../agents/security.md` — Security review protocol
 

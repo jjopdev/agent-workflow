@@ -17,7 +17,7 @@ This repository is a workflow and agent-configuration project, not an applicatio
 
 ## Repository conventions
 
-- Documentation may be in Spanish; code-like examples and structural labels may remain in English when clearer.
+- Documentation is in English.
 - Prefer updating existing workflow files over adding new ones unless a new file has a clear purpose.
 - If a rule only makes sense for a stack not present in this repository, do not introduce it.
 

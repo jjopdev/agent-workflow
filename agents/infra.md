@@ -14,6 +14,9 @@ tools:
   - Grep
   - WebFetch
   - WebSearch
+  # Documentation (cloud service docs)
+  - context7/resolve-library-id
+  - context7/query-docs
 ---
 
 # Infra — Infrastructure and Deploy
@@ -35,6 +38,7 @@ You manage the project's infrastructure and deploy configuration.
 - Read `.env.example` or equivalent for documented environment variables
 - Search for existing infra config files (CI/CD, Docker, cloud config, Terraform, etc.)
 - Identify the project's cloud provider and deploy tools
+- Consult documentation tools for cloud service or infrastructure tool docs when available
 
 ## Process
 

@@ -161,8 +161,8 @@ Antes de fixear, confirmar el estado real de cada target:
 
 **Decisión cerrada — hooks format:** `.claude/settings.json` con formato wrapped. Es la ÚNICA ruta de discovery workspace-level para Claude format (docs oficiales). Si el archivo ya existe en el workspace, leer y hacer merge del key `hooks` sin sobrescribir permissions ni otros settings.
 
-- [ ] Actualizar `installClaudeVariant()` en `src/extension.js` con paths corregidos
-- [ ] Implementar merge-safe para hooks en `.claude/settings.json` existente
+- [x] Actualizar `installClaudeVariant()` en `src/extension.js` con paths corregidos
+- [x] Implementar merge-safe para hooks en `.claude/settings.json` existente
 
 #### Step 2: Completar manifest de Claude Code plugin
 
@@ -174,8 +174,8 @@ Agregar `agents` y `skills` al `.claude-plugin/plugin.json`:
   "hooks": "./hooks/hooks.json"
 }
 ```
-- [ ] Actualizar `.claude-plugin/plugin.json` con paths explícitos
-- [ ] Actualizar `packages/claude-code/.claude-plugin/plugin.json` (copia del build)
+- [x] Actualizar `.claude-plugin/plugin.json` con paths explícitos
+- [x] Actualizar `packages/claude-code/.claude-plugin/plugin.json` (copia del build)
 
 #### Step 3: Verificar hooks format por plataforma
 
@@ -187,9 +187,8 @@ Los hooks tienen 2 formatos:
 
 | Archivo | Formato actual | Formato correcto | ¿Fix? |
 |---|---|---|---|
-| `hooks/hooks.json` | flat | flat (template Copilot) | ✅ OK |
-| `hooks/hooks.dev.json` | wrapped | wrapped (Claude dev) | ✅ OK |
-| `packages/claude-code/hooks/hooks.json` | wrapped | wrapped (Claude plugin) | ✅ OK |
+| `hooks/hooks.json` | flat | flat (hooks distribuidos compartidos) | ✅ OK |
+| `packages/claude-code/hooks/hooks.json` | flat | flat (Claude plugin package) | ✅ Build output |
 | `packages/copilot-cli/hooks/hooks.json` | flat | flat (Copilot plugin) | ✅ OK |
 | `.github/hooks/hooks.json` (VSIX Copilot) | flat | flat (workspace Copilot) | ✅ OK |
 | `.claude/settings.json` (VSIX Claude) | N/A — no existe | wrapped `{"hooks":{}}` | 🔧 Step 1 lo crea |
@@ -677,7 +676,6 @@ Cada método de instalación debe entregar SOLO los archivos que le corresponden
 | `skills/` (completo) | ✅ | ✅ | ✅ | ✅ | Compartido, universal |
 | `skills/*/evals/` | ❌ | ❌ | ❌ | ❌ | Solo desarrollo (PR6 lo excluye) |
 | `hooks/hooks.json` | ✅ | ✅ | ✅ | ✅ | Compartido |
-| `hooks/hooks.dev.json` | ❌ | ❌ | ❌ | ❌ | Solo desarrollo |
 | `settings.json` | ✅ | ✅ | ❌ | ❌ | Solo CLI plugins |
 | `.claude-plugin/plugin.json` | ✅ | ❌ | ❌ | ❌ | Solo Claude Code |
 | `plugin.json` (root) | ❌ | ✅ | ❌ | ❌ | Solo Copilot CLI |
@@ -694,7 +692,7 @@ Cada método de instalación debe entregar SOLO los archivos que le corresponden
 Estos archivos se distribuyen vacíos/template y se llenan durante el uso:
 - `skills/workflow-knowledge/lessons.md` — cada proyecto acumula sus propias lecciones
 - `skills/workflow-knowledge/summaries.md` — cada proyecto acumula su propio cache
-- `hooks/hooks.json` — hooks de producción, el proyecto puede agregar los suyos
+- `hooks/hooks.json` — hooks distribuidos con `SessionStart` y `Stop`; el proyecto puede extenderlos
 
 #### Plan de fix
 
@@ -772,7 +770,7 @@ agent-workflow/
 │   ├── instructions/        # Workspace instructions
 │   └── tasks/               # todo.md, lessons.md, progress.md, summaries.md
 ├── skills/                  # Shared skills (universal)
-├── hooks/                   # hooks.json (prod) + hooks.dev.json (dev)
+├── hooks/                   # hooks.json (shared distributed hooks)
 ├── src/                     # VS Code extension source
 ├── scripts/                 # Build tools
 ├── benchmark/               # Performance testing (dev only)
@@ -852,7 +850,7 @@ El plugin distribuye las 17 skills competas a todos los targets. Un dev que inst
 | `lesson` | Registrar lección manual (`/lesson`) | Comando usuario | Útil pero pipeline auto-registra via orchestrator |
 | `save-progress` | Guardar estado de sesión (`/save-progress`) | Comando usuario | Calidad de vida, no bloquea pipeline |
 | `consolidate` | Merge/cleanup de lessons.md (`/consolidate`) | Mantenimiento | Periódico, no por cada pipeline |
-| `post-session` | Extracción automática de lecciones post-sesión | Automatización | **Tiene Stop hook trigger en Claude Code** — cierra el ciclo de aprendizaje automático. NOTA: el trigger está roto (solo en `packages/claude-code/hooks/`, no en `hooks/hooks.json` distribuido). Si se arreglan hooks → reclasificar como REQUIRED |
+| `post-session` | Extracción automática de lecciones post-sesión | Automatización | **Tiene Stop hook trigger en `hooks/hooks.json` distribuido** — cierra el ciclo de aprendizaje automático. |
 | `review-pr` | Review de PR estilo Tech Lead (`/review-pr`) | Comando usuario | Útil pero no parte del pipeline principal |
 | `create-issue` | Crear GitHub Issue + doc Notion | Comando usuario | Depende de servicios externos (Notion) |
 | `prompt-refiner` | Normalizar input desordenado del usuario | UX helper | Nice-to-have, no crítico |
@@ -907,19 +905,20 @@ rlm-codebase-nav    ←── [codebase-navigator]
 
 > ⚠️ Requiere input del usuario. La auditoría confirma que **todas las 17 skills tienen referencia** — no hay huérfanas. La pregunta no es "cuáles sobran" sino "cuáles son opcionales para un dev que solo quiere el workflow pipeline".
 
-#### Hallazgo crítico: hooks de producción vacíos vs hooks con triggers
+#### Hallazgo resuelto: hooks distribuidos con triggers activos
 
 | Hook file | Stop hooks | ¿Se distribuye? | Estado |
 |---|---|---|---|
-| `hooks/hooks.json` (producción) | `"Stop": []` — **VACÍO** | ✅ Sí — es el que se instala | 🔴 No triggerea `/post-session --auto` |
-| `hooks/hooks.dev.json` (desarrollo) | 2 Stop hooks activos | ❌ Solo dev local | ✅ Funciona en dev |
-| `packages/claude-code/hooks/hooks.json` | 2 Stop hooks activos | ⚠️ Snapshot stale | ⚠️ Funciona pero desactualizado |
+| `hooks/hooks.json` (distribuido) | 2 Stop hooks activos | ✅ Sí — source of truth | ✅ Triggerea `/post-session --auto` |
+| `packages/claude-code/hooks/hooks.json` | 2 Stop hooks activos | ✅ Sí — sync desde build | ✅ Alineado |
+| `packages/copilot-cli/hooks/hooks.json` | 2 Stop hooks activos | ✅ Sí — sync desde build | ✅ Alineado |
 
-**Impacto:** El dev que instala el plugin NO recibe los Stop hooks que:
+**Resultado:** El dev que instala los plugins recibe los hooks que:
 1. Detectan correcciones/fallos → appenden lección automáticamente
 2. Detectan pipeline completion → invocan `/post-session --auto`
+3. Detectan trabajo en progreso al iniciar sesión
 
-**Fix requerido:** Decidir si los Stop hooks van en `hooks/hooks.json` distribuido o si se mantienen solo para dev. Si van en producción, `post-session` se reclasifica como REQUIRED.
+**Fix aplicado:** Option A unifica los hooks distribuidos en `hooks/hooks.json` y elimina el split dev/prod.
 
 #### Cross-platform: skills deben funcionar en todas las plataformas
 

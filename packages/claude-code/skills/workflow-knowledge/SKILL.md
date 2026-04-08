@@ -9,8 +9,8 @@ user-invocable: false
 This skill contains accumulated lessons and navigation summaries from the project workflow.
 
 ## Files
-- `lessons.md` — Error patterns, pitfalls, and cross-domain insights categorized by [DX], [ARCH], [SECURITY], [FAIL], [PERF]
-- `summaries.md` — Cached module exploration summaries (mark [STALE] when code changes)
+- `.github/tasks/lessons.md` — Error patterns, pitfalls, and cross-domain insights categorized by [DX], [ARCH], [SECURITY], [FAIL], [PERF]
+- `.github/tasks/summaries.md` — Cached module exploration summaries (mark [STALE] when code changes)
 
 ## When to Consult
 - At session start: scan lesson headers for relevant categories

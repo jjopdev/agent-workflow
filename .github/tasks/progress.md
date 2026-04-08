@@ -1,8 +1,5 @@
 # Work In Progress
 
-> Canonical location: `.github/tasks/progress.md`
-> This file is kept temporarily as a compatibility pointer. Update the canonical file instead.
-
 > Last saved: 2026-04-08 (session 11 — VS Code Copilot, final save)
 
 ## Task

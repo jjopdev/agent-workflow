@@ -7,7 +7,7 @@ argument-hint: "[optional description of current state]"
 
 # Save Progress
 
-Save the current work state to `.claude/progress.md` for resuming later.
+Save the current work state to `.github/tasks/progress.md` for resuming later.
 
 **Context:** $ARGUMENTS
 
@@ -22,7 +22,7 @@ Save the current work state to `.claude/progress.md` for resuming later.
    - **Key Files**: Files involved in the work
    - **Branch**: Current git branch if relevant
 
-2. Write to `.claude/progress.md` using this format:
+2. Write to `.github/tasks/progress.md` using this format:
 
 ```markdown
 # Work In Progress
@@ -55,7 +55,7 @@ Save the current work state to `.claude/progress.md` for resuming later.
 3. Confirm the save and show the session ID for `--resume`
 
 ## Rules
-- Overwrite `.claude/progress.md` if it already exists (each save is a fresh snapshot)
+- Overwrite `.github/tasks/progress.md` if it already exists (each save is a fresh snapshot)
 - Include the current git branch name
 - Keep descriptions concise — this is a reference, not documentation
 - Always show the session ID at the end so the user can resume

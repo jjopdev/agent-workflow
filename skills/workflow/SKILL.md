@@ -52,4 +52,4 @@ Runs AFTER both Test and Review complete. If the changes touch any of: auth, use
 ## Rules
 - If any step fails, stop and re-plan
 - After completion, summarize what was done and any lessons learned
-- Record any new lessons to skills/workflow-knowledge/lessons.md
+- Record any new lessons to `.github/tasks/lessons.md`

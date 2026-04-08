@@ -152,7 +152,7 @@ FORBIDDEN_FILES = [
     "GUIDE.md", "SETUP.md", "CHANGELOG.md", "INSTALL.md",
     "workflow-model-strategy.md", ".gitignore", ".git",
     "benchmark", "scripts", "node_modules", ".github/workflows",
-    ".vscodeignore", "hooks/hooks.dev.json",
+    ".vscodeignore",
 ]
 
 if os.path.isdir(DIST_DIR):

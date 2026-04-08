@@ -40,3 +40,42 @@
 ### [ARCH] Claude Code project memory lives at `~/.claude/projects/<project>/memory/` (user HOME) — `.claude/memory/` in the repo is NOT read by Claude Code at all, files there have zero effect
 ### [ARCH] Content that is functionally a behavioral rule ("always run full pipeline") belongs in `.claude/rules/` (Claude) or `.github/instructions/` (Copilot), NOT in memory files — even if originally captured as "feedback" during development
 ### [PLANNING] Plans must pass Staff Engineer pre-review before implementation: Step 0 (reproduce bugs first), all architectural decisions closed (no "TBD" in impl steps), concrete acceptance criteria (what command, what output), PR strategy with dependency graph, cross-dependencies between subtasks documented
+
+### [ARCH] Plugin manifests copy entire directories
+Claude Code and Copilot CLI `plugin.json` manifests have no `files` or include/exclude field, so the entire plugin directory is copied on install. To control distribution, use a git-subdir source, an npm source with a `files` whitelist, or a build script that assembles clean packages into a separate directory.
+
+### [ARCH] VSIX contents need explicit packaging control
+VS Code supports `.vscodeignore` as a blacklist and the `package.json` `files` field as a whitelist for controlling VSIX contents. Use `vsce package --ignoreFile` when you need multiple distribution variants from the same repo.
+
+### [DX] Prefer whitelists for multi-target plugin distribution
+When distributing a plugin repo to multiple targets, always use a whitelist approach and include only what each target needs. Whitelists are safer because new files cannot leak into distributions by accident.
+
+### [ARCH] Multi-variant VS Code builds should use per-variant ignore files
+For VS Code multi-variant builds from a single repo, use the `--ignoreFile` flag with separate `.vscodeignore.<variant>` files and swap `package.json` temporarily before `vsce package`. Always back up and restore the original files.
+
+### [DX] Distributed hooks should be the single source of truth
+Ship the real workflow automation in `hooks/hooks.json` so distributed packages inherit the same `SessionStart` and `Stop` behavior instead of relying on a separate dev-only hook file.
+
+### [ARCH] Canonical workflow sources should not be duplicated
+Eliminate canonical source duplication early. Duplicating `agents/` and `skills/` across root and `.claude/` creates maintenance burden and drift risk, so keep the single source of truth at the repository root and reserve `.claude/` for rules and settings.
+
+### [ARCH] MCP tools are not inferred from platform mappings
+VS Code auto-maps Claude frontmatter tool names such as `Read` and `Bash`, and silently ignores unknown tool names. MCP tools like `context7`, `shadcn`, `snyk`, and `playwright` must still be declared explicitly because the platform does not infer them from installed extensions.
+
+### [ARCH] Agent body text is not translated across platforms
+Agent body text is passed through as written. Instructions like "Use Grep to scan" remain literal in VS Code, so use platform-neutral wording such as "Search the codebase for..." or explicit per-platform tool syntax when a capability matters.
+
+### [DX] Body text drift creates real cross-platform capability gaps
+When agents support multiple platforms, frontmatter drift is usually manageable because tool names get mapped. Body text drift is more dangerous because missing MCP references in Claude agents prevent VS Code from using `context7`, `shadcn`, or `snyk` even when those tools are available.
+
+### [FAIL] Validate distributed hook payloads instead of stale snapshots
+Always inspect the exact `hooks/hooks.json` file that packages ship, or installed plugins may miss automations such as `/post-session --auto` even when local snapshots look correct.
+
+### [ARCH] Cross-platform skills need path resolution
+Skills that write files, such as `consolidate`, `save-progress`, and `lesson`, cannot hardcode platform-specific paths. They must detect the active platform or resolve paths centrally, or they will write to the wrong location.
+
+### [ARCH] Claude variant discovery uses platform-specific paths
+VS Code discovers the Claude variant under `.claude/agents/`, `.claude/skills/`, and `.claude/rules/`, not under root-level `agents/` or `skills/`. Hooks belong in `.claude/settings.json` with a wrapped `{"hooks": ...}` structure, and updates must merge into the existing file so workspace permissions are not overwritten.
+
+### [ARCH] Claude plugin manifests must declare agents and skills
+Claude Code CLI plugin manifests require explicit `agents` and `skills` fields in `plugin.json`. Without them, only `hooks` resolve and agents or skills go missing silently even when the folders exist on disk.

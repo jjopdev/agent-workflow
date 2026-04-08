@@ -13,10 +13,10 @@ Consolidate `lessons.md` and `summaries.md` by merging duplicates, grouping by c
 
 ## Target files
 
-| Platform | Lessons | Summaries |
-|----------|---------|-----------|
-| Claude Code | `skills/workflow-knowledge/lessons.md` | `skills/workflow-knowledge/summaries.md` |
-| Copilot | `.github/tasks/lessons.md` | `.github/tasks/summaries.md` |
+| File | Path |
+|------|------|
+| Lessons | `.github/tasks/lessons.md` |
+| Summaries | `.github/tasks/summaries.md` |
 
 ## Process
 

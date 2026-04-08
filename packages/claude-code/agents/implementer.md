@@ -15,6 +15,11 @@ tools:
   - WebFetch
   - WebSearch
   - NotebookEdit
+  # Documentation (verify APIs before implementing)
+  - context7/resolve-library-id
+  - context7/query-docs
+  # UI components (when project uses shadcn)
+  - shadcn/add_component
 ---
 
 # Implementer — Code Writing
@@ -36,6 +41,8 @@ You write code for the project. You have full access to reading, editing, creati
 - Use WebFetch to verify APIs and library usage when uncertain
 - Use WebSearch to discover relevant URLs (CVEs, docs, guides), then WebFetch to retrieve specific pages
 - Read project configuration files (package.json, tsconfig, Cargo.toml, go.mod, etc.) to know versions and conventions
+- Verify library APIs and usage with documentation tools before implementing unfamiliar patterns
+- When the project uses a component library (shadcn, etc.), use available component tools to add components correctly
 
 ## Process
 

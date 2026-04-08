@@ -6,14 +6,14 @@ This project supports **two independent workflows**. Choose ONE based on what yo
 
 Each target installs only the files it needs:
 
-**Claude Code** (39 files — agents, skills, hooks, settings) — run inside an active Claude Code session:
+**Claude Code** (30 files — agents, skills, hooks, settings) — run inside an active Claude Code session:
 
 ```
 /plugin marketplace add jjopdev/agent-workflow
 /plugin install agent-workflow@jjopdev-agent-workflow
 ```
 
-**GitHub Copilot CLI** (41 files — agents, skills, hooks, settings):
+**GitHub Copilot CLI** (31 files — agents, skills, hooks, settings):
 
 ```bash
 copilot plugin install jjopdev/agent-workflow:packages/copilot-cli
@@ -107,7 +107,7 @@ claude
 - Tasks exist only for this session
 
 **Between sessions (persistent learning):**
-- Lessons auto-recorded via stop hook in `skills/workflow-knowledge/lessons.md`
+- Lessons auto-recorded via stop hook in `.github/tasks/lessons.md`
 - Or manually: `/lesson [CATEGORY] description`
 
 ### Key Files
@@ -152,7 +152,7 @@ In the Copilot chat:
 
 ```
 @orchestrator Describe your task
-"El cliente reporta error 500 en Google login, parece ser en el callback OAuth"
+"The client reports a 500 error on Google login, appears to be in the OAuth callback"
 
 # Orchestrator analyzes, then delegates:
 @orchestrator Use /workflow to start the full pipeline
@@ -195,7 +195,7 @@ In the Copilot chat:
 | **Task tracking (live)** | TaskCreate (native) | Manual `.github/tasks/todo.md` |
 | **Lesson recording** | Auto stop hook | Manual via Scribe delegation |
 | **Cost model** | Opus/Sonnet/Haiku mix | GPT-5.4/Opus (premium) |
-| **Agents** | 6 + built-in helpers | 9 (Orchestrator, Planner, Scribe...) |
+| **Agents** | 7 + built-in helpers | 9 (Orchestrator, Planner, Scribe...) |
 | **Integration** | CLI + VS Code | VS Code only |
 | **Learning curve** | Steeper (RLM concepts) | Gentler (familiar agents) |
 | **Best for** | Complex multi-file features, cost-conscious teams | Quick bugs, existing Copilot users |

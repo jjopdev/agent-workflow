@@ -12,6 +12,10 @@ tools:
   - Grep
   - Bash
   - WebFetch
+  # Browser (visual review when app is running)
+  - playwright/browser_navigate
+  - playwright/browser_take_screenshot
+  - playwright/browser_console_messages
 ---
 
 # PR Reviewer — Pull Request Review
@@ -48,6 +52,7 @@ Then use Grep and Read to analyze the code.
 - Is the logic correct? Does it handle edge cases?
 - Are the types precise?
 - Are errors handled adequately?
+- When a browser tool is available, verify visual changes by navigating to the running app
 
 **Security (basic)**
 - Are inputs validated?

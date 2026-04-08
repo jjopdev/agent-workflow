@@ -40,8 +40,8 @@ bash scripts/build-dist.sh --target claude-code
 |---|---|
 | `.claude-plugin/plugin.json` | Plugin manifest |
 | `agents/` | 7 agent definitions (.md) — includes orchestrator |
-| `skills/` | 17 skill directories |
-| `hooks/hooks.json` | Hook template (empty, customizable) |
+| `skills/` | 16 skill directories |
+| `hooks/hooks.json` | Shared hook automation (SessionStart and Stop events) |
 | `settings.json` | Permissions and sandbox config |
 | `LICENSE` | MIT license |
 
@@ -92,8 +92,8 @@ bash scripts/build-dist.sh --target copilot-cli
 |---|---|
 | `plugin.json` | Plugin manifest |
 | `agents/` | 9 agent definitions (.agent.md) |
-| `skills/` | 17 skill directories |
-| `hooks/hooks.json` | Hook template (empty, customizable) |
+| `skills/` | 16 skill directories |
+| `hooks/hooks.json` | Shared hook automation (SessionStart and Stop events) |
 | `settings.json` | Permissions and sandbox config |
 | `LICENSE` | MIT license |
 
@@ -159,17 +159,7 @@ Distribute:
 
 ### Hooks
 
-All packages include an empty `hooks/hooks.json` template. To add custom hooks:
-
-```json
-{
-  "PreToolUse": [],
-  "PostToolUse": [],
-  "Notification": [],
-  "Stop": [],
-  "SessionStart": []
-}
-```
+All packages include the shared `hooks/hooks.json` automation with `SessionStart` and `Stop` events. Edit that file if you want to customize hook behavior after install.
 
 See the [Claude Code hooks documentation](https://code.claude.com/docs/en/hooks) for details.
 

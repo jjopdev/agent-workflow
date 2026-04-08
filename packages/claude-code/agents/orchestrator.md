@@ -121,10 +121,14 @@ Before delegating to the Security agent (opus — most expensive):
 After the final pipeline stage completes:
 1. Summarize the pipeline run: stages executed, findings by severity, any re-plans that occurred
 2. If any failures or corrections happened during the run, extract lessons
-3. Append new lessons to `skills/workflow-knowledge/lessons.md` with appropriate category tags
+3. Append new lessons to `.github/tasks/lessons.md` with appropriate category tags
+4. If any module or directory was explored during the pipeline (by Explore, Reviewer, or Planner), extract a brief summary and append it to `.github/tasks/summaries.md` using the format: `### [AREA] <name>` with Date, Status (active), Paths, Summary (2-4 lines), and Notes
+5. If any files were modified in an area that has an existing active summary in `.github/tasks/summaries.md`, mark that summary as `Status: stale`
 
 ## Learning System
-- At session start: read `skills/workflow-knowledge/lessons.md` headers
+- At session start: read `.github/tasks/lessons.md` headers
+- At session start: read `.github/tasks/summaries.md` for relevant area summaries to avoid redundant exploration
+- At session start: if `.github/tasks/summaries.md` has no module entries (only header/format template), note it's empty and fill it as modules are explored during the session
 - After any user correction: record a lesson in memory AND append to lessons.md
 - Before delegating: filter relevant lessons by category for the subagent
 - Categories: [DX], [ARCH], [SECURITY], [FAIL], [PERF]

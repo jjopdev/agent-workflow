@@ -142,7 +142,7 @@ Every code change runs the full pipeline. Test and Review run in parallel after 
 | Command | Description |
 |---------|-------------|
 | `/workflow <task>` | Full pipeline: Plan → Implement → [Test ∥ Review] → Security |
-| `/save-progress [state]` | Save current plan and progress to `.claude/progress.md` for session resumption |
+| `/save-progress [state]` | Save current plan and progress to `.github/tasks/progress.md` for session resumption |
 | `/create-issue <summary>` | Document to Notion + create GitHub Issue |
 | `/review-pr <number>` | Review a PR and post results on GitHub |
 | `/lesson [CATEGORY] <text>` | Record a lesson (`[DX]`, `[ARCH]`, `[SECURITY]`, `[FAIL]`, `[PERF]`) |
@@ -160,11 +160,11 @@ agents/                            ← 7 agents (canonical)
 │   ├── tester.md                    Tests (sonnet)
 │   ├── infra.md                     DevOps / CI-CD (sonnet)
 │   └── security.md                  OWASP review (opus)
-skills/                            ← 17 reusable skills (canonical)
+skills/                            ← 17 skill directories (16 distributed)
 │   ├── workflow/                    /workflow — full pipeline trigger
 │   ├── save-progress/               /save-progress — persist work state
 │   ├── owasp-review/                Web security (OWASP Top 10:2025)
-│   └── ...                          and 12 more
+│   └── ...                          and 11 more
 .claude/
 │   ├── rules/                     ← Quality & planning principles
 │   └── settings.json              ← Permissions, sandbox, hooks
@@ -185,9 +185,11 @@ The security agent runs automatically when changes touch auth, tokens, user inpu
 
 ### Hooks
 
+All distributed packages ship the shared `hooks/hooks.json` automation payload with the real `SessionStart` and `Stop` handlers.
+
 | Event | Type | Purpose |
 |-------|------|---------|
-| `SessionStart` | agent | Detects saved work in `.claude/progress.md` and notifies on resume |
+| `SessionStart` | agent | Detects saved work in `.github/tasks/progress.md` and notifies on resume |
 | `Stop` | agent | Detects user corrections or failures and enforces lesson recording |
 | `Stop` | agent | Detects completed pipeline runs and prompts for lesson extraction |
 

@@ -10,6 +10,11 @@ tools:
   - Glob
   - Grep
   - WebFetch
+  # Browser (visual review when app is running)
+  - playwright/browser_navigate
+  - playwright/browser_take_screenshot
+  - playwright/browser_console_messages
+  - playwright/browser_network_requests
 ---
 
 # Reviewer — Code Review
@@ -49,6 +54,7 @@ Analyze each change through these 4 lenses:
 - Do components or modules do redundant work?
 - Does the bundle size or build size grow unnecessarily?
 - Are framework capabilities (caching, lazy loading, etc.) used correctly?
+- When a browser automation tool is available, verify network requests and rendering behavior directly
 
 ### 4. Architecture
 - Is it consistent with the patterns defined in the project's documentation?

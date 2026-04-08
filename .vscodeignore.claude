@@ -12,6 +12,11 @@
 # Shared skills
 !skills/**
 
+# Exclude development-only skill artifacts
+**/evals/**
+**/templates/**
+**/references/**
+
 # Consumer hooks template
 !hooks/hooks.json
 

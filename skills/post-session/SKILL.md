@@ -30,15 +30,16 @@ For each finding, assign exactly one category:
 - `[PERF]` — Performance insights, optimization discoveries
 
 ### Step 3: Deduplicate
-1. Read `skills/workflow-knowledge/lessons.md`
+1. Read `.github/tasks/lessons.md`
 2. For each new finding, check if a similar lesson already exists (same category + 3 or more shared keywords)
 3. If duplicate found: update existing entry only if the new information adds meaningful value; skip otherwise
 4. If genuinely new: proceed to append
 
 ### Step 4: Append
-For each new unique lesson, append to `skills/workflow-knowledge/lessons.md` using the established format:
+For each new unique lesson, append to `.github/tasks/lessons.md` using the established format:
 ```
-- **[CATEGORY]** Actionable takeaway — context of what happened and how to avoid or replicate it
+### [CATEGORY] Short title
+Actionable takeaway — context of what happened and how to avoid or replicate it
 ```
 
 ### Step 5: Report

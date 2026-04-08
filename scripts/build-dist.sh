@@ -4,6 +4,16 @@
 # Usage: bash scripts/build-dist.sh [--target TARGET] [--help]
 # Targets: claude-code, copilot-cli, vscode-claude, vscode-copilot, all (default)
 
+# ---------------------------------------------------------------------------
+# Skill distribution policy
+# ---------------------------------------------------------------------------
+# REQUIRED (5): workflow, workflow-knowledge, workflow-orchestrator, owasp-review, github-cli
+# OPTIONAL (9): lesson, save-progress, consolidate, post-session, review-pr,
+#               create-issue, prompt-refiner, owasp-mcp-review, skill-creator
+# INFRASTRUCTURE (2): codebase-navigator, rlm-codebase-navigation
+# EXCLUDED (1): interface-design (domain-specific, heavy references)
+# Total distributed: 16 skills
+
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
@@ -83,11 +93,29 @@ copy_file() {
   cp "$src" "$dest"
 }
 
+# Portable in-place replacement that works on macOS and Linux.
+replace_in_file() {
+  local expr="$1" file="$2" tmp_file
+
+  if [ ! -f "$file" ]; then
+    log_warn "File not found for replacement: $file"
+    return 1
+  fi
+
+  tmp_file="${file}.tmp.$$"
+  if sed "$expr" "$file" > "$tmp_file"; then
+    mv "$tmp_file" "$file"
+  else
+    rm -f "$tmp_file"
+    return 1
+  fi
+}
+
 # Sync version from package.json into a plugin.json file
 sync_version() {
   local file="$1"
   if [ -f "$file" ]; then
-    sed -i "s/\"version\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"version\": \"$VERSION\"/" "$file"
+    replace_in_file "s/\"version\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"version\": \"$VERSION\"/" "$file"
     log_info "Synced version $VERSION → $file"
   fi
 }
@@ -100,6 +128,22 @@ count_files() {
   else
     echo "0"
   fi
+}
+
+# Remove development-only skill artifacts from packaged distributions.
+remove_skill_dev_artifacts() {
+  local skills_dir="$1"
+
+  if [ ! -d "$skills_dir" ]; then
+    return 0
+  fi
+
+  find "$skills_dir" -type d -name "evals" -exec rm -rf {} + 2>/dev/null || true
+  find "$skills_dir" -type d -name "templates" -exec rm -rf {} + 2>/dev/null || true
+  find "$skills_dir" -type d -name "references" -exec rm -rf {} + 2>/dev/null || true
+
+  # Exclude domain-specific skills not needed for core workflow.
+  rm -rf "$skills_dir/interface-design" 2>/dev/null || true
 }
 
 # ---------------------------------------------------------------------------
@@ -126,7 +170,6 @@ FORBIDDEN_PATTERNS=(
   ".vscodeignore.copilot"
   "package.claude.json"
   "package.copilot.json"
-  "hooks/hooks.dev.json"
 )
 
 validate_package() {
@@ -184,6 +227,14 @@ validate_package() {
     errors=$((errors + 1))
   fi
 
+  # Check no development artifacts leaked into package
+  local dev_dirs
+  dev_dirs=$(find "$pkg_dir/skills" -type d \( -name "evals" -o -name "templates" -o -name "references" \) 2>/dev/null || true)
+  if [ -n "$dev_dirs" ]; then
+    log_error "$pkg_name contains development artifacts: $dev_dirs"
+    errors=$((errors + 1))
+  fi
+
   if [ "$errors" -eq 0 ]; then
     log_ok "$pkg_name validated ($(count_files "$pkg_dir") files)"
   else
@@ -205,6 +256,7 @@ build_claude_code() {
 
   copy_dir  "$ROOT/agents"                "$out/agents"
   copy_dir  "$ROOT/skills"                "$out/skills"
+  remove_skill_dev_artifacts               "$out/skills"
   copy_dir  "$ROOT/.claude-plugin"        "$out/.claude-plugin"
   copy_file "$ROOT/hooks/hooks.json"      "$out/hooks/hooks.json"
   copy_file "$ROOT/settings.json"         "$out/settings.json"
@@ -229,6 +281,7 @@ build_copilot_cli() {
   # Copilot agents come from .github/agents/ (*.agent.md format)
   copy_dir  "$ROOT/.github/agents"        "$out/agents"
   copy_dir  "$ROOT/skills"                "$out/skills"
+  remove_skill_dev_artifacts               "$out/skills"
   copy_file "$ROOT/hooks/hooks.json"      "$out/hooks/hooks.json"
   copy_file "$ROOT/settings.json"         "$out/settings.json"
   copy_file "$ROOT/LICENSE"               "$out/LICENSE"
@@ -289,8 +342,7 @@ build_vscode_variant() {
   # Swap manifests
   cp "$pkg_file" "$orig_pkg"
   # Sync version into variant manifest
-  sed -i "s/\"version\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"version\": \"$VERSION\"/" "$orig_pkg"
-  log_info "Synced version $VERSION → package.json (from ${variant} variant)"
+  sync_version "$orig_pkg"
   cp "$ignore_file" "$orig_ignore"
 
   # Build .vsix

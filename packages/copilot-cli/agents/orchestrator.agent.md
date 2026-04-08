@@ -63,7 +63,7 @@ You are the project orchestrator. Your role is to **coordinate subagents**, NOT 
 5. If `.github/tasks/summaries.md` does not exist, delegate to Scribe to create it with a minimal header
 6. Read `.github/tasks/lessons.md` for lessons learned
 7. Read `.github/tasks/todo.md` for recent state
-8. Read `.github/tasks/summaries.md` for cached module summaries
+8. Read `.github/tasks/summaries.md` — check if the areas relevant to the current task have cached summaries to avoid redundant exploration
 9. List `skills/` with #tool:search/listDirectory to discover **project** skills
 10. List `~/.copilot/skills/` with #tool:search/listDirectory to discover your **personal** skills
 11. Read the description (frontmatter `description:`) of each skill found — do NOT read the full content
@@ -350,21 +350,26 @@ When a subagent returns `STATUS: failed` or `STATUS: blocked`, follow this escal
    - Delegate to the `Scribe` agent to mark the task as completed in `.github/tasks/todo.md`
    - If there are new lessons, delegate to the `Scribe` agent to add them to `.github/tasks/lessons.md` with format: `### [CATEGORY] Title` + brief description
 
-   Scribe handoff examples:
-   ```
-   TASK: Record lesson learned
-   ACTION: add_lesson
-   TARGET: lessons.md
-   CONTENT: "### [CATEGORY] Lesson title — brief description"
-   CATEGORY: [relevant category]
-   ```
+### Post-Pipeline Summary Update
+After the pipeline completes:
+1. If any module or directory was explored during the pipeline (via Explore, Reviewer, or Planner subagents), delegate to `@scribe` with ACTION: `add_summary` including the paths explored and key findings
+2. If the Implementer modified files in an area with an existing active summary in `.github/tasks/summaries.md`, delegate to `@scribe` with ACTION: `mark_stale` for those paths
 
-   ```
-   TASK: Mark subtask as completed
-   ACTION: mark_complete
-   TARGET: todo.md
-   CONTENT: "Subtask description to match"
-   ```
+Scribe handoff examples:
+```
+TASK: Record lesson learned
+ACTION: add_lesson
+TARGET: lessons.md
+CONTENT: "### [CATEGORY] Lesson title — brief description"
+CATEGORY: [relevant category]
+```
+
+```
+TASK: Mark subtask as completed
+ACTION: mark_complete
+TARGET: todo.md
+CONTENT: "Subtask description to match"
+```
 
 ---
 

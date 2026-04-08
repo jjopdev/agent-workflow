@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-04-08
+
+### Added
+- MCP tools (context7, snyk, playwright, shadcn) added to Claude agent frontmatter with platform-neutral body hints (PR5)
+- Summaries.md triggers wired in both orchestrators — post-pipeline add_summary and mark_stale (PR4)
+- `always-full-pipeline` rule created in `.claude/rules/` and `.github/instructions/` (PR3)
+- Negative validation in build-dist.sh — rejects packages containing evals/, templates/, or references/ (PR6)
+- Skill distribution policy documented in build-dist.sh header (PR9)
+
+### Changed
+- Operational files unified to `.github/tasks/` — lessons.md, summaries.md, progress.md now single source of truth (PR2)
+- Planning work consolidated into `.github/tasks/todo.md` (PR8)
+- Hook distribution unified around the shared `hooks/hooks.json` payload with live `SessionStart` and `Stop` automation (Option A)
+
+### Removed
+- `PLAN-agent-improvements.md`, `PLAN-selective-install.md` — obsolete planning docs (PR8)
+- Distribution optimized: evals/, templates/, references/ excluded from packages — 9 fewer dev files per package (PR6)
+- interface-design skill excluded from distribution (domain-specific, 16 skills distributed instead of 17) (PR9)
+- Obsolete dev-only hook split removed from packaging and documentation (Option A)
+- Claude install paths fixed: `.claude/agents/`, `.claude/skills/`, `.claude/rules/`, hooks via `.claude/settings.json` (PR1)
+- Plugin manifests now declare explicit `agents` and `skills` fields (PR1)
+- `.claude/agent-memory/` — empty residual directories (PR3)
+- `.claude/memory/` — moved feedback rule to `.claude/rules/always-full-pipeline.md` (PR3)
+
+### Fixed
+- macOS build compatibility — sed -i portability fix in build-dist.sh (PR6)
+
 ## [1.4.0] - 2026-04-06
 
 ### Added

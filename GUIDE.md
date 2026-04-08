@@ -21,16 +21,16 @@ Tell Claude what happened. Be as specific or as vague as you want — the prompt
 
 ```
 # Bug report
-"El cliente dice que al hacer login con Google le da error 500,
-parece que es en el callback de OAuth"
+"The client says that logging in with Google gives a 500 error,
+it seems to be in the OAuth callback"
 
 # Feature request
-"Necesitan un export a Excel de la tabla de facturas,
-con filtros de fecha y estado"
+"They need an Excel export from the invoices table,
+with date and status filters"
 
 # Vague requirement
-"hay un problema con los permisos en la api de usuarios,
-algunos roles no pueden ver lo que deberian"
+"there's a problem with permissions in the users API,
+some roles can't see what they should"
 ```
 
 Claude will:
@@ -43,7 +43,7 @@ Claude will:
 Once Claude has analyzed the problem and you're satisfied with the plan:
 
 ```
-/create-issue El callback de OAuth con Google falla con error 500
+/create-issue The Google OAuth callback fails with a 500 error
 ```
 
 This will:
@@ -82,7 +82,7 @@ Then review your own PR:
 
 If you're assigning the work:
 
-> "Asignar el issue #42 al developer. El issue tiene toda la información necesaria."
+> "Assign issue #42 to the developer. The issue has all the information needed."
 
 The developer works in their own environment with their own workflow. When they submit a PR, you review it:
 
@@ -114,7 +114,7 @@ The stop hook also auto-prompts for lessons when corrections or failures are det
 ### Bug Fix (Simple)
 
 ```
-"El botón de guardar no funciona en la página de edición de perfil"
+"The save button doesn't work on the profile edit page"
 ```
 
 Claude investigates → finds the issue → fixes directly (quick path, no full pipeline needed).
@@ -122,8 +122,8 @@ Claude investigates → finds the issue → fixes directly (quick path, no full 
 ### Bug Fix (Complex)
 
 ```
-"Los reportes de ventas no cuadran con los datos de la base de datos,
-parece que hay un problema en el cálculo de impuestos"
+"The sales reports don't match the database data,
+there seems to be a problem in the tax calculation"
 ```
 
 Claude investigates → finds multiple files involved → you run `/create-issue` → then `/workflow` for the full pipeline.
@@ -131,7 +131,7 @@ Claude investigates → finds multiple files involved → you run `/create-issue
 ### New Feature
 
 ```
-"Agregar autenticación con Microsoft Azure AD para el portal de administración"
+"Add Microsoft Azure AD authentication for the admin portal"
 ```
 
 Claude scopes the feature → `/create-issue` → `/workflow` runs Plan → Implement → [Test ∥ Review] → Security (auth changes trigger security review automatically).
@@ -147,7 +147,7 @@ Claude reads the full diff, checks the linked Issue, verifies acceptance criteri
 ### Infrastructure Change
 
 ```
-"Configurar CI/CD con GitHub Actions para deploy a Azure App Service"
+"Set up CI/CD with GitHub Actions for deployment to Azure App Service"
 ```
 
 Claude delegates to the infra agent for DevOps work.

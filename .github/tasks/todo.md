@@ -140,11 +140,14 @@ Hay **6 targets de instalación** (2 niveles × 3 plataformas). Analicé docs of
 #### Step 0: Reproducir bugs en cada plataforma
 
 Antes de fixear, confirmar el estado real de cada target:
-- [ ] VS Code VSIX Claude: Instalar en workspace vacío → abrir Copilot Chat → `@` muestra agents? `/` muestra skills? Hook se ejecuta?
-- [ ] VS Code VSIX Copilot: Mismo test
-- [ ] VS Code Agent Plugin (Install from Source): Mismo test
-- [ ] Claude Code CLI: `claude plugin install .` → `claude plugins list` → ¿muestra agents/skills count correcto?
-- [ ] Copilot CLI: `copilot plugin install .` → verificar discovery
+- [x] VS Code VSIX Claude: Instalar en workspace vacío → `@` muestra 7 agents ✅, `/` muestra skills ✅, SessionStart hook detecta progress.md ✅, `/save-progress` funciona ✅
+  - **Bug encontrado:** tool names en Claude CLI format (Read, Edit, Bash) → VS Code ignora, sin restricciones → **Fixeado en v1.5.2**
+  - **Bug encontrado:** `interface-design` leak en VSIX → **Fixeado en v1.5.2**
+  - **Bug encontrado:** `rules/` ausente en VSIX → **Fixeado en v1.5.2**
+- [ ] VS Code VSIX Copilot: Pendiente test manual
+- [ ] VS Code Agent Plugin (Install from Source): Pendiente test manual
+- [ ] Claude Code CLI: `claude plugin install .` → pendiente test manual
+- [ ] Copilot CLI: `copilot plugin install .` → pendiente test manual
 
 **Output:** Actualizar tabla "Bugs confirmados vs por verificar" con status real (CONFIRMED/OK/BROKEN). Eliminar los "Por verificar" — solo facts.
 
@@ -218,15 +221,15 @@ Los hooks tienen 2 formatos:
 3. Iniciar sesión → agents disponibles como subagents
 4. Ejecutar acción que trigger hook → verificar ejecución
 
-- [ ] VS Code VSIX Claude: setup → agents en `@`, skills en `/`, hooks en Output panel
+- [x] VS Code VSIX Claude: setup → agents en `@` ✅, skills en `/` ✅, hooks funcionan ✅, tools traducidas en v1.5.2 ✅, rules incluidas ✅
 - [ ] VS Code VSIX Copilot: setup → mismo checklist
 - [ ] VS Code Agent Plugin (Install from Source): discovery en Output panel
 - [ ] Claude Code CLI: `claude plugins list` → counts correctos + hooks ejecutan
 - [ ] Copilot CLI: `copilot plugins list` → counts correctos + hooks ejecutan
 
 #### Step 6: Review
-- [ ] Verificar que la instalación existente no se rompe
-- [ ] Confirmar que build-dist.sh produce paquetes con rutas correctas
+- [x] Verificar que build-dist.sh produce paquetes con rutas correctas — 4 builds passing
+- [ ] Verificar que la instalación existente no se rompe (test con workspace que ya tenía v1.5.1)
 
 ### Constraints
 - No romper instalación existente en ninguna plataforma

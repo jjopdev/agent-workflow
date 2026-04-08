@@ -1,52 +1,45 @@
 # Work In Progress
 
-> Last saved: 2026-04-08 (session 12)
+> Last saved: 2026-04-08 (session 13)
 
 ## Task
-v1.5.0 + v1.5.1 release cycle — unified operations, MCP tools, optimized distribution, safe uninstall command.
+v1.5.2 release — fix VS Code Claude VSIX tool names + packaging
 
 ## Plan
-- [x] PR1: Fix plugin installation paths (VSIX, CLI, manifests)
-- [x] PR2: Unify operational files to .github/tasks/
-- [x] PR3: Clean .claude/ directory
-- [x] PR4: Wire summaries.md triggers in orchestrators
-- [x] PR5: Add MCP tools to Claude agents
-- [x] PR6: Optimize distribution weight
-- [x] PR7: Documentation alignment
-- [x] PR8: Project structure cleanup (PLAN files)
-- [x] PR9: Skill distribution audit
-- [x] Final docs review — all aligned, Spanish→English, Staff Engineer approved
-- [x] Hook distribution — merged dev hooks into hooks.json (Option A)
-- [x] Version bump 1.5.0 — all manifests synced
-- [x] v1.5.0 released — commit 2531852, tag v1.5.0, CI triggered
-- [x] Safe uninstall command — removes only plugin files, preserves user custom files
-- [x] macOS sed portability fix in bump-version.sh
-- [x] v1.5.1 released — commit f860864, tag v1.5.1, CI triggered
+- [x] Manual test: install VSIX Claude v1.5.1 in clean Windows workspace
+- [x] Verified: agents discovered (7), skills discovered (16+1 leaked), settings.json with hooks, SessionStart hook works
+- [x] Bug found: agent tool names use Claude CLI format (Read, Edit, Bash) — VS Code ignores them, no restrictions enforced
+- [x] Bug found: interface-design skill leaking into VSIX despite exclusion policy
+- [x] Bug found: .claude/rules/ not packaged in VSIX
+- [x] Implement: translate_claude_tools_for_vscode() in build-dist.sh
+- [x] Implement: Claude VSIX staging — backup agents + skills, translate tools, stage rules, restore after build
+- [x] Implement: .vscodeignore.claude — added rules whitelist, interface-design exclusion
+- [x] Fix: stale .bak dir guard (rm before cp -r), find instead of ls for counting
+- [x] Review: Staff Engineer approved — 2 critical fixes applied
+- [x] Test: all 4 builds passing (claude-code 30, copilot-cli 31, vscode-claude 36 files 62KB, vscode-copilot 44 files 90KB)
+- [x] v1.5.2 released — commit 831ee71, tag v1.5.2, GitHub release with both VSIX + CLI tarballs
+- [x] Manual test: reinstalled vscode-claude.vsix v1.5.2 in Windows workspace — agents, rules, skills all in correct paths
 
 ## Key Files
-- `src/extension.js` — VS Code extension (setup + uninstall commands)
-- `scripts/build-dist.sh` — build system with skill distribution policy
-- `scripts/bump-version.sh` — version bump (macOS sed fix applied)
-- `scripts/validate-manifests.py` — manifest validation
-- `agents/` — 7 Claude agents with MCP tools
-- `skills/` — 17 canonical (16 distributed, interface-design excluded)
-- `hooks/hooks.json` — ships real hooks (SessionStart + 2 Stop)
-- `.github/tasks/` — unified operational files
+- `scripts/build-dist.sh` — added translate_claude_tools_for_vscode() + claude staging/restore
+- `.vscodeignore.claude` — rules whitelist + interface-design exclusion
+- `CHANGELOG.md` — v1.5.2 entry
+- `dist/vscode-claude.vsix` — fixed VSIX (36 files, 62KB)
 
 ## Next Steps
-1. Live test: install VSIX in a clean workspace, verify Setup + Uninstall commands
+1. Verify in Windows VS Code: tool restrictions enforced (orchestrator can't edit, reviewer can't run terminal)
 2. Live test: Claude Code CLI plugin install + orchestrator agent
 3. Live test: Copilot CLI plugin install
 4. Live test: Stop hooks (lesson-detection, post-pipeline) in Claude Code CLI
 5. Consider: update release workflow to build both VSIX variants + CLI tarballs
+6. Consider: CI workflow to auto-build all 4 targets on tag push
 
 ## Context
-- v1.5.0: 96 files, +758/-2937 lines (major cleanup)
-- v1.5.1: 9 files, +198/-23 lines (uninstall feature)
-- All 4 builds passing: claude-code 30 files, copilot-cli 31 files, vscode-claude.vsix 83KB, vscode-copilot.vsix 92KB
-- validate-manifests.py: ALL CHECKS PASSED
-- No hardcoded local paths (grep verified clean)
-- All docs in English, no Spanish remaining
+- v1.5.2: 11 files, +122/-111 lines (tool translation fix)
+- Tool mapping: Read→read/readFile, Edit→edit/editFiles, Write→edit/createFile, Bash→execute/runInTerminal, Glob→search/fileSearch, Grep→search/textSearch, Agent→agent/runSubagent, NotebookEdit→edit/editNotebook
+- MCP tools (context7/*, snyk/*, playwright/*, shadcn/*) passed through unchanged
+- WebFetch, WebSearch, Task* tools removed (built-in in VS Code)
+- Branch: main
 
 ## Resume Command
 `claude --continue` or `claude --resume`

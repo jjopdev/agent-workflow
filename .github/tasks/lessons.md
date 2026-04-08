@@ -37,3 +37,6 @@
 ### [ARCH] Workflow operational files (lessons, todo, progress, summaries) are PROJECT-scoped, not platform-scoped — single source of truth in `.github/tasks/`, never duplicated per platform
 ### [ARCH] `.claude/agent-memory/` is user-level (`~/.claude/agent-memory/`), NOT project-level — never commit empty agent-memory dirs to a repo, they're dead code
 ### [ARCH] `.claude/memory/` in a plugin repo is a development artifact — don't distribute it, as it would inject foreign memories into target projects
+### [ARCH] Claude Code project memory lives at `~/.claude/projects/<project>/memory/` (user HOME) — `.claude/memory/` in the repo is NOT read by Claude Code at all, files there have zero effect
+### [ARCH] Content that is functionally a behavioral rule ("always run full pipeline") belongs in `.claude/rules/` (Claude) or `.github/instructions/` (Copilot), NOT in memory files — even if originally captured as "feedback" during development
+### [PLANNING] Plans must pass Staff Engineer pre-review before implementation: Step 0 (reproduce bugs first), all architectural decisions closed (no "TBD" in impl steps), concrete acceptance criteria (what command, what output), PR strategy with dependency graph, cross-dependencies between subtasks documented

@@ -1,7 +1,7 @@
 {
   "name": "agent-workflow-copilot",
   "displayName": "Agent Workflow — Copilot Agents",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline — GitHub Copilot agents variant",
   "publisher": "jjopdev",
   "license": "MIT",
@@ -22,6 +22,10 @@
       {
         "command": "agentWorkflow.setup",
         "title": "Agent Workflow (Copilot): Setup in Current Workspace"
+      },
+      {
+        "command": "agentWorkflow.uninstall",
+        "title": "Agent Workflow: Remove from Current Workspace"
       }
     ]
   }

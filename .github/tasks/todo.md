@@ -264,3 +264,73 @@ Plugins se instalan en `~/.copilot/installed-plugins/`. No copian al workspace.
 2. `.claude-plugin/plugin.json` — agregar `agents` y `skills` paths explícitos
 3. Posiblemente `build-dist.sh` — si la estructura del paquete Claude necesita cambios
 4. Posiblemente `validate-manifests.py` — si las rutas validadas cambian
+
+---
+
+### Subtarea A: Unificar ubicación de archivos operacionales del workflow
+
+#### Problema
+Los archivos operacionales (lessons, todo, progress, summaries) están fragmentados en 3 ubicaciones:
+
+| Archivo | Ubicación actual | Quién lo usa |
+|---|---|---|
+| `lessons.md` | `.github/tasks/lessons.md` | Copilot agents (Scribe) — hard-coded |
+| `lessons.md` | `skills/workflow-knowledge/lessons.md` | Claude Code (orchestrator skill) |
+| `todo.md` | `.github/tasks/todo.md` | Copilot agents (Scribe) |
+| `summaries.md` | `.github/tasks/summaries.md` | Copilot agents (Scribe) |
+| `summaries.md` | `skills/workflow-knowledge/summaries.md` | Claude Code skill |
+| `progress.md` | `.claude/progress.md` | Claude Code (save-progress skill) |
+
+**Resultado:** lessons duplicadas con contenido diferente, progress aislado de las demás, cada plataforma apunta a un lugar distinto.
+
+#### Decisión arquitectural
+
+**Estos archivos son de PROYECTO** — registran conocimiento del equipo sobre ESE proyecto, sin importar si el developer usa Claude Code, Copilot CLI o VS Code.
+
+**Single source of truth: `.github/tasks/`**
+- `.github/` es convención estándar para metadata de proyecto (GitHub lo usa para templates, workflows, etc.)
+- Funciona en todas las plataformas — es solo un directorio
+- Claude Code no exige que archivos operacionales estén en `.claude/`
+- Los agents/skills de cada plataforma se configuran para apuntar ahí
+
+#### Fix
+- [ ] Mover `progress.md` de `.claude/` a `.github/tasks/progress.md`
+- [ ] Eliminar duplicación: `skills/workflow-knowledge/lessons.md` → referenciar `.github/tasks/lessons.md`
+- [ ] Eliminar duplicación: `skills/workflow-knowledge/summaries.md` → referenciar `.github/tasks/summaries.md`
+- [ ] Actualizar agent orchestrator Claude Code → apuntar a `.github/tasks/lessons.md`
+- [ ] Actualizar skill `save-progress` → apuntar a `.github/tasks/progress.md`
+- [ ] Actualizar hooks que referencian `.claude/progress.md`
+- [ ] Actualizar packages Claude Code y Copilot CLI (copias del build)
+
+---
+
+### Subtarea B: Limpiar archivos muertos y mal ubicados en `.claude/`
+
+#### Auditoría completa
+
+| Archivo/Carpeta | ¿Qué es? | ¿Funcional? | Veredicto |
+|---|---|---|---|
+| `.claude/rules/planning.md` | Reglas de planning | ✅ Claude Code carga al inicio | **MANTENER** — config del plugin para proyectos target |
+| `.claude/rules/tech-lead.md` | Principios de calidad | ✅ Claude Code carga al inicio | **MANTENER** — config del plugin |
+| `.claude/settings.json` | Permisos y sandbox | ✅ Committeable, aplica al equipo | **MANTENER** — config del plugin |
+| `.claude/settings.local.json` | Overrides locales | ✅ No commitear | **MANTENER** — pero verificar .gitignore |
+| `.claude/README.md` | Docs setup Claude Code | ✅ Documentación | **MANTENER** |
+| `.claude/progress.md` | WIP tracking | ✅ Funcional | **MOVER** → `.github/tasks/progress.md` (subtarea A) |
+| `.claude/agent-memory/` (5 dirs) | Memoria de subagents | ❌ **Vacías** — 0 archivos | **ELIMINAR** — dead code, en producción vive en `~/.claude/agent-memory/` |
+| `.claude/memory/MEMORY.md` | Índice de memoria proyecto | ⚠️ Artefacto de desarrollo | **EVALUAR** — es knowledge del plugin, no para distribuir |
+| `.claude/memory/feedback_always_full_pipeline.md` | Feedback de user | ⚠️ Artefacto de desarrollo | **EVALUAR** — mismo caso |
+
+#### Contexto de docs oficiales
+
+- **`agent-memory/`**: Claude Code almacena memorias de subagents en `~/.claude/agent-memory/<agent-name>/` (user-level). Las carpetas en el repo son residuos de desarrollo, nunca se popularon.
+- **`memory/`**: Claude Code almacena memory del proyecto en `~/.claude/projects/<project>/memory/`. Los archivos en `.claude/memory/` del repo son artefactos de cuando se desarrolló el workflow. Si el plugin distribuyera esto, inyectaría memorias ajenas en proyectos target.
+- **`rules/`**: Sí se distribuyen — son las reglas que el plugin aplica a proyectos target. Correcto.
+
+#### Fix
+- [ ] Eliminar `.claude/agent-memory/` — carpetas vacías, dead code
+- [ ] Decidir qué hacer con `.claude/memory/` — opciones:
+  - Opción 1: Mover contenido a `skills/workflow-knowledge/` (donde ya vive el knowledge base del workflow)
+  - Opción 2: Mover a `.github/tasks/` (si es knowledge de proyecto)
+  - Opción 3: Eliminar si es solo artefacto de desarrollo
+- [ ] Verificar que `build-dist.sh` NO empaqueta `agent-memory/` ni `memory/` en los dist packages
+- [ ] Verificar `.gitignore` tiene `settings.local.json`

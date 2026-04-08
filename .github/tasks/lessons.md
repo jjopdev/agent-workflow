@@ -34,3 +34,6 @@
 ### [DX] Windows `command -v python` lies — the Microsoft Store alias passes the check but fails at runtime. Always verify with `python --version` before using
 ### [ARCH] VS Code does NOT discover skills/hooks/agents at workspace root — must use platform-specific discovery paths: `.claude/skills/`, `.claude/settings.json` (Claude format) or `.github/skills/`, `.github/hooks/` (Copilot format). Putting files at root means they're invisible.
 ### [ARCH] Plugin manifests should declare ALL component paths explicitly (agents, skills, hooks) — relying on defaults is fragile and undocumented behavior varies across CLI versions
+### [ARCH] Workflow operational files (lessons, todo, progress, summaries) are PROJECT-scoped, not platform-scoped — single source of truth in `.github/tasks/`, never duplicated per platform
+### [ARCH] `.claude/agent-memory/` is user-level (`~/.claude/agent-memory/`), NOT project-level — never commit empty agent-memory dirs to a repo, they're dead code
+### [ARCH] `.claude/memory/` in a plugin repo is a development artifact — don't distribute it, as it would inject foreign memories into target projects

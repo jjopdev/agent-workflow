@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2026-04-08
+
+### Fixed
+- VS Code Claude VSIX: agent tool names now translated from Claude CLI format to VS Code format during build (Read→read/readFile, Edit→edit/editFiles, etc.)
+- VS Code Claude VSIX: `interface-design` skill and dev artifacts (evals, templates, references) excluded from package
+- VS Code Claude VSIX: `.claude/rules/` (planning, tech-lead, always-full-pipeline) now included in package
+- Build script: stale backup guard prevents `cp -r` merge bug on repeated builds
+
 ## [1.5.1] - 2026-04-08
 
 ### Added

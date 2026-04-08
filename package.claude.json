@@ -1,7 +1,7 @@
 {
   "name": "agent-workflow-claude",
   "displayName": "Agent Workflow — Claude Code Agents",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline — Claude Code agents variant",
   "publisher": "jjopdev",
   "license": "MIT",

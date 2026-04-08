@@ -146,6 +146,37 @@ remove_skill_dev_artifacts() {
   rm -rf "$skills_dir/interface-design" 2>/dev/null || true
 }
 
+translate_claude_tools_for_vscode() {
+  local agents_dir="$1"
+
+  if [ ! -d "$agents_dir" ]; then
+    return 0
+  fi
+
+  log_info "Translating Claude tool names to VS Code equivalents..."
+
+  local f
+  for f in "$agents_dir"/*.md; do
+    [ -f "$f" ] || continue
+    replace_in_file 's/^  - Read$/  - read\/readFile/' "$f"
+    replace_in_file 's/^  - Edit$/  - edit\/editFiles/' "$f"
+    replace_in_file 's/^  - Write$/  - edit\/createFile/' "$f"
+    replace_in_file 's/^  - Bash$/  - execute\/runInTerminal/' "$f"
+    replace_in_file 's/^  - Glob$/  - search\/fileSearch/' "$f"
+    replace_in_file 's/^  - Grep$/  - search\/textSearch/' "$f"
+    replace_in_file 's/^  - Agent$/  - agent\/runSubagent/' "$f"
+    replace_in_file 's/^  - NotebookEdit$/  - edit\/editNotebook/' "$f"
+    replace_in_file '/^  - WebFetch$/d' "$f"
+    replace_in_file '/^  - WebSearch$/d' "$f"
+    replace_in_file '/^  - TaskCreate$/d' "$f"
+    replace_in_file '/^  - TaskUpdate$/d' "$f"
+    replace_in_file '/^  - TaskList$/d' "$f"
+    replace_in_file '/^  - TaskGet$/d' "$f"
+  done
+
+  log_ok "Tool names translated for $(find "$agents_dir" -maxdepth 1 -name '*.md' | wc -l | tr -d ' ') agent files"
+}
+
 # ---------------------------------------------------------------------------
 # Forbidden files check — ensures no project metadata leaks into packages
 # ---------------------------------------------------------------------------
@@ -328,6 +359,27 @@ build_vscode_variant() {
     cp "$orig_ignore" "$backup_ignore"
   fi
 
+  # For claude variant: translate tool names, clean skills, stage rules
+  local staged_claude=false
+  if [ "$variant" = "claude" ]; then
+    # Backup agents and translate tool names for VS Code
+    rm -rf "$ROOT/agents.vscode.bak"
+    cp -r "$ROOT/agents" "$ROOT/agents.vscode.bak"
+    translate_claude_tools_for_vscode "$ROOT/agents"
+
+    # Backup skills and remove excluded content for VSIX
+    rm -rf "$ROOT/skills.vscode.bak"
+    cp -r "$ROOT/skills" "$ROOT/skills.vscode.bak"
+    remove_skill_dev_artifacts "$ROOT/skills"
+
+    # Stage .claude/rules/ as rules/ for VSIX packaging
+    if [ -d "$ROOT/.claude/rules" ]; then
+      mkdir -p "$ROOT/rules"
+      cp -r "$ROOT/.claude/rules/." "$ROOT/rules/"
+    fi
+    staged_claude=true
+  fi
+
   # For copilot variant: stage .github/agents/ as agents/ temporarily
   local staged_agents=false
   if [ "$variant" = "copilot" ]; then
@@ -378,6 +430,15 @@ build_vscode_variant() {
     if [ -d "$ROOT/agents.claude.bak" ]; then
       mv "$ROOT/agents.claude.bak" "$ROOT/agents"
     fi
+  fi
+
+  # Restore agents, skills for claude variant
+  if [ "$staged_claude" = true ]; then
+    rm -rf "$ROOT/agents"
+    mv "$ROOT/agents.vscode.bak" "$ROOT/agents"
+    rm -rf "$ROOT/skills"
+    mv "$ROOT/skills.vscode.bak" "$ROOT/skills"
+    rm -rf "$ROOT/rules"
   fi
 
   # Keep variant source file version in sync

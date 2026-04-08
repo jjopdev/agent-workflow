@@ -1,6 +1,6 @@
 {
   "name": "agent-workflow",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline for Claude Code",
   "author": {
     "name": "jjopdev"

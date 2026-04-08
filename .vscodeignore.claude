@@ -6,16 +6,20 @@
 !src/**
 !LICENSE
 
-# Claude Code agents (canonical .md format)
+# Claude Code agents (canonical .md format, tools translated for VS Code)
 !agents/**
 
 # Shared skills
 !skills/**
 
-# Exclude development-only skill artifacts
+# Exclude development-only skill artifacts and domain-specific skills
 **/evals/**
 **/templates/**
 **/references/**
+skills/interface-design/**
+
+# Claude rules (behavioral instructions)
+!rules/**
 
 # Consumer hooks template
 !hooks/hooks.json

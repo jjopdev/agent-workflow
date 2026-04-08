@@ -542,18 +542,57 @@ Esto significa:
 
 > ⚠️ Esta decisión requiere input del usuario antes de implementar. Las 4 opciones tienen trade-offs significativos.
 
-#### Fix inmediato (independiente de la decisión arquitectural)
+#### Staff Engineer review — 2026-04-08
+
+**NO APROBADO como fix completo.** Aprobado como PR incremental con 2 objeciones:
+
+**Objeción 1: Tools sin instrucciones = herramienta muda**
+Agregar `snyk/snyk_code_scan` al frontmatter sin instrucciones de USO en el body es inútil. El modelo ve la tool disponible pero el body dice "Use WebSearch to discover CVEs" — nunca va a invocar Snyk espontáneamente.
+
+**Requisito:** Cada MCP tool agregado al frontmatter DEBE tener al menos 1 línea de guidance en el body (neutral, funciona en ambas plataformas):
+- Security: "Run automated vulnerability scans when available (Snyk, dependency audit)"
+- Security: "Verify security headers by navigating to the target URL when a browser tool is available"
+- Implementer: "Verify library APIs and usage with documentation tools before implementing unfamiliar patterns"
+
+**Objeción 2: Pregunta arquitectural sin responder**
+Los targets VS Code VSIX Claude + Plugin source van a seguir siendo ciudadanos de segunda clase (body con "Use Grep", sin VS Code specifics como `read/problems`, `search/usages`, `execute/testFailure`). La pregunta de fondo: **¿por qué un usuario de VS Code recibiría Claude agents en vez de Copilot agents?**
+
+Si la respuesta es "no debería":
+- VSIX Claude variant → debería instalar `.github/agents/` (Copilot format) en VS Code
+- Plugin source → VS Code debería preferir `.github/agents/` sobre `agents/` cuando ambos existen
+- Esto elimina los escenarios degradados por completo
+
+**Trazabilidad post-PR5 fix inmediato (solo frontmatter + hints):**
+
+| # | Target | MCP tools | Body text | VS Code specifics | Veredicto |
+|---|---|---|---|---|---|
+| 1 | Claude Code CLI | Ignorados (no MCP) | Claude nativo ✅ | N/A | ✅ Sin regresión |
+| 2 | Copilot CLI | Ya incluidos ✅ | `#tool:` ✅ | N/A | ✅ Sin cambios |
+| 3 | VS Code VSIX Copilot | Ya incluidos ✅ | `#tool:` ✅ | Todos ✅ | ✅ Sin cambios |
+| 4 | VS Code VSIX Claude | **Agregados ✅** | "Use Grep" ⚠️ | Faltan ❌ | ⚠️ Mejorado, degradado |
+| 5 | VS Code Plugin source | **Agregados ✅** | "Use Grep" ⚠️ | Faltan ❌ | ⚠️ Mejorado, degradado |
+
+**Recomendación:**
+1. Decidir opción A-D ANTES de implementar — especialmente si VSIX Claude para VS Code debería usar Copilot agents
+2. Si se mantienen 2 variantes: Opción D (template body + frontmatter per-platform) es obligatoria
+3. El fix inmediato se expande: frontmatter + body hints con instrucciones concretas por MCP tool
+
+#### Fix inmediato expandido (independiente de la decisión arquitectural)
 
 Mientras se decide la opción, hay fixes que ya se pueden hacer:
 
-- [ ] **Claude agents: agregar MCP tools al frontmatter** — `context7/resolve-library-id`, `context7/query-docs` para Implementer, Planner, Infra, Tester. Si VS Code los mapea y Claude Code los ignora, no hay riesgo.
-- [ ] **Claude agents: agregar body hints para docs lookup** — agregar "Verify APIs and library usage with documentation tools when uncertain" (neutral, funciona en ambas plataformas)
-- [ ] **Security agent Claude: agregar Snyk/Playwright refs** — las tools se ignoran si no están disponibles
+- [ ] **Claude agents: agregar MCP tools al frontmatter** — `context7/resolve-library-id`, `context7/query-docs` para Implementer, Infra, Tester. Claude Code los ignora, VS Code los activa.
+- [ ] **Claude agents: agregar body hints CON instrucciones de uso por tool** — NO solo "verify APIs" genérico, sino guidance concreto:
+  - Implementer body: "Verify library APIs and usage with documentation tools before implementing unfamiliar patterns"
+  - Security body: "Run automated vulnerability scans when available (Snyk, dependency audit)" + "Verify security headers by navigating to the target URL when a browser tool is available"
+  - Tester body: "Use browser automation tools when available for E2E test verification"
+- [ ] **Security agent Claude: agregar Snyk/Playwright al frontmatter + body** — tools se ignoran si no disponibles
 - [ ] **Verificar mapeo VS Code** — confirmar qué Claude tools mapean y cuáles se ignoran silenciosamente
 - [ ] **Propagar a distribution copies** — `packages/claude-code/agents/` y `packages/copilot-cli/agents/`
 
-#### Acceptance criteria (fix inmediato)
+#### Acceptance criteria (fix inmediato expandido)
 1. Claude agents con MCP tools en frontmatter → al cargar en VS Code, context7 aparece como tool disponible
 2. Claude agent Security con snyk/playwright en frontmatter → Snyk scan funciona si extensión instalada
-3. Body hints neutros → funciona en Claude Code CLI Y VS Code sin confusión
-4. Claude Code CLI no se rompe → tools desconocidos se ignoran silenciosamente
+3. Body hints incluyen guidance de USO por tool → el modelo sabe CUÁNDO invocar cada MCP tool
+4. Body hints neutros → funciona en Claude Code CLI Y VS Code sin confusión
+5. Claude Code CLI no se rompe → tools desconocidos se ignoran silenciosamente

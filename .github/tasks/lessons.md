@@ -31,3 +31,6 @@
 ### [SECURITY] Security agent auto-generates project security-context skill on first review — Scribe persists it, subsequent reviews read and update it
 ### [ARCH] Security context skill is a living document — grows with each review cycle, never reset
 ### [ARCH] Scribe scope expanded to include .github/skills/security-context/ — only security-context, not arbitrary skills
+### [DX] Windows `command -v python` lies — the Microsoft Store alias passes the check but fails at runtime. Always verify with `python --version` before using
+### [ARCH] VS Code does NOT discover skills/hooks/agents at workspace root — must use platform-specific discovery paths: `.claude/skills/`, `.claude/settings.json` (Claude format) or `.github/skills/`, `.github/hooks/` (Copilot format). Putting files at root means they're invisible.
+### [ARCH] Plugin manifests should declare ALL component paths explicitly (agents, skills, hooks) — relying on defaults is fragile and undocumented behavior varies across CLI versions

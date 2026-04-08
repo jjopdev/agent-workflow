@@ -6,14 +6,14 @@ This project supports **two independent workflows**. Choose ONE based on what yo
 
 Each target installs only the files it needs:
 
-**Claude Code** (36 files — agents, skills, hooks, settings) — run inside an active Claude Code session:
+**Claude Code** (39 files — agents, skills, hooks, settings) — run inside an active Claude Code session:
 
 ```
 /plugin marketplace add jjopdev/agent-workflow
 /plugin install agent-workflow@jjopdev-agent-workflow
 ```
 
-**GitHub Copilot CLI** (39 files — agents, skills, hooks, settings):
+**GitHub Copilot CLI** (41 files — agents, skills, hooks, settings):
 
 ```bash
 copilot plugin install jjopdev/agent-workflow:packages/copilot-cli

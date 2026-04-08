@@ -33,6 +33,17 @@ The workflow was dogfooded from day one — it was built using itself.
 - **Persistent learning** — Lessons accumulate across sessions via stop hook and `/lesson` command
 - **Stack-agnostic** — Works with TypeScript, .NET, Python, Go, Rust, and any stack with a CLI
 
+## Prerequisites
+
+| Target | Requirement |
+|--------|-------------|
+| Claude Code | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) installed and authenticated |
+| GitHub Copilot CLI | [Copilot CLI](https://docs.github.com/en/copilot) with plugin support enabled |
+| VS Code | VS Code with the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension |
+| Local build | `bash` and `git` (no Node.js required) |
+
+No runtime dependencies. No framework lock-in.
+
 ## Installation
 
 Each target installs **only the files it needs** — no project metadata, benchmarks, or scripts.
@@ -158,8 +169,8 @@ skills/                            ← 17 reusable skills (canonical)
 │   ├── rules/                     ← Quality & planning principles
 │   └── settings.json              ← Permissions, sandbox, hooks
 packages/                          ← Clean distribution packages
-│   ├── claude-code/                 Claude Code plugin (37 files)
-│   └── copilot-cli/                 Copilot CLI plugin (39 files)
+│   ├── claude-code/                 Claude Code plugin
+│   └── copilot-cli/                 Copilot CLI plugin
 ```
 
 ## Security
@@ -178,6 +189,7 @@ The security agent runs automatically when changes touch auth, tokens, user inpu
 |-------|------|---------|
 | `SessionStart` | agent | Detects saved work in `.claude/progress.md` and notifies on resume |
 | `Stop` | agent | Detects user corrections or failures and enforces lesson recording |
+| `Stop` | agent | Detects completed pipeline runs and prompts for lesson extraction |
 
 ## Supported Stacks
 

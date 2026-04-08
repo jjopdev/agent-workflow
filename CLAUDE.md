@@ -22,19 +22,6 @@ This repo is distributable as a plugin for Claude Code and Copilot CLI:
 - The only exceptions are meta-files: lessons.md, progress.md, MEMORY.md (workflow artifacts, not project code)
 - Delegating a one-line fix to an Implementer costs less than debugging a pipeline bypass
 
-## Scope
-- Primary sources of truth: `agents/`, `skills/`, `.claude/rules/`, and root Markdown files
-- Prefer minimal, focused changes
-- Do not assume there is a runnable app unless such files exist
-- Documentation may be in Spanish; code-like examples in English when clearer
-
-### Plugin Distribution
-This repo is distributable as a plugin for Claude Code and Copilot CLI:
-- **Claude Code plugin manifest:** `.claude-plugin/plugin.json`
-- **Copilot CLI plugin manifest:** `plugin.json` (root)
-- **VS Code extension:** `package.json` + `src/extension.js`
-- Root `skills/` and `agents/` are the canonical plugin sources
-
 ## Rules
 - If something goes wrong, STOP and re-plan before retrying
 - After any user correction, record a lesson

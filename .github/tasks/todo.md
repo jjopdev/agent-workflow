@@ -305,7 +305,7 @@ Plugins se instalan en `~/.copilot/installed-plugins/`. No copian al workspace.
 
 ### Estrategia de PRs y orden de ejecución
 
-**5 PRs separados** — cada uno con scope claro (principio: "Separate refactoring from feature changes"):
+**8 PRs separados** — cada uno con scope claro (principio: "Separate refactoring from feature changes"):
 
 | PR | Scope | Depende de | Branch |
 |---|---|---|---|
@@ -314,10 +314,15 @@ Plugins se instalan en `~/.copilot/installed-plugins/`. No copian al workspace.
 | **PR3** | Subtarea B: Cleanup `.claude/` + memory→rules | PR2 (progress.md ya movido) | `cleanup/claude-dead-files` |
 | **PR4** | Subtarea C: Wire summaries.md triggers | PR2 (paths unificados) | `feat/wire-summaries-triggers` |
 | **PR5** | Subtarea D: Alinear tools de agents por plataforma | Nada (independiente) | `fix/agent-tools-per-platform` |
+| **PR6** | Subtarea E: Optimizar peso de distribución (RAM/size) | Nada (independiente) | `perf/distribution-weight` |
+| **PR7** | Subtarea F: Documentación + aislamiento de archivos por método | PR1 + PR6 | `docs/align-with-changes` |
+| **PR8** | Subtarea G: Auditoría estructura del proyecto | PR6 | `refactor/project-structure` |
 
-**Orden:** PR1, PR2 y PR5 en paralelo. PR3 y PR4 después de PR2.
+**Orden:**
+- **Fase 1 (paralelo):** PR1, PR2, PR5, PR6
+- **Fase 2 (secuencial):** PR3, PR4 (dependen de PR2) y PR7, PR8 (dependen de PR1/PR6)
 
-**Sin conflicto:** PR1 toca `extension.js` + manifests. PR2 toca paths/references. PR3 toca `.claude/` cleanup. PR4 toca orchestrator/scribe logic. PR5 toca agent body text + frontmatter tools.
+**Sin conflicto:** PR1 toca `extension.js` + manifests. PR2 toca paths/references. PR3 toca `.claude/` cleanup. PR4 toca orchestrator/scribe logic. PR5 toca agent body text + frontmatter tools. PR6 toca `build-dist.sh` + `.vscodeignore*`. PR7 toca docs `.md` en root. PR8 toca estructura de carpetas.
 
 ---
 
@@ -596,3 +601,225 @@ Mientras se decide la opción, hay fixes que ya se pueden hacer:
 3. Body hints incluyen guidance de USO por tool → el modelo sabe CUÁNDO invocar cada MCP tool
 4. Body hints neutros → funciona en Claude Code CLI Y VS Code sin confusión
 5. Claude Code CLI no se rompe → tools desconocidos se ignoran silenciosamente
+
+---
+
+### Subtarea E: Optimizar peso de distribución (RAM/tamaño) — 2026-04-08
+
+#### Problema
+
+Al instalar los agents en VS Code y Copilot CLI / Claude Code CLI, el usuario reporta mayor consumo de RAM. Cada instalación copia la totalidad de `skills/` sin filtrar contenido innecesario.
+
+#### Auditoría de peso actual
+
+| Contenido | Incluido en distribución | Necesario para runtime | Impacto |
+|---|---|---|---|
+| `skills/*/SKILL.md` (16 skills) | ✅ Sí | ✅ Sí — core del plugin | Necesario |
+| `skills/*/evals/` (4 skills) | ✅ Sí | ❌ No — solo para desarrollo | ~50KB/paquete basura |
+| `skills/*/templates/` (skill-creator) | ✅ Sí | ⚠️ Solo si usuario crea skills | ~10KB, marginal |
+| `skills/interface-design/references/` (4 archivos) | ✅ Sí | ⚠️ Referencia pero pesada | ~100KB, considerable |
+| `skills/workflow-knowledge/lessons.md` | ✅ Sí | ✅ Sí — memoria del workflow | Necesario |
+| `skills/workflow-knowledge/summaries.md` | ✅ Sí | ✅ Sí — cache de navegación | Necesario |
+| Skills triplicadas (claude-code + copilot-cli + vsix) | ✅ Sí | ❌ Cada target solo necesita 1 copia | ~590KB × 3 = 1.7MB waste |
+| `packages/` snapshots manuales | ✅ En repo | ❌ Stale, build escribe en `dist/` | Confusión + mantenimiento |
+
+#### Root cause
+
+1. `build-dist.sh` copia `skills/` completo con `copy_dir` — no excluye subdirectorios de desarrollo
+2. `validate_package()` verifica que `skills/*/SKILL.md` existe pero NO verifica que `evals/` NO existe
+3. No hay `.vscodeignore` entry para `**/evals/` ni `**/references/`
+4. Las skills se empaquetan idénticas para cada target — sin filtro per-platform
+5. `packages/` mantiene snapshots manuales que compiten con `dist/` (build output)
+
+#### Plan de fix
+
+- [ ] **Excluir `evals/` del build** — agregar exclusión en `copy_dir` o post-copy cleanup en `build-dist.sh`
+- [ ] **Excluir `templates/` del build** — solo útil para desarrollo de nuevas skills
+- [ ] **Evaluar `references/`** — si `interface-design/SKILL.md` los referencia inline, mantener; si son archivo de soporte, excluir
+- [ ] **Agregar validación negativa** — `validate_package()` falla si encuentra `evals/`, `templates/` o `*.test.*` en distribución
+- [ ] **Actualizar `.vscodeignore.*`** — agregar `**/evals/**`, `**/templates/**`
+- [ ] **Medir antes/después** — comparar tamaño de paquete y file count
+
+#### Sobre RAM
+
+La RAM adicional en VS Code NO viene del tamaño de archivos en disco — viene de:
+1. **Más archivos indexados** por VS Code file watcher → más entradas en memoria
+2. **Más context cargado** si agents/skills referencian archivos que VS Code pre-lee
+3. **MCP servers activos** (context7, playwright) consumen RAM independientemente
+
+Reducir archivos innecesarios (evals, templates) reduce el file count que VS Code indexa. Pero si el delta de RAM es significativo (>100MB), la causa probable es MCP servers, no archivos.
+
+#### Acceptance criteria
+1. `dist/claude-code/skills/` NO contiene subdirectorios `evals/` ni `templates/`
+2. `dist/copilot-cli/skills/` NO contiene subdirectorios `evals/` ni `templates/`
+3. VSIX packages NO contienen `**/evals/**` ni `**/templates/**`
+4. `validate_package()` falla si encuentra archivos de desarrollo en paquete
+5. File count del paquete reducido (medir antes/después)
+6. Runtime no se rompe — skills cargan sin error en Claude Code y VS Code
+
+---
+
+### Subtarea F: Documentación alineada + aislamiento de archivos por método de instalación — 2026-04-08
+
+#### Problema 1: Documentación desactualizada
+
+Los documentos del proyecto (README.md, INSTALL.md, GUIDE.md, SETUP.md) reflejan la estructura ANTES de los cambios planificados. Si se ejecutan PR1-PR6 sin actualizar docs, el usuario encontrará instrucciones que no corresponden a la realidad.
+
+#### Problema 2: Archivos incorrectos por método de instalación
+
+Cada método de instalación debe entregar SOLO los archivos que le corresponden:
+
+| Archivo / Carpeta | Claude Code CLI | Copilot CLI | VS Code VSIX Claude | VS Code VSIX Copilot | Justificación |
+|---|---|---|---|---|---|
+| `agents/` (Claude format) | ✅ | ❌ | ✅ | ❌ | Solo targets Claude |
+| `agents/` (Copilot format) | ❌ | ✅ | ❌ | ✅ | Solo targets Copilot |
+| `skills/` (completo) | ✅ | ✅ | ✅ | ✅ | Compartido, universal |
+| `skills/*/evals/` | ❌ | ❌ | ❌ | ❌ | Solo desarrollo (PR6 lo excluye) |
+| `hooks/hooks.json` | ✅ | ✅ | ✅ | ✅ | Compartido |
+| `hooks/hooks.dev.json` | ❌ | ❌ | ❌ | ❌ | Solo desarrollo |
+| `settings.json` | ✅ | ✅ | ❌ | ❌ | Solo CLI plugins |
+| `.claude-plugin/plugin.json` | ✅ | ❌ | ❌ | ❌ | Solo Claude Code |
+| `plugin.json` (root) | ❌ | ✅ | ❌ | ❌ | Solo Copilot CLI |
+| `package.json` | ❌ | ❌ | ✅ | ✅ | Solo VS Code VSIX |
+| `src/extension.js` | ❌ | ❌ | ✅ | ✅ | Solo VS Code VSIX |
+| `LICENSE` | ✅ | ✅ | ✅ | ✅ | Siempre incluido |
+| `README.md`, `GUIDE.md`, etc. | ❌ | ❌ | ❌ | ❌ | Solo repo (ya en FORBIDDEN) |
+| `benchmark/`, `scripts/` | ❌ | ❌ | ❌ | ❌ | Solo desarrollo (ya excluidos) |
+| `workflow-knowledge/lessons.md` | ✅ | ✅ | ✅ | ✅ | Memoria — se llena per-proyecto |
+| `workflow-knowledge/summaries.md` | ✅ | ✅ | ✅ | ✅ | Cache — se llena per-proyecto |
+
+#### Archivos compartidos de proyecto (SÍ se distribuyen)
+
+Estos archivos se distribuyen vacíos/template y se llenan durante el uso:
+- `skills/workflow-knowledge/lessons.md` — cada proyecto acumula sus propias lecciones
+- `skills/workflow-knowledge/summaries.md` — cada proyecto acumula su propio cache
+- `hooks/hooks.json` — hooks de producción, el proyecto puede agregar los suyos
+
+#### Plan de fix
+
+**Documentación:**
+- [ ] **Revisar README.md** — ¿refleja la estructura post-PR1/PR2? ¿Paths de instalación correctos?
+- [ ] **Revisar INSTALL.md** — ¿instrucciones de instalación por método son correctas?
+- [ ] **Revisar GUIDE.md** — ¿guía de uso alineada con agents/skills/hooks paths?
+- [ ] **Revisar SETUP.md** — ¿setup inicial correcto post-cambios?
+- [ ] **Verificar CHANGELOG.md** — agregar entradas para PR1-PR8
+
+**Aislamiento de archivos:**
+- [ ] **Auditar `build_claude_code()`** — verificar contra tabla de arriba, cada archivo presente/ausente
+- [ ] **Auditar `build_copilot_cli()`** — verificar contra tabla
+- [ ] **Auditar `build_vscode_variant("claude")`** — verificar contra tabla
+- [ ] **Auditar `build_vscode_variant("copilot")`** — verificar contra tabla
+- [ ] **Agregar test automatizado** — script que verifica contenido de cada `dist/<target>/` contra tabla expected
+
+#### Acceptance criteria
+1. Cada doc root (README, INSTALL, GUIDE, SETUP) refleja structure post-PRs
+2. `build-dist.sh` para cada target contiene EXACTAMENTE los archivos de la tabla
+3. Test script verifica: para cada target, lista files en dist/ y compara contra expected list
+4. Ningún target instala archivos de otro target (Claude agents no van a Copilot, y viceversa)
+5. CHANGELOG.md tiene entradas para todos los PRs ejecutados
+
+---
+
+### Subtarea G: Auditoría y limpieza de estructura del proyecto — 2026-04-08
+
+#### Problema
+
+El repositorio ha crecido orgánicamente y tiene:
+1. **Duplicación**: `packages/claude-code/` y `packages/copilot-cli/` son snapshots manuales que `build-dist.sh` NO usa (escribe en `dist/`)
+2. **Archivos planning obsoletos**: `PLAN-agent-improvements.md`, `PLAN-selective-install.md`, `workflow-model-strategy.md` son documentos de planificación que ya están en `todo.md`
+3. **Estructura inconsistente**: el build genera en `dist/` pero `packages/` también existe como pre-built
+4. **VS Code VSIX estructura**: la distribución VS Code podría servir como referencia para la estructura canónica del repo
+
+#### Auditoría de archivos root
+
+| Archivo | Propósito | ¿Mantener? | Acción |
+|---|---|---|---|
+| `README.md` | Docs principal | ✅ | Actualizar (PR7) |
+| `INSTALL.md` | Guía de instalación | ✅ | Actualizar (PR7) |
+| `GUIDE.md` | Guía de uso | ✅ | Actualizar (PR7) |
+| `SETUP.md` | Setup inicial | ⚠️ ¿Redundante con INSTALL? | Evaluar merge con INSTALL |
+| `CHANGELOG.md` | Historial cambios | ✅ | Actualizar (PR7) |
+| `CLAUDE.md` | Config Claude Code | ✅ | Necesario para Claude Code entrypoint |
+| `CODEOWNERS` | GitHub ownership | ✅ | Mantener |
+| `LICENSE` | Licencia | ✅ | Mantener |
+| `PLAN-agent-improvements.md` | Plan viejo | ❌ | Eliminar — contenido ya en todo.md |
+| `PLAN-selective-install.md` | Plan viejo | ❌ | Eliminar — contenido ya en todo.md |
+| `workflow-model-strategy.md` | Estrategia de modelos | ⚠️ | Evaluar — ¿migrar a skill o eliminar? |
+| `package.json` | VS Code main manifest | ✅ | Mantener |
+| `package.claude.json` | VS Code Claude variant | ✅ | Mantener |
+| `package.copilot.json` | VS Code Copilot variant | ✅ | Mantener |
+| `plugin.json` | Copilot CLI manifest | ✅ | Mantener |
+| `settings.json` | Config compartido | ✅ | Mantener |
+
+#### Auditoría de `packages/` vs `dist/`
+
+| Directorio | Propósito | Estado actual | Acción |
+|---|---|---|---|
+| `packages/claude-code/` | Snapshot manual Claude | ❌ Stale — `build-dist.sh` escribe en `dist/` | **Eliminar** o convertir en symlink a `dist/claude-code/` |
+| `packages/copilot-cli/` | Snapshot manual Copilot | ❌ Stale — `build-dist.sh` escribe en `dist/` | **Eliminar** o convertir en symlink a `dist/copilot-cli/` |
+| `dist/` (gitignored) | Build output real | ✅ Generado por build | Mantener como está |
+
+> **Decisión PENDIENTE:** ¿Eliminar `packages/` completamente? Si otros repos o CI dependen de `packages/` como source, necesitan migrar a `dist/`. Verificar si hay references externas.
+
+#### Estructura propuesta (post-PR8)
+
+```
+agent-workflow/
+├── agents/                  # Claude Code canonical agents
+├── .github/
+│   ├── agents/              # Copilot/VS Code canonical agents
+│   ├── instructions/        # Workspace instructions
+│   └── tasks/               # todo.md, lessons.md, progress.md, summaries.md
+├── skills/                  # Shared skills (universal)
+├── hooks/                   # hooks.json (prod) + hooks.dev.json (dev)
+├── src/                     # VS Code extension source
+├── scripts/                 # Build tools
+├── benchmark/               # Performance testing (dev only)
+├── .claude/                 # Claude Code config (rules, settings)
+├── .claude-plugin/          # Claude Code plugin manifest
+├── dist/                    # Build output (gitignored)
+├── README.md                # Main documentation
+├── INSTALL.md               # Installation guide
+├── GUIDE.md                 # Usage guide
+├── CHANGELOG.md             # Version history
+├── CLAUDE.md                # Claude Code entrypoint
+├── LICENSE                  # License
+├── package.json             # VS Code main manifest
+├── package.claude.json      # VS Code Claude variant
+├── package.copilot.json     # VS Code Copilot variant
+├── plugin.json              # Copilot CLI manifest
+└── settings.json            # Shared config
+```
+
+#### Plan de fix
+
+- [ ] **Eliminar PLAN-*.md** — contenido ya consolidado en `.github/tasks/todo.md`
+- [ ] **Evaluar workflow-model-strategy.md** — ¿migrar contenido a skill o eliminar?
+- [ ] **Evaluar SETUP.md vs INSTALL.md** — ¿merge o mantener separados?
+- [ ] **Decidir qué hacer con `packages/`** — eliminar, symlink, o mantener como referencia
+- [ ] **Si se elimina `packages/`**: actualizar `.gitignore`, build scripts, y cualquier referencia
+- [ ] **Verificar que `dist/` está en `.gitignore`**
+- [ ] **Actualizar CLAUDE.md** si la estructura cambia
+
+#### Staff Engineer review — 2026-04-08
+
+**Aplica a Subtareas E, F, y G en conjunto:**
+
+**APROBADO con condiciones:**
+
+1. **E (distribución)**: Plan sólido. La hipótesis de RAM es correctamente matizada — archivos en disco reducen file watcher entries, pero RAM significativa viene de MCP servers. El fix es correcto: excluir `evals/`, `templates/`, agregar validación negativa. **Condición:** medir antes/después en VS Code con extensión activa.
+
+2. **F (docs + aislamiento)**: La tabla de archivos por método es excelente — es el contrato de distribución. **Condición:** la tabla DEBE convertirse en test automatizado (no solo doc), y cada PR debe verificar que el build sigue pasando.
+
+3. **G (estructura)**: El riesgo está en `packages/` — si repos externos dependen de esa ruta, eliminar rompe. **Condición:** antes de eliminar, buscar references en GitHub (issues, READMEs de otros repos, CI configs). Si no hay dependencias externas, eliminar con confidence.
+
+4. **Scope creep alert**: 8 PRs es mucho. Considerar si PR6/PR7/PR8 se pueden consolidar en 1 PR de cleanup (no tocan lógica, solo archivos/docs). **Recomendación:** PR6+PR8 → 1 PR "clean distribution" ya que ambos tocan `build-dist.sh` y estructura.
+
+5. **Orden correcto**: PR7 (docs) DEBE ser el último — documenta el estado final, no un intermedio.
+
+#### Acceptance criteria (G)
+1. No existen `PLAN-*.md` en root
+2. `packages/` eliminado o documentado por qué se mantiene
+3. `dist/` está en `.gitignore`
+4. Estructura del repo coincide con la tabla propuesta
+5. CLAUDE.md actualizado si estructura cambió

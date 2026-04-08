@@ -305,7 +305,7 @@ Plugins se instalan en `~/.copilot/installed-plugins/`. No copian al workspace.
 
 ### Estrategia de PRs y orden de ejecución
 
-**8 PRs separados** — cada uno con scope claro (principio: "Separate refactoring from feature changes"):
+**9 PRs separados** — cada uno con scope claro (principio: "Separate refactoring from feature changes"):
 
 | PR | Scope | Depende de | Branch |
 |---|---|---|---|
@@ -317,12 +317,13 @@ Plugins se instalan en `~/.copilot/installed-plugins/`. No copian al workspace.
 | **PR6** | Subtarea E: Optimizar peso de distribución (RAM/size) | Nada (independiente) | `perf/distribution-weight` |
 | **PR7** | Subtarea F: Documentación + aislamiento de archivos por método | PR1 + PR6 | `docs/align-with-changes` |
 | **PR8** | Subtarea G: Auditoría estructura del proyecto | PR6 | `refactor/project-structure` |
+| **PR9** | Subtarea H: Auditoría de skills — solo las necesarias | PR6 (excluir evals primero) | `refactor/skill-audit` |
 
 **Orden:**
 - **Fase 1 (paralelo):** PR1, PR2, PR5, PR6
-- **Fase 2 (secuencial):** PR3, PR4 (dependen de PR2) y PR7, PR8 (dependen de PR1/PR6)
+- **Fase 2 (secuencial):** PR3, PR4 (dependen de PR2) y PR7, PR8, PR9 (dependen de PR1/PR6)
 
-**Sin conflicto:** PR1 toca `extension.js` + manifests. PR2 toca paths/references. PR3 toca `.claude/` cleanup. PR4 toca orchestrator/scribe logic. PR5 toca agent body text + frontmatter tools. PR6 toca `build-dist.sh` + `.vscodeignore*`. PR7 toca docs `.md` en root. PR8 toca estructura de carpetas.
+**Sin conflicto:** PR1 toca `extension.js` + manifests. PR2 toca paths/references. PR3 toca `.claude/` cleanup. PR4 toca orchestrator/scribe logic. PR5 toca agent body text + frontmatter tools. PR6 toca `build-dist.sh` + `.vscodeignore*`. PR7 toca docs `.md` en root. PR8 toca estructura de carpetas. PR9 toca `skills/` contenido + agent frontmatter `skills:`.
 
 ---
 
@@ -823,3 +824,115 @@ agent-workflow/
 3. `dist/` está en `.gitignore`
 4. Estructura del repo coincide con la tabla propuesta
 5. CLAUDE.md actualizado si estructura cambió
+
+---
+
+### Subtarea H: Auditoría de skills — solo instalar las necesarias — 2026-04-08
+
+#### Problema
+
+El plugin distribuye las 17 skills competas a todos los targets. Un dev que instala el workflow recibe skills que quizás no necesita. Se necesita verificar cuáles son core del workflow y cuáles son opcionales/especializadas.
+
+#### Auditoría completa: 17 skills
+
+**✅ REQUIRED — Core del workflow pipeline (5 skills)**
+
+| Skill | Propósito | Referenciado por | Evidencia |
+|---|---|---|---|
+| `workflow` | Entry point: ejecutar pipeline completo (Plan → Implement → Test/Review → Security) | README, GUIDE, CLAUDE.md, benchmark | Comando principal `/workflow` |
+| `workflow-knowledge` | Memoria persistente: lessons.md + summaries.md | 6 agents (frontmatter `skills:`): Implementer, Tester, Reviewer, PR-Reviewer, Security, Infra | Cada agent lo lee al iniciar |
+| `workflow-orchestrator` | Protocolo de pipeline para Copilot agents | `.github/agents/*.agent.md` (comment: "GENERATED FROM") | Scaffold de agents Copilot |
+| `owasp-review` | Security review OWASP Top 10:2025 | Security agent (frontmatter `skills: - owasp-review`) | Dependencia directa del agent |
+| `github-cli` | Referencia de comandos `gh` para PRs/issues | PR-Reviewer agent (frontmatter `skills: - github-cli`) | Dependencia directa del agent |
+
+**⚠️ OPTIONAL — Valuable pero no bloquean el workflow (9 skills)**
+
+| Skill | Propósito | Tipo | Justificación |
+|---|---|---|---|
+| `lesson` | Registrar lección manual (`/lesson`) | Comando usuario | Útil pero pipeline auto-registra via orchestrator |
+| `save-progress` | Guardar estado de sesión (`/save-progress`) | Comando usuario | Calidad de vida, no bloquea pipeline |
+| `consolidate` | Merge/cleanup de lessons.md (`/consolidate`) | Mantenimiento | Periódico, no por cada pipeline |
+| `post-session` | Extracción automática de lecciones post-sesión | Automatización | Supplementary, no crítico |
+| `review-pr` | Review de PR estilo Tech Lead (`/review-pr`) | Comando usuario | Útil pero no parte del pipeline principal |
+| `create-issue` | Crear GitHub Issue + doc Notion | Comando usuario | Depende de servicios externos (Notion) |
+| `prompt-refiner` | Normalizar input desordenado del usuario | UX helper | Nice-to-have, no crítico |
+| `owasp-mcp-review` | Security review específico para MCP servers | Especializado | Solo relevante si el proyecto usa MCP |
+| `skill-creator` | Crear nuevas skills (`/skill-creator`) | Meta-tool | Solo para extender el workflow mismo |
+
+**🟡 INFRASTRUCTURE — Navigation helpers (2 skills)**
+
+| Skill | Propósito | Relación | Justificación |
+|---|---|---|---|
+| `codebase-navigator` | Mapa de proyecto + descubrimiento de estructura | Referencia `rlm-codebase-navigation` | Helper de navegación, fallback |
+| `rlm-codebase-navigation` | Protocolo RLM genérico de exploración | Referenciado por `codebase-navigator` | Genérico, no específico del workflow |
+
+**🎨 DOMAIN-SPECIFIC (1 skill)**
+
+| Skill | Propósito | Justificación |
+|---|---|---|
+| `interface-design` | Diseño UI/UX con referencias de craft | Solo relevante para proyectos con frontend. Incluye `references/` (~100KB) |
+
+#### Mapa de dependencias entre skills
+
+```
+workflow-knowledge ←── [consolidate, lesson, post-session, workflow]
+owasp-review        ←── [owasp-mcp-review]
+rlm-codebase-nav    ←── [codebase-navigator]
+```
+
+#### Decisión: ¿Qué instalar por defecto?
+
+**Opción 1: Instalar todas (status quo)**
+- Pros: sin complejidad de selección, usuario tiene todo disponible
+- Cons: peso innecesario, skills irrelevantes confunden
+
+**Opción 2: Solo REQUIRED (5 skills)**
+- Pros: mínimo peso, zero confusión
+- Cons: usuario pierde `/lesson`, `/save-progress`, `/review-pr` que son muy útiles en práctica
+
+**Opción 3 (recomendada): REQUIRED + OPTIONAL del workflow (14 skills), excluir domain-specific**
+- Instalar: las 5 REQUIRED + 9 OPTIONAL + 2 INFRASTRUCTURE = 16 skills
+- Excluir: `interface-design` (domain-specific, 100KB+ con references/)
+- El dev que necesite UI/design puede instalarlo manualmente
+- Pros: workflow completo sin peso de dominio específico
+- Cons: solo excluye 1 skill — beneficio marginal
+
+**Opción 4: REQUIRED + selectively OPTIONAL (core UX commands)**
+- Instalar: 5 REQUIRED + `lesson` + `save-progress` + `consolidate` + `post-session` + `review-pr` = 10 skills
+- Excluir: `create-issue` (Notion dependency), `prompt-refiner`, `owasp-mcp-review`, `skill-creator`, `codebase-navigator`, `rlm-codebase-navigation`, `interface-design`
+- Pros: workflow lean, solo lo que un dev usa en la práctica diaria
+- Cons: dev pierde navigation helpers y meta-tools
+
+#### Decisión: PENDIENTE
+
+> ⚠️ Requiere input del usuario. La auditoría confirma que **todas las 17 skills tienen referencia** — no hay huérfanas. La pregunta no es "cuáles sobran" sino "cuáles son opcionales para un dev que solo quiere el workflow pipeline".
+
+#### Plan de fix (independiente de la decisión)
+
+- [ ] **Categorizar skills en el manifest** — agregar metadata de categoría (core/optional/domain) si el formato lo soporta
+- [ ] **Documentar cuáles son las core skills** — en README o INSTALL, para que el dev sepa qué recibe
+- [ ] **Si se excluyen skills**: actualizar `build-dist.sh` para filtrar por categoría/lista
+- [ ] **Si se excluyen skills**: actualizar `validate_package()` para validar contra lista esperada
+- [ ] **Verificar que skills excluidas no rompen agents** — si un agent tiene `skills: - X` y X no está instalada, ¿qué pasa?
+- [ ] **Propagar a distribution copies** — `packages/claude-code/skills/` y `packages/copilot-cli/skills/`
+
+#### Staff Engineer review — 2026-04-08
+
+**APROBADO con observaciones:**
+
+1. **Auditoría confirma: 0 skills huérfanas.** Las 17 tienen al menos una referencia. Esto es buena señal — no hay dead code en skills.
+
+2. **La pregunta real es UX, no técnica.** El peso de 17 vs 10 skills es ~200KB de diferencia — irrelevante para RAM o disco. El valor está en **reducir ruido cognitivo**: un dev nuevo que ve 17 skills se pregunta cuáles usar.
+
+3. **Recomendación: Opción 3 + documentación.** Instalar 16/17 (excluir solo `interface-design`), pero **documentar categorías** en README/INSTALL para que el dev sepa: "estas 5 son core, estas 9 son comandos opcionales, esta 1 es para frontend".
+
+4. **Risk check**: si un agent declara `skills: - owasp-review` y la skill no está instalada, Claude Code falla silenciosamente (no crash, pero pierde contexto). VS Code ignora skills no encontradas. Esto significa que excluir skills referenciadas por agents NO es seguro sin actualizar el agent frontmatter.
+
+5. **Consolidar con PR6/PR8**: esta subtarea toca `build-dist.sh` y `skills/` — mismos archivos que PR6 y PR8. Considerar agrupar.
+
+#### Acceptance criteria (H)
+1. Skills categorizadas (core/optional/domain) en documentación
+2. `interface-design` excluida de distribución (si se decide Opción 3) o justificación documentada de por qué se mantiene
+3. Ningun agent falla por skill faltante — verificado en Claude Code CLI y VS Code
+4. README/INSTALL documenta qué skills recibe el dev y para qué sirve cada una
+5. Build validation pasa con el nuevo set de skills

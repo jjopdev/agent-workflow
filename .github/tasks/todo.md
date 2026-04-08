@@ -852,7 +852,7 @@ El plugin distribuye las 17 skills competas a todos los targets. Un dev que inst
 | `lesson` | Registrar lección manual (`/lesson`) | Comando usuario | Útil pero pipeline auto-registra via orchestrator |
 | `save-progress` | Guardar estado de sesión (`/save-progress`) | Comando usuario | Calidad de vida, no bloquea pipeline |
 | `consolidate` | Merge/cleanup de lessons.md (`/consolidate`) | Mantenimiento | Periódico, no por cada pipeline |
-| `post-session` | Extracción automática de lecciones post-sesión | Automatización | Supplementary, no crítico |
+| `post-session` | Extracción automática de lecciones post-sesión | Automatización | **Tiene Stop hook trigger en Claude Code** — cierra el ciclo de aprendizaje automático. NOTA: el trigger está roto (solo en `packages/claude-code/hooks/`, no en `hooks/hooks.json` distribuido). Si se arreglan hooks → reclasificar como REQUIRED |
 | `review-pr` | Review de PR estilo Tech Lead (`/review-pr`) | Comando usuario | Útil pero no parte del pipeline principal |
 | `create-issue` | Crear GitHub Issue + doc Notion | Comando usuario | Depende de servicios externos (Notion) |
 | `prompt-refiner` | Normalizar input desordenado del usuario | UX helper | Nice-to-have, no crítico |
@@ -907,6 +907,41 @@ rlm-codebase-nav    ←── [codebase-navigator]
 
 > ⚠️ Requiere input del usuario. La auditoría confirma que **todas las 17 skills tienen referencia** — no hay huérfanas. La pregunta no es "cuáles sobran" sino "cuáles son opcionales para un dev que solo quiere el workflow pipeline".
 
+#### Hallazgo crítico: hooks de producción vacíos vs hooks con triggers
+
+| Hook file | Stop hooks | ¿Se distribuye? | Estado |
+|---|---|---|---|
+| `hooks/hooks.json` (producción) | `"Stop": []` — **VACÍO** | ✅ Sí — es el que se instala | 🔴 No triggerea `/post-session --auto` |
+| `hooks/hooks.dev.json` (desarrollo) | 2 Stop hooks activos | ❌ Solo dev local | ✅ Funciona en dev |
+| `packages/claude-code/hooks/hooks.json` | 2 Stop hooks activos | ⚠️ Snapshot stale | ⚠️ Funciona pero desactualizado |
+
+**Impacto:** El dev que instala el plugin NO recibe los Stop hooks que:
+1. Detectan correcciones/fallos → appenden lección automáticamente
+2. Detectan pipeline completion → invocan `/post-session --auto`
+
+**Fix requerido:** Decidir si los Stop hooks van en `hooks/hooks.json` distribuido o si se mantienen solo para dev. Si van en producción, `post-session` se reclasifica como REQUIRED.
+
+#### Cross-platform: skills deben funcionar en todas las plataformas
+
+Las skills se invocan como comandos (`/lesson`, `/save-progress`, `/consolidate`, etc.). Verificar que funcionen en:
+
+| Skill | Claude Code CLI | Copilot CLI | VS Code |
+|---|---|---|---|
+| Skills con `argument-hint` | ✅ `/skill-name args` | ⚠️ Verificar formato invocación | ⚠️ Verificar formato invocación |
+| Skills con `disable-model-invocation: true` | ✅ Solo manual | ⚠️ ¿VS Code respeta este flag? | ⚠️ ¿VS Code respeta este flag? |
+| Skills que escriben archivos (`lesson`, `save-progress`, `consolidate`) | ✅ Paths Claude Code | ⚠️ Paths Copilot | ⚠️ Paths VS Code |
+| Skills que delegan a agents (`consolidate` → Scribe) | ✅ Claude delega con Agent | ⚠️ ¿Copilot CLI delega igual? | ✅ VS Code tiene runSubagent |
+
+**Riesgo:** `consolidate` escribe a paths específicos:
+- Claude Code: `skills/workflow-knowledge/lessons.md`
+- Copilot: `.github/tasks/lessons.md`
+
+Si los paths no coinciden con la plataforma, la skill escribe en el lugar equivocado o falla.
+
+- [ ] **Verificar paths de escritura por plataforma** — cada skill que escribe archivos debe detectar la plataforma o usar paths relativos correctos
+- [ ] **Verificar flags de invocación** — `disable-model-invocation`, `argument-hint` en VS Code y Copilot CLI
+- [ ] **Verificar delegación de skills a agents** — `consolidate` delega a Scribe, ¿funciona en todas las plataformas?
+
 #### Plan de fix (independiente de la decisión)
 
 - [ ] **Categorizar skills en el manifest** — agregar metadata de categoría (core/optional/domain) si el formato lo soporta
@@ -918,17 +953,21 @@ rlm-codebase-nav    ←── [codebase-navigator]
 
 #### Staff Engineer review — 2026-04-08
 
-**APROBADO con observaciones:**
+**APROBADO con correcciones aplicadas:**
 
 1. **Auditoría confirma: 0 skills huérfanas.** Las 17 tienen al menos una referencia. Esto es buena señal — no hay dead code en skills.
 
-2. **La pregunta real es UX, no técnica.** El peso de 17 vs 10 skills es ~200KB de diferencia — irrelevante para RAM o disco. El valor está en **reducir ruido cognitivo**: un dev nuevo que ve 17 skills se pregunta cuáles usar.
+2. **Corrección `post-session`**: originalmente clasificada OPTIONAL. Tiene Stop hook trigger — si se arreglan hooks distribuidos, es REQUIRED (cierra ciclo de aprendizaje automático). Hallazgo de hooks vacíos agregado.
 
-3. **Recomendación: Opción 3 + documentación.** Instalar 16/17 (excluir solo `interface-design`), pero **documentar categorías** en README/INSTALL para que el dev sepa: "estas 5 son core, estas 9 son comandos opcionales, esta 1 es para frontend".
+3. **Cross-platform gap identificado**: skills que escriben archivos (`consolidate`, `save-progress`, `lesson`) usan paths hardcoded por plataforma. Si la skill se instala en VS Code pero tiene paths de Claude Code, escribe en el lugar equivocado. Requiere verificación.
 
-4. **Risk check**: si un agent declara `skills: - owasp-review` y la skill no está instalada, Claude Code falla silenciosamente (no crash, pero pierde contexto). VS Code ignora skills no encontradas. Esto significa que excluir skills referenciadas por agents NO es seguro sin actualizar el agent frontmatter.
+4. **La pregunta real es UX, no técnica.** El peso de 17 vs 10 skills es ~200KB de diferencia — irrelevante para RAM o disco. El valor está en **reducir ruido cognitivo**: un dev nuevo que ve 17 skills se pregunta cuáles usar.
 
-5. **Consolidar con PR6/PR8**: esta subtarea toca `build-dist.sh` y `skills/` — mismos archivos que PR6 y PR8. Considerar agrupar.
+5. **Recomendación: Opción 3 + documentación.** Instalar 16/17 (excluir solo `interface-design`), pero **documentar categorías** en README/INSTALL.
+
+6. **Risk check**: si un agent declara `skills: - owasp-review` y la skill no está instalada, Claude Code falla silenciosamente (no crash, pero pierde contexto). VS Code ignora skills no encontradas. Excluir skills referenciadas por agents NO es seguro sin actualizar agent frontmatter.
+
+7. **Consolidar con PR6/PR8**: esta subtarea toca `build-dist.sh` y `skills/` — mismos archivos que PR6 y PR8. Considerar agrupar.
 
 #### Acceptance criteria (H)
 1. Skills categorizadas (core/optional/domain) en documentación
@@ -936,3 +975,5 @@ rlm-codebase-nav    ←── [codebase-navigator]
 3. Ningun agent falla por skill faltante — verificado en Claude Code CLI y VS Code
 4. README/INSTALL documenta qué skills recibe el dev y para qué sirve cada una
 5. Build validation pasa con el nuevo set de skills
+6. Skills que escriben archivos funcionan en las 3 plataformas (paths correctos)
+7. Decisión tomada sobre hooks de producción: ¿Stop hooks incluidos o no? Si sí, `post-session` reclasificada como REQUIRED

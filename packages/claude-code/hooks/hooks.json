@@ -5,8 +5,8 @@
         "matcher": "startup",
         "hooks": [
           {
-            "type": "agent",
-            "prompt": "Check if the file .claude/progress.md exists in the current working directory.\n\nIf it exists, read it and respond with:\n{\"systemMessage\":\"📋 Work in progress found. Run /save-progress to update or delete .claude/progress.md when done.\"}\n\nIf it does not exist, respond with: {}",
+            "type": "command",
+            "command": "node -e \"const fs=require('fs');if(fs.existsSync('.claude/progress.md')){console.log(JSON.stringify({hookSpecificOutput:{hookEventName:'SessionStart',additionalContext:'Work in progress found. Run /save-progress to update or delete .claude/progress.md when done.'}}))}else{console.log('{}')}\"",
             "timeout": 15
           }
         ]

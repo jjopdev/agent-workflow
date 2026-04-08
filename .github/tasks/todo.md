@@ -135,18 +135,34 @@ Hay **6 targets de instalación** (2 niveles × 3 plataformas). Analicé docs of
 | 5 | Copilot CLI (repo) | Probablemente OK | Paths declarados coinciden con estructura |
 | 6 | Copilot CLI (dist) | Probablemente OK | build-dist.sh ya ajusta paths |
 
-### Pipeline: Implement → Test → Review
+### Pipeline: Reproduce → Implement → Test → Review
+
+#### Step 0: Reproducir bugs en cada plataforma
+
+Antes de fixear, confirmar el estado real de cada target:
+- [ ] VS Code VSIX Claude: Instalar en workspace vacío → abrir Copilot Chat → `@` muestra agents? `/` muestra skills? Hook se ejecuta?
+- [ ] VS Code VSIX Copilot: Mismo test
+- [ ] VS Code Agent Plugin (Install from Source): Mismo test
+- [ ] Claude Code CLI: `claude plugin install .` → `claude plugins list` → ¿muestra agents/skills count correcto?
+- [ ] Copilot CLI: `copilot plugin install .` → verificar discovery
+
+**Output:** Actualizar tabla "Bugs confirmados vs por verificar" con status real (CONFIRMED/OK/BROKEN). Eliminar los "Por verificar" — solo facts.
 
 #### Step 1: Fix VS Code VSIX — Claude variant (bug confirmado)
 
-Cambiar `installClaudeVariant()` en `extension.js`:
-```
-agents  → .claude/agents/        (o dejar root — VS Code busca en .claude/agents/)
-skills  → .claude/skills/        (VS Code NO busca en skills/)
-hooks   → .claude/settings.json  (VS Code busca en .claude/settings.json, NO en hooks/)
-```
-- [ ] Actualizar `installClaudeVariant()` en `src/extension.js`
-- [ ] Decidir formato hooks: archivo separado `.claude/hooks/hooks.json` o embebido en `.claude/settings.json`
+**Decisión cerrada — paths destino:**
+
+| Tipo | Destino workspace | Formato |
+|---|---|---|
+| agents | `.claude/agents/` | — |
+| skills | `.claude/skills/` | — |
+| hooks | `.claude/settings.json` | Wrapped `{"hooks":{...}}` — merge con existente |
+| rules | `.claude/rules/` | — |
+
+**Decisión cerrada — hooks format:** `.claude/settings.json` con formato wrapped. Es la ÚNICA ruta de discovery workspace-level para Claude format (docs oficiales). Si el archivo ya existe en el workspace, leer y hacer merge del key `hooks` sin sobrescribir permissions ni otros settings.
+
+- [ ] Actualizar `installClaudeVariant()` en `src/extension.js` con paths corregidos
+- [ ] Implementar merge-safe para hooks en `.claude/settings.json` existente
 
 #### Step 2: Completar manifest de Claude Code plugin
 
@@ -167,25 +183,47 @@ Los hooks tienen 2 formatos:
 - **Flat (Copilot/root):** `{ "PreToolUse": [], "Stop": [] }`
 - **Wrapped (Claude):** `{ "hooks": { "PreToolUse": [], "Stop": [] } }`
 
-Estado actual:
-- `hooks/hooks.json` → flat (template vacío)
-- `packages/claude-code/hooks/hooks.json` → wrapped (con hooks reales)
-- `packages/copilot-cli/hooks/hooks.json` → flat (template vacío)
-- `hooks/hooks.dev.json` → wrapped (hooks de desarrollo)
+**Decisión cerrada — formato correcto por archivo:**
 
-VS Code docs: "For Claude format, it's `hooks/hooks.json`, and for Copilot format, it's `hooks.json` at the plugin root. VS Code auto-detects the plugin format."
-- [ ] Verificar que cada paquete usa el formato correcto para su plataforma
+| Archivo | Formato actual | Formato correcto | ¿Fix? |
+|---|---|---|---|
+| `hooks/hooks.json` | flat | flat (template Copilot) | ✅ OK |
+| `hooks/hooks.dev.json` | wrapped | wrapped (Claude dev) | ✅ OK |
+| `packages/claude-code/hooks/hooks.json` | wrapped | wrapped (Claude plugin) | ✅ OK |
+| `packages/copilot-cli/hooks/hooks.json` | flat | flat (Copilot plugin) | ✅ OK |
+| `.github/hooks/hooks.json` (VSIX Copilot) | flat | flat (workspace Copilot) | ✅ OK |
+| `.claude/settings.json` (VSIX Claude) | N/A — no existe | wrapped `{"hooks":{}}` | 🔧 Step 1 lo crea |
+
+**Regla:** VS Code plugin-level → hooks auto-detectado por formato. Workspace-level → `.claude/settings.json` (wrapped) o `.github/hooks/` (flat). CLI plugins → formato del manifest.
+
+- [x] ~~Verificar que cada paquete usa el formato correcto~~ — verificado en tabla, todos OK excepto Claude workspace (Step 1 lo resuelve)
 
 #### Step 4: Verificar VS Code Copilot variant
-- [ ] Confirmar que `.github/hooks/hooks.json` es descubierto por VS Code
-- [ ] Verificar formato hooks (flat vs wrapped) para workspace `.github/hooks/`
+- [ ] Confirmar que `installCopilotVariant()` paths son correctos (`.github/agents/`, `.github/skills/`, `.github/hooks/hooks.json`) — revisar código contra tabla de discovery
+- [ ] Verificar que `.github/hooks/hooks.json` usa formato flat (confirmado en Step 3, validar en runtime con Step 0)
 
 #### Step 5: Test en cada plataforma
-- [ ] VS Code VSIX Claude: instalar en workspace vacío → verificar skills y hooks descubiertos
-- [ ] VS Code VSIX Copilot: instalar en workspace vacío → verificar discovery
-- [ ] VS Code Agent Plugin (Install from Source): verificar discovery
-- [ ] Claude Code CLI: `claude plugin install` → verificar skills/hooks/agents
-- [ ] Copilot CLI: `copilot plugin install` → verificar skills/hooks/agents
+
+**Criterio de aceptación concreto:**
+
+**VS Code (VSIX Claude + Copilot + Agent Plugin):**
+1. Instalar en workspace vacío (sin archivos previos del plugin)
+2. Abrir Copilot Chat → escribir `@` → agents del plugin aparecen en autocomplete
+3. Escribir `/` → skills del plugin aparecen
+4. Abrir Output panel → canal "Copilot Chat" → buscar líneas de discovery (agents/skills/hooks loaded)
+5. Ejecutar acción que trigger un hook → verificar que se ejecuta
+
+**CLI (Claude Code + Copilot):**
+1. `claude plugin install .` (o `copilot plugin install .`)
+2. `claude plugins list` → agents count, skills count, hooks count correctos
+3. Iniciar sesión → agents disponibles como subagents
+4. Ejecutar acción que trigger hook → verificar ejecución
+
+- [ ] VS Code VSIX Claude: setup → agents en `@`, skills en `/`, hooks en Output panel
+- [ ] VS Code VSIX Copilot: setup → mismo checklist
+- [ ] VS Code Agent Plugin (Install from Source): discovery en Output panel
+- [ ] Claude Code CLI: `claude plugins list` → counts correctos + hooks ejecutan
+- [ ] Copilot CLI: `copilot plugins list` → counts correctos + hooks ejecutan
 
 #### Step 6: Review
 - [ ] Verificar que la instalación existente no se rompe
@@ -260,10 +298,24 @@ Plugins se instalan en `~/.copilot/installed-plugins/`. No copian al workspace.
 > - VS Code agent plugin → estructura interna del plugin + manifest, VS Code resuelve
 
 ### Archivos a modificar (estimado)
-1. `src/extension.js` — fix `installClaudeVariant()` paths: skills → `.claude/skills/`, hooks → `.claude/hooks/hooks.json`, agents → `.claude/agents/`
+1. `src/extension.js` — fix `installClaudeVariant()` paths + merge-safe hooks en `.claude/settings.json`
 2. `.claude-plugin/plugin.json` — agregar `agents` y `skills` paths explícitos
 3. Posiblemente `build-dist.sh` — si la estructura del paquete Claude necesita cambios
 4. Posiblemente `validate-manifests.py` — si las rutas validadas cambian
+
+### Estrategia de PRs y orden de ejecución
+
+**3 PRs separados** — cada uno con scope claro (principio: "Separate refactoring from feature changes"):
+
+| PR | Scope | Depende de | Branch |
+|---|---|---|---|
+| **PR1** | Fix Plugin Installation Paths (Steps 0-6) | Nada | `fix/plugin-install-paths` |
+| **PR2** | Subtarea A: Unificar archivos operacionales | Nada (independiente) | `refactor/unify-operational-files` |
+| **PR3** | Subtarea B: Cleanup `.claude/` + memory→rules | PR2 (progress.md ya movido) | `cleanup/claude-dead-files` |
+
+**Orden:** PR1 y PR2 en paralelo. PR3 después de PR2.
+
+**Sin conflicto:** PR1 toca `extension.js` + manifests. PR2 toca skills/hooks references. Archivos distintos.
 
 ---
 
@@ -302,6 +354,8 @@ Los archivos operacionales (lessons, todo, progress, summaries) están fragmenta
 - [ ] Actualizar hooks que referencian `.claude/progress.md`
 - [ ] Actualizar packages Claude Code y Copilot CLI (copias del build)
 
+> **Dependencia:** PR3 (Subtarea B) requiere que este PR esté mergeado primero — `progress.md` se mueve aquí y se elimina allá.
+
 ---
 
 ### Subtarea B: Limpiar archivos muertos y mal ubicados en `.claude/`
@@ -329,8 +383,14 @@ Los archivos operacionales (lessons, todo, progress, summaries) están fragmenta
 #### Fix
 - [ ] Eliminar `.claude/agent-memory/` — carpetas vacías, dead code
 - [ ] Decidir qué hacer con `.claude/memory/` — opciones:
-  - Opción 1: Mover contenido a `skills/workflow-knowledge/` (donde ya vive el knowledge base del workflow)
-  - Opción 2: Mover a `.github/tasks/` (si es knowledge de proyecto)
-  - Opción 3: Eliminar si es solo artefacto de desarrollo
+  - ~~Opción 1: Mover contenido a `skills/workflow-knowledge/`~~ 
+  - ~~Opción 2: Mover a `.github/tasks/`~~
+  - ~~Opción 3: Eliminar si es solo artefacto de desarrollo~~
+  - **Opción 4 (elegida):** El contenido es una REGLA de workflow, no memoria. Mover a:
+    - `.claude/rules/always-full-pipeline.md` → Claude Code la carga automáticamente, se commitea, se distribuye con el plugin
+    - `.github/instructions/always-full-pipeline.instructions.md` → Copilot/VS Code la carga automáticamente
+  - Luego eliminar `.claude/memory/` completo (MEMORY.md queda obsoleto — Claude Code auto-genera el suyo en `~/.claude/projects/`)
+  - **Scope de la regla:** Esta regla ES PARA proyectos target que instalen el plugin — les dice "siempre correr pipeline completo". Es parte del valor del plugin (workflow discipline). SÍ se distribuye intencionalmente.
+  - **Justificación:** `~/.claude/projects/<project>/memory/` es auto-managed por Claude Code en HOME, NO en el repo. Poner archivos en `.claude/memory/` del repo no tiene efecto — Claude Code nunca los lee de ahí.
 - [ ] Verificar que `build-dist.sh` NO empaqueta `agent-memory/` ni `memory/` en los dist packages
 - [ ] Verificar `.gitignore` tiene `settings.local.json`

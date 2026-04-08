@@ -3,50 +3,36 @@
 > Last saved: 2026-04-08 (session 7 — VS Code Copilot)
 
 ## Task
-Crear script de version bump (`scripts/bump-version.sh`)
-
-## Status: COMPLETE ✓
+Fix Plugin Installation Paths — hooks, skills, agents no se descubren tras instalar en ninguna plataforma
 
 ## Plan
-- [x] Auditoría de versiones — todas en 1.4.0, CHANGELOG al día
-- [x] Plan aprobado por usuario
-- [x] Implementar `scripts/bump-version.sh`
-- [x] Test: todos los modos verificados (patch, minor, major, explicit)
-- [x] Review: bash puro, sin deps, idempotente, validate-manifests pasa
-- [x] Repo revertido a 1.4.0 (estado limpio)
+- [x] Investigación docs oficiales (Claude Code, Copilot CLI, VS Code)
+- [x] Root cause analysis con hipótesis por target
+- [x] Standards documentados con discovery paths por plataforma
+- [x] Lessons registradas
+- [ ] **Next**: Step 1 — Fix `installClaudeVariant()` en `extension.js`
+- [ ] Step 2 — Completar manifest `.claude-plugin/plugin.json`
+- [ ] Step 3 — Verificar hooks format por plataforma
+- [ ] Step 4 — Verificar VS Code Copilot variant
+- [ ] Step 5 — Test en cada plataforma
+- [ ] Step 6 — Review
 
 ## Key Files
-- `scripts/bump-version.sh` — NUEVO: script a crear
-- `scripts/build-dist.sh` — referencia (no modificar)
-- `scripts/validate-manifests.py` — referencia (no modificar)
-- `package.json` — single source of truth para versión
-- `CHANGELOG.md` — agregar entrada template
-- `.github/tasks/todo.md` — tracking del pipeline
+- `src/extension.js` — fix `installClaudeVariant()` paths (skills→`.claude/skills/`, hooks→`.claude/hooks/`, agents→`.claude/agents/`)
+- `.claude-plugin/plugin.json` — agregar agents/skills paths explícitos
+- `.github/tasks/todo.md` — plan completo § "Fix Plugin Installation Paths"
+- `scripts/build-dist.sh` — posible ajuste si estructura del paquete Claude incorrecta
 
-## Acceptance Criteria
-1. `bash scripts/bump-version.sh patch` desde 1.4.0 → 1.4.1 en todos los manifests
-2. `bash scripts/bump-version.sh minor` → 1.5.0
-3. `bash scripts/bump-version.sh major` → 2.0.0
-4. `bash scripts/bump-version.sh 1.6.0` → versión explícita
-5. CHANGELOG.md recibe nueva entrada template
-6. `validate-manifests.py` pasa después del bump
-
-## Constraints
-- Pure bash, no npm/node
-- No modificar build-dist.sh ni validate-manifests.py
-
-## Standards
-- **Semver 2.0.0** — MAJOR.MINOR.PATCH (semver.org)
-- **Keep a Changelog 1.1.0** — formato ya usado en CHANGELOG.md
-- Categorías: Added, Changed, Fixed, Deprecated, Removed, Security
-- Formato: `## [X.Y.Z] - YYYY-MM-DD` + secciones `### Category`
-- Template genera entrada vacía con Added/Changed/Fixed para completar
-- Después del bump, correr validate-manifests.py
-- Idempotente: no duplicar entrada si la versión ya existe en CHANGELOG
+## Next Steps
+1. Fix `installClaudeVariant()`: cambiar dest de `skills/`→`.claude/skills/`, `hooks/`→`.claude/hooks/`, `agents/`→`.claude/agents/`
+2. Agregar `agents` y `skills` fields al `.claude-plugin/plugin.json`
+3. Verificar hooks format (flat vs wrapped) por plataforma
+4. Test de instalación en VS Code, Claude Code CLI, Copilot CLI
 
 ## Context
-- build-dist.sh ya tiene `sync_version()` que propaga desde package.json
-- validate-manifests.py ya verifica consistencia
+- Bug confirmado: VS Code no descubre skills/hooks en workspace root — busca en `.claude/` o `.github/`
+- 6 targets de instalación analizados, prioridad en VS Code VSIX Claude (bug confirmado)
+- bump-version.sh completado esta sesión (commit `48f4d48`)
 
 ## Branch
 `main`

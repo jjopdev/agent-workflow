@@ -18,6 +18,5 @@
     "./agents/security.md",
     "./agents/tester.md"
   ],
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "skills": "./skills/"
 }

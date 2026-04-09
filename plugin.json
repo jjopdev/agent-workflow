@@ -1,6 +1,6 @@
 {
   "name": "agent-workflow",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline for Copilot CLI",
   "author": {
     "name": "jjopdev"

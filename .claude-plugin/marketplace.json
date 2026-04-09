@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline",
-    "version": "1.4.0"
+    "version": "1.5.2"
   },
   "plugins": [
     {
       "name": "agent-workflow",
       "source": "./packages/claude-code",
       "description": "Tech Lead orchestrator with RLM-based multi-agent pipeline for Claude Code",
-      "version": "1.4.0",
+      "version": "1.5.2",
       "author": {
         "name": "jjopdev"
       },
